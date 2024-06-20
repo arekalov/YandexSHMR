@@ -10,10 +10,12 @@ class ToDoItemRepository() {
         val todoItemsToAdd = listOf(
             ToDoItem(
                 "id1",
-                "Подготовить презентацию для встречи",
+                "Подготовка презентацию для встречи с оооооооооооооооооооооооооооооооооооо" +
+                        "ооооооооооооооооооооооооооооооооооооооооооооооооооооооооочень длииииииииии" +
+                        "ннымммммммммммммммм текстооооооооооооооооооооооооооооооооооооооооом",
                 Priority.HIGH,
                 LocalDate.of(2024, 7, 15),
-                true,
+                false,
                 LocalDate.of(2024, 7, 15),
                 LocalDate.of(2024, 7, 14)
             ),
@@ -143,6 +145,134 @@ class ToDoItemRepository() {
                 LocalDate.of(2024, 8, 10),
                 null
             ),
+
+            ToDoItem(
+                "id16",
+                "Купить продукты в супермаркете",
+                Priority.REGULAR,
+                LocalDate.of(2024, 7, 20),
+                false,
+                LocalDate.of(2024, 7, 12),
+                null
+            ),
+            ToDoItem(
+                "id17",
+                "Выучить новый язык программирования",
+                Priority.HIGH,
+                LocalDate.of(2024, 7, 25),
+                false,
+                LocalDate.of(2024, 7, 5),
+                LocalDate.of(2024, 7, 20)
+            ),
+            ToDoItem(
+                "id18",
+                "Сделать зарядку каждое утро",
+                Priority.LOW,
+                null,
+                true,
+                LocalDate.of(2024, 7, 8),
+                null
+            ),
+            ToDoItem(
+                "id19",
+                "Подготовиться к экзамену по математике",
+                Priority.HIGH,
+                LocalDate.of(2024, 7, 30),
+                false,
+                LocalDate.of(2024, 6, 25),
+                LocalDate.of(2024, 7, 28)
+            ),
+            ToDoItem(
+                "id20",
+                "Прочитать новую книгу",
+                Priority.REGULAR,
+                LocalDate.of(2024, 8, 5),
+                false,
+                LocalDate.of(2024, 7, 1),
+                null
+            ),
+            ToDoItem(
+                "id21",
+                "Сходить к врачу на осмотр",
+                Priority.HIGH,
+                LocalDate.of(2024, 8, 10),
+                true,
+                LocalDate.of(2024, 7, 3),
+                LocalDate.of(2024, 8, 9)
+            ),
+            ToDoItem(
+                "id22",
+                "Написать отчет о выполненной работе",
+                Priority.REGULAR,
+                LocalDate.of(2024, 8, 15),
+                false,
+                LocalDate.of(2024, 7, 7),
+                LocalDate.of(2024, 8, 14)
+            ),
+            ToDoItem(
+                "id23",
+                "Провести ремонт в квартире",
+                Priority.LOW,
+                LocalDate.of(2024, 8, 20),
+                false,
+                LocalDate.of(2024, 7, 20),
+                null
+            ),
+            ToDoItem(
+                "id24",
+                "Заказать подарок на день рождения друга",
+                Priority.REGULAR,
+                LocalDate.of(2024, 8, 25),
+                true,
+                LocalDate.of(2024, 7, 15),
+                LocalDate.of(2024, 8, 22)
+            ),
+            ToDoItem(
+                "id25",
+                "Планирование отпуска на следующий год",
+                Priority.LOW,
+                LocalDate.of(2024, 9, 1),
+                false,
+                LocalDate.of(2024, 7, 30),
+                null
+            ),
+            ToDoItem(
+                "id126",
+                "Заняться спортом три раза в неделю",
+                Priority.REGULAR,
+                LocalDate.of(2024, 9, 5),
+                false,
+                LocalDate.of(2024, 8, 1),
+                LocalDate.of(2024, 9, 3)
+            ),
+            ToDoItem(
+                "id27",
+                "Подготовиться к интервью на новую работу",
+                Priority.HIGH,
+                LocalDate.of(2024, 9, 10),
+                true,
+                LocalDate.of(2024, 8, 3),
+                null
+            ),
+            ToDoItem(
+                "id28",
+                "Провести вечеринку в выходной день",
+                Priority.REGULAR,
+                LocalDate.of(2024, 9, 15),
+                false,
+                LocalDate.of(2024, 8, 5),
+                LocalDate.of(2024, 9, 14)
+            ),
+            ToDoItem(
+                "id29",
+                "Найти и оформить новое жилье",
+                Priority.HIGH,
+                LocalDate.of(2024, 9, 20),
+                false,
+                LocalDate.of(2024, 8, 10),
+                null
+            )
+
         )
         _todoItems.addAll(todoItemsToAdd)
     }
