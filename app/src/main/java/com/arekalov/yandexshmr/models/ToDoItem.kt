@@ -1,15 +1,17 @@
 package com.arekalov.yandexshmr.models
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import java.time.LocalDate
 
 data class ToDoItem(
-    val id: String,
-    val task: String,
-    val priority: Priority,
-    val deadline: LocalDate? = null,
-    val isDone: Boolean,
-    val creationDate: LocalDate,
-    val editDate: LocalDate? = null,
+    var id: MutableState<String>,
+    var task: MutableState<String>,
+    var priority: MutableState<Priority>,
+    var deadline: MutableState<LocalDate?> = mutableStateOf(null),
+    var isDone: MutableState<Boolean>,
+    var creationDate: MutableState<LocalDate>,
+    var editDate: MutableState<LocalDate?> = mutableStateOf(null),
 )
 
 enum class Priority {
