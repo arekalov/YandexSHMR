@@ -1,15 +1,10 @@
 package com.arekalov.yandexshmr.models
 
 import androidx.compose.runtime.mutableStateOf
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate
 
 class ToDoItemRepository() {
-    private val itemList = mutableListOf<ToDoItem>() // Ваш список данных
-    private val _itemListFlow = MutableStateFlow<List<ToDoItem>>(itemList)
-    val itemListFlow: StateFlow<List<ToDoItem>>
-        get() = _itemListFlow
+    val itemList = mutableListOf<ToDoItem>() // Ваш список данных
 
     init {
         val todoItemsToAdd = listOf(
@@ -277,23 +272,19 @@ class ToDoItemRepository() {
 
         )
         itemList.addAll(todoItemsToAdd)
-        _itemListFlow.value = itemList
     }
 
     fun deleteItem(item: ToDoItem) {
         itemList.remove(item)
-        _itemListFlow.value = itemList
     }
 
     fun updateItem(id: String, item: ToDoItem) {
         val foundItem = itemList.find { it.id.value == id }
         val index = itemList.indexOf(foundItem)
         itemList[index] = item
-        _itemListFlow.value = itemList
     }
 
     fun addItem(item: ToDoItem) {
         itemList.add(item)
-        _itemListFlow.value = itemList
     }
 }

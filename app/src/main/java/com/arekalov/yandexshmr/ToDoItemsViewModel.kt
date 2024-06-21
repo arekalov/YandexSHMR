@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.update
 class ToDoItemsViewModel : ViewModel() {
     // Временное решение, которое заменится при реальном репизотории
     private val repository = ToDoItemRepository()
-    private val list = repository.itemListFlow.value
+    private val list = repository.itemList
     private val _items = MutableStateFlow(list)
     val items: StateFlow<List<ToDoItem>> = _items.asStateFlow()
 
@@ -49,5 +49,9 @@ class ToDoItemsViewModel : ViewModel() {
             nowList[ind] = item
             nowList
         }
+    }
+
+    fun getItem(id: String): ToDoItem? {
+        return _items.value.find { it.id.value == id }
     }
 }
