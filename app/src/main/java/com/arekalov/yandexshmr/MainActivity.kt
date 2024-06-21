@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,11 +28,18 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,7 +52,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.models.Priority
 import com.arekalov.yandexshmr.models.ToDoItem
-import com.arekalov.yandexshmr.models.ToDoItemRepository
 import com.arekalov.yandexshmr.ui.ToDoListTheme
 
 
@@ -61,13 +68,11 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-val toDoItemsList = ToDoItemRepository().todoItems
 
 @Composable
 fun Item(
     item: ToDoItem,
     onCheckedChange: (Boolean) -> Unit,
-    onInfoClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -102,7 +107,9 @@ fun Item(
         )
 
         Column(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 10.dp)
         ) {
             Text(
                 text = item.task.value,
@@ -118,23 +125,63 @@ fun Item(
                 )
             }
         }
-        IconButton(onClick = onInfoClick) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_info),
-                contentDescription = "Info",
-                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                modifier = Modifier.padding(start = 8.dp, end = 8.dp)
-            )
-        }
-
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DismissBackground(dismissState: SwipeToDismissBoxState) {
+    val color = when (dismissState.dismissDirection) {
+        SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.tertiary
+        SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.tertiary
+        else -> Color.Transparent
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color)
+            .padding(12.dp, 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {}
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ItemWithSwipe(
+    item: ToDoItem,
+    modifier: Modifier = Modifier,
+    onCheckChanged: (Boolean) -> Unit,
+    onDeleteSwipe: (ToDoItem) -> Unit,
+) {
+    val currentItem by rememberUpdatedState(item)
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = {
+            when (it) {
+                SwipeToDismissBoxValue.StartToEnd -> onDeleteSwipe(currentItem)
+                SwipeToDismissBoxValue.EndToStart -> onDeleteSwipe(currentItem)
+                SwipeToDismissBoxValue.Settled -> return@rememberSwipeToDismissBoxState false
+            }
+            return@rememberSwipeToDismissBoxState true
+        },
+        positionalThreshold = { it * .5f })
+    SwipeToDismissBox(
+        state = dismissState,
+        modifier = modifier,
+        backgroundContent = { DismissBackground(dismissState) },
+        content = {
+            Item(item = item, onCheckedChange = onCheckChanged)
+        })
+}
+
 
 @Composable
 fun ItemsList(
     toDoItems: List<ToDoItem>,
     onCheckedChange: (ToDoItem, Boolean) -> Unit,
-    onInfoClick: () -> Unit,
+    onCheckedChangeSwipe: (ToDoItem) -> Unit,
+    onDeleteSwipe: (ToDoItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -144,11 +191,11 @@ fun ItemsList(
             .shadow(3.dp, shape = RoundedCornerShape(3))
     ) {
         LazyColumn(Modifier.clip(MaterialTheme.shapes.extraLarge)) {
-            items(toDoItems) { toDoItem ->
-                Item(
+            items(toDoItems, key = { it.id }) { toDoItem ->
+                ItemWithSwipe(
                     item = toDoItem,
-                    onCheckedChange = { checked -> onCheckedChange(toDoItem, checked) },
-                    onInfoClick = onInfoClick
+                    onCheckChanged = { checked -> onCheckedChange(toDoItem, checked) },
+                    onDeleteSwipe = onDeleteSwipe,
                 )
             }
         }
@@ -167,6 +214,7 @@ fun AppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
             titleContentColor = MaterialTheme.colorScheme.primary,
+            scrolledContainerColor = MaterialTheme.colorScheme.background
         ),
         title = {
             Text(
@@ -198,6 +246,7 @@ fun HomeScreen(
     toDoItemsViewModel: ToDoItemsViewModel,
     modifier: Modifier = Modifier
 ) {
+    val toDoItems by toDoItemsViewModel.items.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     Scaffold(
         topBar = { AppBar(scrollBehavior, {}) },
@@ -222,9 +271,10 @@ fun HomeScreen(
         }
     ) { paddingValues ->
         ItemsList(
-            toDoItems = toDoItemsList,
+            toDoItems = toDoItems,
             onCheckedChange = { item, _ -> toDoItemsViewModel.changeIsDone(item) },
-            onInfoClick = {},
+            onCheckedChangeSwipe = { item -> toDoItemsViewModel.changeIsDone(item) },
+            onDeleteSwipe = { item -> toDoItemsViewModel.deleteItem(item) },
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .padding(paddingValues)

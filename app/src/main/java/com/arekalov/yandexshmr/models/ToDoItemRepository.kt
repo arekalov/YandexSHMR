@@ -1,11 +1,15 @@
 package com.arekalov.yandexshmr.models
 
 import androidx.compose.runtime.mutableStateOf
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate
 
 class ToDoItemRepository() {
-    private val _todoItems = mutableListOf<ToDoItem>()
-    val todoItems: List<ToDoItem> = _todoItems
+    private val itemList = mutableListOf<ToDoItem>() // Ваш список данных
+    private val _itemListFlow = MutableStateFlow<List<ToDoItem>>(itemList)
+    val itemListFlow: StateFlow<List<ToDoItem>>
+        get() = _itemListFlow
 
     init {
         val todoItemsToAdd = listOf(
@@ -272,23 +276,24 @@ class ToDoItemRepository() {
             )
 
         )
-        _todoItems.addAll(todoItemsToAdd)
+        itemList.addAll(todoItemsToAdd)
+        _itemListFlow.value = itemList
     }
 
-    fun removeItem(item: ToDoItem) {
-        _todoItems.remove(item)
+    fun deleteItem(item: ToDoItem) {
+        itemList.remove(item)
+        _itemListFlow.value = itemList
     }
 
     fun updateItem(id: String, item: ToDoItem) {
-        val foundItem = _todoItems.find { it.id.value == id }
-        println(_todoItems[_todoItems.indexOf(foundItem)])
-        println(item)
-        if (foundItem != null) {
-            _todoItems[_todoItems.indexOf(foundItem)] = item
-        }
+        val foundItem = itemList.find { it.id.value == id }
+        val index = itemList.indexOf(foundItem)
+        itemList[index] = item
+        _itemListFlow.value = itemList
     }
 
     fun addItem(item: ToDoItem) {
-        _todoItems.add(item)
+        itemList.add(item)
+        _itemListFlow.value = itemList
     }
 }
