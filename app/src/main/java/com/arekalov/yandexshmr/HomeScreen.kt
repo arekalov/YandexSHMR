@@ -161,7 +161,7 @@ fun ItemWithSwipe(
             }
             return@rememberSwipeToDismissBoxState true
         },
-        positionalThreshold = { it * .5f })
+        positionalThreshold = { it * .75f })
     SwipeToDismissBox(
         state = dismissState,
         modifier = modifier,

@@ -9,4 +9,7 @@
     <string name="deadlinLabel">Сделать до</string>
     <string name="deleteLabel">Удалить</string>
     <string name="saveLabel">СОХРАНИТЬ</string>
+    <string name="noDeadlineLabel">Дедлайн не задан</string>
+    <string name="okLabel">Ok</string>
+    <string name="cancelLabel">Отменить</string>
 </resources>

@@ -2,9 +2,11 @@ package com.arekalov.yandexshmr
 
 import android.content.res.Configuration
 import android.os.Build
+import android.widget.DatePicker
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,6 +35,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +43,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arekalov.yandexshmr.models.Priority
 import com.arekalov.yandexshmr.ui.ToDoListTheme
+import java.time.LocalDate
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -108,7 +113,17 @@ fun EditScreen(
                 onHighClick = { item?.priority?.value = Priority.HIGH }
             )
             HorizontalDivider()
-            DeadlinePicker()
+            DeadlinePicker(
+                deadline = item?.deadline?.value,
+                onSwitchChanged = {
+                    if (it) {
+                        item?.deadline?.value = LocalDate.now()
+                    } else item?.deadline?.value = null
+                },
+                onDateSelected = { item?.deadline?.value = it },
+
+                modifier = Modifier
+            )
             HorizontalDivider()
             TextButton(onClick = {
                 toDoItemsViewModel.deleteItem(item!!)
@@ -133,36 +148,75 @@ fun EditScreen(
     }
 }
 
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DeadlinePicker(modifier: Modifier = Modifier) {
+fun DeadlinePicker(
+    deadline: LocalDate?,
+    onSwitchChanged: (Boolean) -> Unit,
+    onDateSelected: (LocalDate) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val mContext = LocalContext.current
+    val showDialog = remember { mutableStateOf(false) }
+    LaunchedEffect(showDialog.value) {
+        if (showDialog.value) {
+            val mYear: Int
+            val mMonth: Int
+            val mDay: Int
+
+            val initialDate = deadline ?: LocalDate.now()
+            mYear = initialDate.year
+            mMonth = initialDate.monthValue - 1
+            mDay = initialDate.dayOfMonth
+
+            android.app.DatePickerDialog(
+                mContext,
+                { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+                    onDateSelected(LocalDate.of(year, month + 1, dayOfMonth))
+                    showDialog.value = false
+                },
+                mYear, mMonth, mDay
+            ).show()
+        }
+    }
+
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
             .padding(vertical = 10.dp)
             .fillMaxWidth()
     ) {
-        Column(horizontalAlignment = Alignment.Start) {
+        Column(
+            horizontalAlignment = Alignment.Start,
+            modifier = Modifier.clickable { showDialog.value = true }
+        ) {
             Text(
                 text = stringResource(R.string.deadlinLabel),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground,
-
-                )
+            )
             Text(
-                text = stringResource(R.string.priorityLabel),
+                text = deadline?.toString() ?: stringResource(R.string.noDeadlineLabel),
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
                 style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.padding(top = 3.dp)
             )
         }
         Switch(
-            checked = false,
-            colors = SwitchDefaults.colors(),
-            onCheckedChange = { })
-
+            checked = deadline != null,
+            colors = SwitchDefaults.colors(
+                uncheckedIconColor = MaterialTheme.colorScheme.onSurface.copy(0.5f),
+                uncheckedThumbColor = MaterialTheme.colorScheme.onSurface.copy(0.5f),
+                uncheckedTrackColor = Color.White,
+                uncheckedBorderColor = MaterialTheme.colorScheme.onSurface.copy(0.5f)
+            ),
+            onCheckedChange = {
+                onSwitchChanged(it)
+            }
+        )
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -190,17 +244,6 @@ fun AppBar(modifier: Modifier = Modifier, onBack: () -> Unit, onSave: () -> Unit
         },
         modifier = modifier
     )
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MyDatePickerDialog(modifier: Modifier = Modifier) {
-    DatePickerDialog(
-        onDismissRequest = { /*TODO*/ },
-        confirmButton = { /*TODO*/ },
-        dismissButton = { /*TODO*/ }
-    ) {
-    }
 }
 
 @Composable
@@ -297,19 +340,13 @@ private fun DropDownMenuPreview() {
     }
 }
 
-@Preview
-@Composable
-private fun DatePickerDialogPreview() {
-    ToDoListTheme {
-        MyDatePickerDialog()
-    }
-}
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun DeadlinePickerPreview(modifier: Modifier = Modifier) {
     ToDoListTheme {
-        DeadlinePicker()
+        DeadlinePicker(null, {}, {})
     }
 }
 
