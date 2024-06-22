@@ -1,6 +1,8 @@
 package com.arekalov.yandexshmr
 
 import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -56,6 +58,8 @@ import com.arekalov.yandexshmr.models.Priority
 import com.arekalov.yandexshmr.models.ToDoItem
 import com.arekalov.yandexshmr.models.ToDoItemRepository
 import com.arekalov.yandexshmr.ui.ToDoListTheme
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 
 @Composable
@@ -235,6 +239,7 @@ fun AppBar(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -254,7 +259,17 @@ fun HomeScreen(
             .nestedScroll(scrollBehavior.nestedScrollConnection),
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {},
+                onClick = {
+                    val item = ToDoItem(
+                        id = mutableStateOf(LocalDateTime.now().hashCode().toString()),
+                        task = mutableStateOf(""),
+                        priority = mutableStateOf(Priority.REGULAR),
+                        isDone = mutableStateOf(false),
+                        creationDate = mutableStateOf(LocalDate.now())
+                    )
+                    toDoItemsViewModel.addItem(item)
+                    onItemClick(item)
+                },
                 containerColor = MaterialTheme.colorScheme.primary,
                 shape = CircleShape,
                 modifier = Modifier.padding(10.dp)
@@ -309,6 +324,7 @@ private fun ToolBarPreview() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable

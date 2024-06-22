@@ -48,28 +48,18 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arekalov.yandexshmr.models.Priority
-import com.arekalov.yandexshmr.models.ToDoItem
-import com.arekalov.yandexshmr.models.ToDoItemRepository
 import com.arekalov.yandexshmr.ui.ToDoListTheme
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EditScreen(
-    id: String?,
+    id: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     toDoItemsViewModel: ToDoItemsViewModel = viewModel(),
 ) {
     val item = remember {
-        if (id != null) toDoItemsViewModel.getItem(id) else ToDoItem(
-            id = mutableStateOf(LocalDateTime.now().hashCode().toString()),
-            task = mutableStateOf(""),
-            priority = mutableStateOf(Priority.REGULAR),
-            isDone = mutableStateOf(false),
-            creationDate = mutableStateOf(LocalDate.now())
-        )
+        toDoItemsViewModel.getItem(id)
     }
     println(id)
     println(item)
@@ -338,7 +328,6 @@ private fun AppBarPreview() {
 @Composable
 private fun EditScreenPreview() {
     ToDoListTheme {
-        val repo = ToDoItemRepository()
         EditScreen("id1", {})
     }
 }
