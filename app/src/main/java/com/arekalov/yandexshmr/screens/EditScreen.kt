@@ -4,7 +4,6 @@ import android.content.res.Configuration
 import android.widget.DatePicker
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,18 +24,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,10 +61,10 @@ fun EditScreen(
     modifier: Modifier = Modifier,
     toDoItemsViewModel: ToDoItemsViewModel = viewModel(),
 ) {
-    var isItemNew by remember {
+    var isItemNew by rememberSaveable {
         mutableStateOf(false)
     }
-    var item by remember {
+    var item by rememberSaveable {
         mutableStateOf(
             if (id != NEW_ITEM && toDoItemsViewModel.isItemExists(id)) {
                 toDoItemsViewModel.getItem(id = id)!!
@@ -90,6 +86,7 @@ fun EditScreen(
         topBar = {
             AppBar(
                 onBack = onBack,
+                isReadyToSave = item.task.isNotEmpty(),
                 onSave = {
                     if (isItemNew) {
                         toDoItemsViewModel.addItem(item = item)
@@ -133,7 +130,7 @@ fun EditScreen(
                     )
                 )
             }
-            DropDownMenu(
+            PriorityPicker(
                 priority = item.priority,
                 onRegularClick = {
                     item = item.copy(priority = Priority.REGULAR)
@@ -148,26 +145,28 @@ fun EditScreen(
             HorizontalDivider()
             DeadlinePicker(
                 deadline = item.deadline,
-                onSwitchChanged = {
-                    if (it) {
-                        item = item.copy(deadline = LocalDate.now())
-                    } else {
-                        item = item.copy(deadline = null)
-                    }
-                },
-                onDateSelected = { newDeadline ->
+                onDeadlineButtonClick = { newDeadline ->
                     item = item.copy(deadline = newDeadline)
                 },
-
+                onRemoveDeadline = { item = item.copy(deadline = null) },
                 modifier = Modifier
             )
             HorizontalDivider()
-            TextButton(onClick = {
-                if (!isItemNew) toDoItemsViewModel.deleteItem(item.id)
-                onBack()
-            }) {
+            TextButton(
+                enabled = (item.task.isNotEmpty()),
+                onClick = {
+                    if (!isItemNew) toDoItemsViewModel.deleteItem(item.id)
+                    onBack()
+                },
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    val color = MaterialTheme.colorScheme.tertiary
+                    val color = if (item.task.isNotEmpty()) {
+                        MaterialTheme.colorScheme.tertiary
+                    } else {
+                        MaterialTheme.colorScheme.tertiary.copy(0.2f)
+                    }
                     Icon(
                         painter = painterResource(id = R.drawable.ic_delete),
                         contentDescription = "delete",
@@ -188,75 +187,79 @@ fun EditScreen(
 @Composable
 fun DeadlinePicker(
     deadline: LocalDate?,
-    onSwitchChanged: (Boolean) -> Unit,
-    onDateSelected: (LocalDate) -> Unit,
+    onDeadlineButtonClick: (LocalDate?) -> Unit,
+    onRemoveDeadline: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val mContext = LocalContext.current
-    val showDialog = remember { mutableStateOf(false) }
-    LaunchedEffect(showDialog.value) {
-        if (showDialog.value) {
-            val mYear: Int
-            val mMonth: Int
-            val mDay: Int
-
+    val context = LocalContext.current
+    TextButton(
+        onClick = {
+            val year: Int
+            val month: Int
+            val day: Int
             val initialDate = deadline ?: LocalDate.now()
-            mYear = initialDate.year
-            mMonth = initialDate.monthValue - 1
-            mDay = initialDate.dayOfMonth
-
+            year = initialDate.year
+            month = initialDate.monthValue - 1
+            day = initialDate.dayOfMonth
             android.app.DatePickerDialog(
-                mContext,
-                { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-                    onDateSelected(LocalDate.of(year, month + 1, dayOfMonth))
-                    showDialog.value = false
-                },
-                mYear, mMonth, mDay
-            ).show()
-        }
-    }
+                context,
+                { _: DatePicker, takenYear: Int, takenMonth: Int, takenDayOfMonth: Int ->
+                    onDeadlineButtonClick(LocalDate.of(takenYear, takenMonth + 1, takenDayOfMonth))
 
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        modifier = modifier
-            .padding(vertical = 10.dp)
-            .fillMaxWidth()
+                },
+                year, month, day
+            ).show()
+        },
+        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 10.dp),
+        modifier = Modifier.padding(top = 10.dp)
     ) {
-        Column(
-            horizontalAlignment = Alignment.Start,
-            modifier = Modifier.clickable { showDialog.value = true }
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = modifier
+                .fillMaxWidth()
         ) {
-            Text(
-                text = stringResource(R.string.deadlinLabel),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-            )
-            Text(
-                text = deadline?.toString() ?: stringResource(R.string.noDeadlineLabel),
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(top = 3.dp)
-            )
-        }
-        Switch(
-            checked = deadline != null,
-            colors = SwitchDefaults.colors(
-                uncheckedIconColor = MaterialTheme.colorScheme.onSurface.copy(0.5f),
-                uncheckedThumbColor = MaterialTheme.colorScheme.onSurface.copy(0.5f),
-                uncheckedTrackColor = Color.White,
-                uncheckedBorderColor = MaterialTheme.colorScheme.onSurface.copy(0.5f)
-            ),
-            onCheckedChange = {
-                onSwitchChanged(it)
+            Column(
+                horizontalAlignment = Alignment.Start,
+            ) {
+                Text(
+                    text = stringResource(R.string.deadlinLabel),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                )
+                Text(
+                    text = deadline?.toString() ?: stringResource(R.string.noDeadlineLabel),
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 3.dp)
+                )
             }
-        )
+            IconButton(
+                onClick = onRemoveDeadline,
+                enabled = deadline != null
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_close),
+                    tint = if (deadline != null) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        Color.Transparent
+                    },
+                    contentDescription = "remove deadline"
+                )
+            }
+        }
     }
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(modifier: Modifier = Modifier, onBack: () -> Unit, onSave: () -> Unit) {
+fun AppBar(
+    isReadyToSave: Boolean,
+    onBack: () -> Unit,
+    onSave: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
@@ -274,8 +277,18 @@ fun AppBar(modifier: Modifier = Modifier, onBack: () -> Unit, onSave: () -> Unit
             }
         },
         actions = {
-            TextButton(onClick = onSave) {
-                Text(text = stringResource(R.string.saveLabel))
+            TextButton(
+                onClick = onSave,
+                enabled = (isReadyToSave),
+            ) {
+                Text(
+                    text = stringResource(R.string.saveLabel),
+                    color = if (isReadyToSave) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.primary.copy(0.2f)
+                    }
+                )
             }
         },
         modifier = modifier
@@ -283,14 +296,14 @@ fun AppBar(modifier: Modifier = Modifier, onBack: () -> Unit, onSave: () -> Unit
 }
 
 @Composable
-fun DropDownMenu(
+fun PriorityPicker(
     priority: Priority,
     onRegularClick: () -> Unit,
     onLowClick: () -> Unit,
     onHighClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
     Box(
         modifier = modifier
             .padding(vertical = 10.dp)
@@ -298,7 +311,7 @@ fun DropDownMenu(
     ) {
         TextButton(
             onClick = { expanded = true },
-            contentPadding = PaddingValues(horizontal = 2.dp, vertical = 10.dp)
+            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 10.dp)
         ) {
             Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
                 Text(
@@ -370,9 +383,9 @@ fun DropDownMenu(
 
 @Preview(showBackground = true)
 @Composable
-private fun DropDownMenuPreview() {
+private fun PriorityPickerPreview() {
     ToDoListTheme {
-        DropDownMenu(priority = Priority.LOW, {}, {}, {})
+        PriorityPicker(priority = Priority.LOW, {}, {}, {})
     }
 }
 
@@ -381,7 +394,11 @@ private fun DropDownMenuPreview() {
 @Composable
 fun DeadlinePickerPreview(modifier: Modifier = Modifier) {
     ToDoListTheme {
-        DeadlinePicker(null, {}, {})
+        DeadlinePicker(
+            deadline = LocalDate.of(2024, 9, 1),
+            onDeadlineButtonClick = {},
+            onRemoveDeadline = {}
+        )
     }
 }
 
@@ -389,7 +406,11 @@ fun DeadlinePickerPreview(modifier: Modifier = Modifier) {
 @Composable
 private fun AppBarPreview() {
     ToDoListTheme {
-        AppBar(Modifier, {}, {})
+        AppBar(
+            isReadyToSave = true,
+            onBack = {},
+            onSave = {}
+        )
     }
 }
 

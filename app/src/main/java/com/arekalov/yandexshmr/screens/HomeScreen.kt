@@ -105,7 +105,7 @@ fun Item(
                 item.priority == Priority.LOW -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 else -> Color.Transparent
             },
-            modifier = Modifier.padding(end = 5.dp)
+            modifier = Modifier.padding(end = 10.dp)
         )
 
         Column(
