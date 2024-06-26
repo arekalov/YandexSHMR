@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr
+package com.arekalov.yandexshmr.screens
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -52,9 +52,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arekalov.yandexshmr.R
+import com.arekalov.yandexshmr.ToDoItemsViewModel
 import com.arekalov.yandexshmr.models.Priority
 import com.arekalov.yandexshmr.models.ToDoItem
 import com.arekalov.yandexshmr.models.ToDoItemRepository
+import com.arekalov.yandexshmr.navigation.NEW_ITEM
 import com.arekalov.yandexshmr.ui.ToDoListTheme
 
 
