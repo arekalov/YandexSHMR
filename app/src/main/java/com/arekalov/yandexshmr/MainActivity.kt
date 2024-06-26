@@ -10,7 +10,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.arekalov.yandexshmr.models.ToDoItem
 import com.arekalov.yandexshmr.ui.ToDoListTheme
 
 
@@ -25,18 +24,22 @@ class MainActivity : AppCompatActivity() {
                 NavHost(navController = navController, startDestination = HOME) {
                     composable(HOME)
                     {
+                        println("openHome")
                         HomeScreen(
                             toDoItemsViewModel = viewModel,
-                            onItemClick = { item: ToDoItem -> navController.navigate("$EDIT/${item.id.value}") })
+                            onItemClick = { itemId: String ->
+                                navController.navigate("$EDIT/$itemId")
+                            })
                     }
                     composable(
                         EDIT_WITH_ARG,
                         arguments = listOf(navArgument(ITEM_ARG) { type = NavType.StringType })
                     ) {
+                        println("openEdit")
                         EditScreen(
                             toDoItemsViewModel = viewModel,
-                            id = it.arguments?.getString(ITEM_ARG) ?: "",
-                            onBack = { navController.navigate(HOME) }
+                            id = it.arguments?.getString(ITEM_ARG) ?: NEW_ITEM,
+                            onBack = { navController.popBackStack() }
                         )
                     }
                 }

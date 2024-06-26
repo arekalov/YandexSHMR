@@ -1,8 +1,6 @@
 package com.arekalov.yandexshmr
 
 import android.content.res.Configuration
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -58,15 +56,13 @@ import com.arekalov.yandexshmr.models.Priority
 import com.arekalov.yandexshmr.models.ToDoItem
 import com.arekalov.yandexshmr.models.ToDoItemRepository
 import com.arekalov.yandexshmr.ui.ToDoListTheme
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 
 @Composable
 fun Item(
     item: ToDoItem,
     onCheckedChange: (Boolean) -> Unit,
-    onClickEdit: (ToDoItem) -> Unit,
+    onClickEdit: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -75,29 +71,37 @@ fun Item(
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { onClickEdit(item) }
+            .clickable { onClickEdit(item.id) }
     ) {
         Checkbox(
-            checked = item.isDone.value,
+            checked = item.isDone,
             onCheckedChange = onCheckedChange,
             colors = CheckboxDefaults.colors(
                 checkedColor = MaterialTheme.colorScheme.secondary,
-                uncheckedColor = (if (item.priority.value == Priority.HIGH) MaterialTheme.colorScheme.tertiary
-                else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                uncheckedColor = if (item.priority == Priority.HIGH) {
+                    MaterialTheme.colorScheme.tertiary
+                } else {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                }
+
             )
         )
 
         Icon(
             painter = painterResource(
-                id = if (item.priority.value == Priority.HIGH) R.drawable.ic_high_priority
-                else R.drawable.ic_down_arrow
+                id = if (item.priority == Priority.HIGH) {
+                    R.drawable.ic_high_priority
+                } else {
+                    R.drawable.ic_down_arrow
+                }
             ),
             contentDescription = "priority",
-            tint = if (item.isDone.value && item.priority.value != Priority.REGULAR) MaterialTheme.colorScheme.secondary
-            else if (item.priority.value == Priority.HIGH) MaterialTheme.colorScheme.tertiary
-            else if (item.priority.value == Priority.LOW) MaterialTheme.colorScheme.onSurface.copy(
-                alpha = 0.5f
-            ) else MaterialTheme.colorScheme.surface,
+            tint = when {
+                item.isDone && item.priority != Priority.REGULAR -> MaterialTheme.colorScheme.secondary
+                item.priority == Priority.HIGH -> MaterialTheme.colorScheme.tertiary
+                item.priority == Priority.LOW -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                else -> Color.Transparent
+            },
             modifier = Modifier.padding(end = 5.dp)
         )
 
@@ -107,15 +111,15 @@ fun Item(
                 .padding(end = 10.dp)
         ) {
             Text(
-                text = item.task.value,
+                text = item.task,
                 style = MaterialTheme.typography.bodyMedium,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 3
             )
-            if (item.deadline.value != null) {
+            if (item.deadline != null) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = item.deadline.value.toString(),
+                    text = item.deadline.toString(),
                     style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray)
                 )
             }
@@ -148,15 +152,15 @@ fun ItemWithSwipe(
     item: ToDoItem,
     modifier: Modifier = Modifier,
     onCheckChanged: (Boolean) -> Unit,
-    onClickItem: (ToDoItem) -> Unit,
-    onDeleteSwipe: (ToDoItem) -> Unit,
+    onClickItem: (String) -> Unit,
+    onDeleteSwipe: (String) -> Unit,
 ) {
     val currentItem by rememberUpdatedState(item)
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
             when (it) {
-                SwipeToDismissBoxValue.StartToEnd -> onDeleteSwipe(currentItem)
-                SwipeToDismissBoxValue.EndToStart -> onDeleteSwipe(currentItem)
+                SwipeToDismissBoxValue.StartToEnd -> onDeleteSwipe(currentItem.id)
+                SwipeToDismissBoxValue.EndToStart -> onDeleteSwipe(currentItem.id)
                 SwipeToDismissBoxValue.Settled -> return@rememberSwipeToDismissBoxState false
             }
             return@rememberSwipeToDismissBoxState true
@@ -176,8 +180,8 @@ fun ItemWithSwipe(
 fun ItemsList(
     toDoItems: List<ToDoItem>,
     onCheckedChange: (ToDoItem, Boolean) -> Unit,
-    onDeleteSwipe: (ToDoItem) -> Unit,
-    onClickItem: (ToDoItem) -> Unit,
+    onDeleteSwipe: (String) -> Unit,
+    onClickItem: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -239,11 +243,10 @@ fun AppBar(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onItemClick: (ToDoItem) -> Unit,
+    onItemClick: (String) -> Unit,
     modifier: Modifier = Modifier,
     toDoItemsViewModel: ToDoItemsViewModel = viewModel()
 ) {
@@ -260,15 +263,7 @@ fun HomeScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    val item = ToDoItem(
-                        id = mutableStateOf(LocalDateTime.now().hashCode().toString()),
-                        task = mutableStateOf(""),
-                        priority = mutableStateOf(Priority.REGULAR),
-                        isDone = mutableStateOf(false),
-                        creationDate = mutableStateOf(LocalDate.now())
-                    )
-                    toDoItemsViewModel.addItem(item)
-                    onItemClick(item)
+                    onItemClick(NEW_ITEM)
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
                 shape = CircleShape,
@@ -285,10 +280,10 @@ fun HomeScreen(
         }
     ) { paddingValues ->
         ItemsList(
-            toDoItems = if (isVisibleAll) toDoItems else toDoItems.filter { !it.isDone.value },
-            onCheckedChange = { item, _ -> toDoItemsViewModel.changeIsDone(item) },
-            onDeleteSwipe = { item -> toDoItemsViewModel.deleteItem(item) },
-            onClickItem = { item -> onItemClick(item) },
+            toDoItems = if (isVisibleAll) toDoItems else toDoItems.filter { !it.isDone },
+            onCheckedChange = { id, _ -> toDoItemsViewModel.changeIsDone(id) },
+            onDeleteSwipe = { id -> toDoItemsViewModel.deleteItem(id) },
+            onClickItem = { id -> onItemClick(id) },
             modifier = Modifier
                 .padding(horizontal = 10.dp)
                 .padding(paddingValues)
@@ -310,7 +305,7 @@ private fun ItemPreview() {
 @Composable
 private fun ItemListPreview() {
     ToDoListTheme {
-        ItemsList(toDoItemsList, { it, bool -> }, {}, {})
+        ItemsList(toDoItemsList, { _, _ -> }, {}, {})
     }
 }
 
@@ -324,7 +319,6 @@ private fun ToolBarPreview() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, showBackground = true)
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
 @Composable

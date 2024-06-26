@@ -1,6 +1,5 @@
 package com.arekalov.yandexshmr
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.arekalov.yandexshmr.models.ToDoItem
 import com.arekalov.yandexshmr.models.ToDoItemRepository
@@ -11,7 +10,6 @@ import kotlinx.coroutines.flow.update
 
 
 class ToDoItemsViewModel : ViewModel() {
-    // Временное решение, которое заменится при реальном репизотории
     private val repository = ToDoItemRepository()
     private val list = repository.itemList
     private val _items = MutableStateFlow(list)
@@ -21,7 +19,7 @@ class ToDoItemsViewModel : ViewModel() {
         _items.update {
             val nowList = it.toMutableList()
             val ind = nowList.indexOf(item)
-            nowList[ind] = item.copy(isDone = mutableStateOf(!item.isDone.value))
+            nowList[ind] = item.copy(isDone = !item.isDone)
             nowList
         }
     }
@@ -34,10 +32,11 @@ class ToDoItemsViewModel : ViewModel() {
         }
     }
 
-    fun deleteItem(item: ToDoItem) {
+    fun deleteItem(id: String?) {
         _items.update {
             val nowList = it.toMutableList()
-            nowList.remove(item)
+            val el = nowList.find { it.id == id }
+            nowList.remove(el)
             nowList
         }
     }
@@ -45,13 +44,17 @@ class ToDoItemsViewModel : ViewModel() {
     fun update(id: String, item: ToDoItem) {
         _items.update {
             val nowList = it.toMutableList()
-            val ind = nowList.indexOf(nowList.find { it.id.value == id })
+            val ind = nowList.indexOf(nowList.find { it.id == id })
             nowList[ind] = item
             nowList
         }
     }
 
     fun getItem(id: String): ToDoItem? {
-        return _items.value.find { it.id.value == id }
+        return _items.value.find { it.id == id }
+    }
+
+    fun isItemExists(id: String): Boolean {
+        return _items.value.find { it.id == id } != null
     }
 }

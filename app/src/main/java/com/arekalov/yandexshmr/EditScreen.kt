@@ -1,9 +1,7 @@
 package com.arekalov.yandexshmr
 
 import android.content.res.Configuration
-import android.os.Build
 import android.widget.DatePicker
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -52,10 +50,11 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arekalov.yandexshmr.models.Priority
+import com.arekalov.yandexshmr.models.ToDoItem
 import com.arekalov.yandexshmr.ui.ToDoListTheme
 import java.time.LocalDate
+import java.time.LocalDateTime
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EditScreen(
     id: String,
@@ -63,16 +62,39 @@ fun EditScreen(
     modifier: Modifier = Modifier,
     toDoItemsViewModel: ToDoItemsViewModel = viewModel(),
 ) {
-    val item = remember {
-        toDoItemsViewModel.getItem(id)
+    var isItemNew by remember {
+        mutableStateOf(false)
     }
-    println(id)
-    println(item)
+    var item by remember {
+        mutableStateOf(
+            if (id != NEW_ITEM && toDoItemsViewModel.isItemExists(id)) {
+                toDoItemsViewModel.getItem(id = id)!!
+            } else {
+                isItemNew = true
+                val tempId = LocalDateTime.now().hashCode()
+                    .toString() // Временное решение для создания id, потом заменится на primaryKey из DB
+                ToDoItem(
+                    id = tempId,
+                    task = "",
+                    priority = Priority.REGULAR,
+                    isDone = false,
+                    creationDate = LocalDate.now()
+                )
+            }
+        )
+    }
     Scaffold(
         topBar = {
             AppBar(
                 onBack = onBack,
-                onSave = { toDoItemsViewModel.update(item!!.id.value, item); onBack() })
+                onSave = {
+                    if (isItemNew) {
+                        toDoItemsViewModel.addItem(item = item)
+                    } else {
+                        toDoItemsViewModel.update(item.id, item)
+                    }
+                    onBack()
+                })
         },
     ) {
         Column(
@@ -90,8 +112,10 @@ fun EditScreen(
                     )
             ) {
                 TextField(
-                    value = item!!.task.value,
-                    onValueChange = { newText: String -> item.task.value = newText },
+                    value = item.task,
+                    onValueChange = { newText: String ->
+                        item = item.copy(task = newText)
+                    },
                     minLines = 3,
                     placeholder = {
                         Text(
@@ -107,26 +131,36 @@ fun EditScreen(
                 )
             }
             DropDownMenu(
-                priority = item?.priority?.value ?: Priority.REGULAR,
-                onRegularClick = { item?.priority?.value = Priority.REGULAR },
-                onLowClick = { item?.priority?.value = Priority.LOW },
-                onHighClick = { item?.priority?.value = Priority.HIGH }
+                priority = item.priority,
+                onRegularClick = {
+                    item = item.copy(priority = Priority.REGULAR)
+                },
+                onLowClick = {
+                    item = item.copy(priority = Priority.LOW)
+                },
+                onHighClick = {
+                    item = item.copy(priority = Priority.HIGH)
+                }
             )
             HorizontalDivider()
             DeadlinePicker(
-                deadline = item?.deadline?.value,
+                deadline = item.deadline,
                 onSwitchChanged = {
                     if (it) {
-                        item?.deadline?.value = LocalDate.now()
-                    } else item?.deadline?.value = null
+                        item = item.copy(deadline = LocalDate.now())
+                    } else {
+                        item = item.copy(deadline = null)
+                    }
                 },
-                onDateSelected = { item?.deadline?.value = it },
+                onDateSelected = { newDeadline ->
+                    item = item.copy(deadline = newDeadline)
+                },
 
                 modifier = Modifier
             )
             HorizontalDivider()
             TextButton(onClick = {
-                toDoItemsViewModel.deleteItem(item!!)
+                if (!isItemNew) toDoItemsViewModel.deleteItem(item.id)
                 onBack()
             }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -148,7 +182,6 @@ fun EditScreen(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DeadlinePicker(
     deadline: LocalDate?,
@@ -256,7 +289,7 @@ fun DropDownMenu(
 ) {
     var expanded by remember { mutableStateOf(false) }
     Box(
-        modifier = Modifier
+        modifier = modifier
             .padding(vertical = 10.dp)
 
     ) {
@@ -341,7 +374,6 @@ private fun DropDownMenuPreview() {
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun DeadlinePickerPreview(modifier: Modifier = Modifier) {
@@ -359,7 +391,6 @@ private fun AppBarPreview() {
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
