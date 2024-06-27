@@ -1,7 +1,6 @@
 package com.arekalov.yandexshmr.screens
 
 import android.content.res.Configuration
-import android.widget.DatePicker
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +14,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +31,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,11 +41,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arekalov.yandexshmr.R
@@ -51,8 +52,11 @@ import com.arekalov.yandexshmr.models.Priority
 import com.arekalov.yandexshmr.models.ToDoItem
 import com.arekalov.yandexshmr.navigation.NEW_ITEM
 import com.arekalov.yandexshmr.ui.ToDoListTheme
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
 
 @Composable
 fun EditScreen(
@@ -184,6 +188,7 @@ fun EditScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeadlinePicker(
     deadline: LocalDate?,
@@ -191,28 +196,59 @@ fun DeadlinePicker(
     onRemoveDeadline: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
+    var showDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
     TextButton(
         onClick = {
-            val year: Int
-            val month: Int
-            val day: Int
-            val initialDate = deadline ?: LocalDate.now()
-            year = initialDate.year
-            month = initialDate.monthValue - 1
-            day = initialDate.dayOfMonth
-            android.app.DatePickerDialog(
-                context,
-                { _: DatePicker, takenYear: Int, takenMonth: Int, takenDayOfMonth: Int ->
-                    onDeadlineButtonClick(LocalDate.of(takenYear, takenMonth + 1, takenDayOfMonth))
-
-                },
-                year, month, day
-            ).show()
+            showDialog = !showDialog
         },
         contentPadding = PaddingValues(horizontal = 4.dp, vertical = 10.dp),
         modifier = Modifier.padding(top = 10.dp)
     ) {
+        if (showDialog) {
+            val datePickerState = rememberDatePickerState(
+                if (deadline != null) deadline.atStartOfDay()?.toInstant(ZoneOffset.MIN)
+                    ?.toEpochMilli()
+                else null
+            )
+            DatePickerDialog(
+                tonalElevation = 300.dp,
+                colors = DatePickerDefaults.colors(
+                    containerColor = MaterialTheme.colorScheme.background.copy()
+                ),
+                onDismissRequest = { showDialog = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            val localDate =
+                                Instant.ofEpochMilli(datePickerState.selectedDateMillis ?: 0)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+                            onDeadlineButtonClick(localDate)
+                            showDialog = false
+                        }
+                    ) {
+                        Text(text = stringResource(id = R.string.okLabel))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text(text = stringResource(id = R.string.cancelLabel))
+                    }
+                }
+            ) {
+                DatePicker(
+                    colors = DatePickerDefaults.colors(
+                        headlineContentColor = MaterialTheme.colorScheme.onSurface,
+                        titleContentColor = MaterialTheme.colorScheme.primary.copy(0.8f),
+                        navigationContentColor = MaterialTheme.colorScheme.onBackground.copy(0.6f)
+                    ),
+                    state = datePickerState
+                )
+
+            }
+        }
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = modifier
@@ -335,48 +371,47 @@ fun PriorityPicker(
                 )
             }
         }
-    }
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { expanded = false },
-        offset = DpOffset(15.dp, 0.dp),
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.surface)
-            .width(150.dp)
-    ) {
-        DropdownMenuItem(
-            text = {
-                Text(
-                    stringResource(R.string.reqularPriorityLabel),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(10.dp)
-                )
-            },
-            onClick = { onRegularClick(); expanded = false }
-        )
-        DropdownMenuItem(
-            text = {
-                Text(
-                    stringResource(R.string.lowPriorityLabel),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.padding(10.dp)
-                )
-            },
-            onClick = { onLowClick(); expanded = false }
-        )
-        DropdownMenuItem(
-            text = {
-                Text(
-                    stringResource(R.string.highPriorityLabel),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.padding(10.dp)
-                )
-            },
-            onClick = { onHighClick(); expanded = false }
-        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .width(150.dp)
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(R.string.reqularPriorityLabel),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(10.dp)
+                    )
+                },
+                onClick = { onRegularClick(); expanded = false }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(R.string.lowPriorityLabel),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier.padding(10.dp)
+                    )
+                },
+                onClick = { onLowClick(); expanded = false }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        stringResource(R.string.highPriorityLabel),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.padding(10.dp)
+                    )
+                },
+                onClick = { onHighClick(); expanded = false }
+            )
+        }
     }
 }
 
