@@ -14,4 +14,6 @@
     <string name="cancelLabel">Отменить</string>
     <string name="myItemsLabel">Мои задачи</string>
     <string name="doneLabel">Выполнено - %1$s</string>
+    <string name="errorLabel">Ошибка: %1$s</string>
+    <string name="unknownErrorLabel">unknown error</string>
 </resources>

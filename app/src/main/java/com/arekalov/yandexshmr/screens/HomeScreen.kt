@@ -1,6 +1,7 @@
 package com.arekalov.yandexshmr.screens
 
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -48,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -319,11 +321,23 @@ fun HomeScreen(
     toDoItemsViewModel: ToDoItemsViewModel = viewModel()
 ) {
     val toDoItems by toDoItemsViewModel.items.collectAsState()
+    val error by toDoItemsViewModel.error.collectAsState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
     )
     var isVisibleAll by rememberSaveable {
         mutableStateOf(true)
+    }
+    if (error != null) {
+        Toast.makeText(
+            LocalContext.current,
+            stringResource(
+                id = R.string.errorLabel,
+                error ?: stringResource(R.string.unknownErrorLabel)
+            ),
+            Toast.LENGTH_SHORT
+        ).show()
+        toDoItemsViewModel.clearError()
     }
     Scaffold(
         topBar = {
@@ -368,7 +382,7 @@ fun HomeScreen(
     }
 }
 
-val toDoItemsList = ToDoItemRepository().itemList
+val toDoItemsList = ToDoItemRepository().itemsList
 
 @Preview(showBackground = true)
 @Composable
