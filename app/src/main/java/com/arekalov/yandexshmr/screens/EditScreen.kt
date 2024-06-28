@@ -75,7 +75,7 @@ fun EditScreen(
             } else {
                 isItemNew = true
                 val tempId = LocalDateTime.now().hashCode()
-                    .toString() // Временное решение для создания id, потом заменится на primaryKey из DB
+                    .toString() // a temporary way to calculate the id
                 ToDoItem(
                     id = tempId,
                     task = "",
@@ -208,9 +208,11 @@ fun DeadlinePicker(
     ) {
         if (showDialog) {
             val datePickerState = rememberDatePickerState(
-                if (deadline != null) deadline.atStartOfDay()?.toInstant(ZoneOffset.MIN)
-                    ?.toEpochMilli()
-                else null
+                if (deadline != null) {
+                    deadline.atStartOfDay()?.toInstant(ZoneOffset.MIN)?.toEpochMilli()
+                } else {
+                    null
+                }
             )
             DatePickerDialog(
                 tonalElevation = 300.dp,
@@ -347,9 +349,15 @@ fun PriorityPicker(
     ) {
         TextButton(
             onClick = { expanded = true },
-            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 10.dp)
+            contentPadding = PaddingValues(
+                horizontal = 4.dp,
+                vertical = 10.dp
+            )
         ) {
-            Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
+            Column(
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Text(
                     text = stringResource(R.string.priorityLabel),
                     style = MaterialTheme.typography.bodyMedium,
@@ -387,7 +395,10 @@ fun PriorityPicker(
                         modifier = Modifier.padding(10.dp)
                     )
                 },
-                onClick = { onRegularClick(); expanded = false }
+                onClick = {
+                    onRegularClick()
+                    expanded = false
+                }
             )
             DropdownMenuItem(
                 text = {
@@ -398,7 +409,10 @@ fun PriorityPicker(
                         modifier = Modifier.padding(10.dp)
                     )
                 },
-                onClick = { onLowClick(); expanded = false }
+                onClick = {
+                    onLowClick()
+                    expanded = false
+                }
             )
             DropdownMenuItem(
                 text = {
@@ -409,7 +423,10 @@ fun PriorityPicker(
                         modifier = Modifier.padding(10.dp)
                     )
                 },
-                onClick = { onHighClick(); expanded = false }
+                onClick = {
+                    onHighClick()
+                    expanded = false
+                }
             )
         }
     }
@@ -420,7 +437,12 @@ fun PriorityPicker(
 @Composable
 private fun PriorityPickerPreview() {
     ToDoListTheme {
-        PriorityPicker(priority = Priority.LOW, {}, {}, {})
+        PriorityPicker(
+            priority = Priority.LOW,
+            onRegularClick = {},
+            onLowClick = {},
+            onHighClick = {}
+        )
     }
 }
 
@@ -450,11 +472,21 @@ private fun AppBarPreview() {
 }
 
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light editScreen"
+)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark editScreen"
+)
 @Composable
 private fun EditScreenPreview() {
     ToDoListTheme {
-        EditScreen("id1", {})
+        EditScreen(
+            id = "id1",
+            onBack = {})
     }
 }

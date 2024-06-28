@@ -36,7 +36,6 @@ val DarkScheme = darkColorScheme(
 )
 
 
-
 @Composable
 fun ToDoListTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -53,4 +52,3 @@ fun ToDoListTheme(
         content = content
     )
 }
-
