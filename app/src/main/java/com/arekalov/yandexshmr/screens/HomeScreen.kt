@@ -1,6 +1,8 @@
 package com.arekalov.yandexshmr.screens
 
 import android.content.res.Configuration
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,13 +17,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -105,7 +107,8 @@ fun Item(
                 item.priority == Priority.LOW -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 else -> Color.Transparent
             },
-            modifier = Modifier.padding(end = 10.dp)
+            modifier = Modifier
+                .padding(end = 10.dp)
         )
 
         Column(
@@ -174,7 +177,11 @@ fun ItemWithSwipe(
         modifier = modifier,
         backgroundContent = { DismissBackground(dismissState) },
         content = {
-            Item(item = item, onClickEdit = onClickItem, onCheckedChange = onCheckChanged)
+            Item(
+                item = item,
+                onClickEdit = onClickItem,
+                onCheckedChange = onCheckChanged
+            )
         })
 }
 
@@ -193,8 +200,14 @@ fun ItemsList(
             .padding(3.dp)
             .shadow(3.dp, shape = RoundedCornerShape(3))
     ) {
-        LazyColumn(Modifier.clip(MaterialTheme.shapes.extraLarge)) {
-            items(toDoItems, key = { it.id }) { toDoItem ->
+        LazyColumn(
+            modifier = Modifier
+                .clip(MaterialTheme.shapes.extraLarge)
+        ) {
+            items(
+                items = toDoItems,
+                key = { it.id }
+            ) { toDoItem ->
                 ItemWithSwipe(
                     item = toDoItem,
                     onCheckChanged = { checked -> onCheckedChange(toDoItem, checked) },
@@ -206,43 +219,95 @@ fun ItemsList(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(
     scrollBehavior: TopAppBarScrollBehavior,
     onVisibleClick: () -> Unit,
     isVisibleAll: Boolean,
+    doneCount: Int,
     modifier: Modifier = Modifier
 ) {
-    CenterAlignedTopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
-            titleContentColor = MaterialTheme.colorScheme.primary,
-            scrolledContainerColor = MaterialTheme.colorScheme.background
-        ),
-        title = {
-            Text(
-                stringResource(R.string.myTasks),
-                overflow = TextOverflow.Ellipsis,
-                color = MaterialTheme.colorScheme.onBackground,
-                style = MaterialTheme.typography.headlineMedium
-
-            )
+    val elevation = animateDpAsState(
+        targetValue = if (scrollBehavior.state.collapsedFraction > 0.5) {
+            20.dp
+        } else {
+            0.dp
         },
-        actions = {
-            IconButton(onClick = onVisibleClick) {
-                Icon(
-                    painter = if (isVisibleAll) painterResource(id = R.drawable.ic_visibile)
-                    else painterResource(id = R.drawable.ic_invisible),
-                    contentDescription = "Localized description",
-                    tint = MaterialTheme.colorScheme.primary
-                )
-            }
-        },
-        scrollBehavior = scrollBehavior,
-        modifier = modifier
+        label = "elevation",
+        animationSpec = tween(durationMillis = 400)
     )
+    Surface(
+        color = MaterialTheme.colorScheme.background,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(bottom = 0.dp)
+            .shadow(elevation.value)
+
+    ) {
+        LargeTopAppBar(
+            colors = TopAppBarDefaults.largeTopAppBarColors(
+                scrolledContainerColor = MaterialTheme.colorScheme.background,
+                containerColor = MaterialTheme.colorScheme.background
+            ),
+            title = {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .padding(start = 25.dp)
+                    ) {
+                        if (scrollBehavior.state.collapsedFraction >= 0.5) {
+                            Text(
+                                text = stringResource(R.string.myItemsLabel),
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier.padding(start = 26.dp),
+                                color = MaterialTheme.colorScheme.onBackground,
+                            )
+                        } else {
+                            Column {
+                                Text(
+                                    text = stringResource(id = R.string.myItemsLabel),
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    modifier = Modifier.padding(start = 26.dp)
+                                )
+                                Text(
+                                    text = stringResource(id = R.string.doneLabel, doneCount),
+                                    color = MaterialTheme.colorScheme.onBackground.copy(0.3f),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.padding(start = 26.dp)
+                                )
+                            }
+                        }
+                    }
+                    IconButton(
+                        onClick = onVisibleClick,
+                        modifier = Modifier
+                            .align(Alignment.Bottom)
+                            .padding(end = 15.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(
+                                id =
+                                if (isVisibleAll) {
+                                    R.drawable.ic_visibile
+                                } else {
+                                    R.drawable.ic_invisible
+                                }
+                            ),
+                            contentDescription = "visible icon",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            },
+            scrollBehavior = scrollBehavior
+        )
+    }
 }
 
 
@@ -254,12 +319,21 @@ fun HomeScreen(
     toDoItemsViewModel: ToDoItemsViewModel = viewModel()
 ) {
     val toDoItems by toDoItemsViewModel.items.collectAsState()
-    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+        rememberTopAppBarState()
+    )
     var isVisibleAll by rememberSaveable {
         mutableStateOf(true)
     }
     Scaffold(
-        topBar = { AppBar(scrollBehavior, { isVisibleAll = !isVisibleAll }, isVisibleAll) },
+        topBar = {
+            AppBar(
+                onVisibleClick = { isVisibleAll = !isVisibleAll },
+                isVisibleAll = isVisibleAll,
+                doneCount = toDoItems.count { it.isDone },
+                scrollBehavior = scrollBehavior
+            )
+        },
         modifier = modifier
             .background(MaterialTheme.colorScheme.background)
             .nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -300,7 +374,11 @@ val toDoItemsList = ToDoItemRepository().itemList
 @Composable
 private fun ItemPreview() {
     ToDoListTheme {
-        Item(toDoItemsList[0], {}, {})
+        Item(
+            item = toDoItemsList[0],
+            onCheckedChange = {},
+            onClickEdit = {}
+        )
     }
 }
 
@@ -308,25 +386,47 @@ private fun ItemPreview() {
 @Composable
 private fun ItemListPreview() {
     ToDoListTheme {
-        ItemsList(toDoItemsList, { _, _ -> }, {}, {})
+        ItemsList(
+            toDoItems = toDoItemsList,
+            onCheckedChange = { _, _ -> },
+            onDeleteSwipe = {},
+            onClickItem = {}
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun ToolBarPreview() {
+private fun AppBarPreview() {
     ToDoListTheme {
-        val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-        AppBar(scrollBehavior = scrollBehavior, {}, false)
+        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
+            rememberTopAppBarState()
+        )
+        AppBar(
+            onVisibleClick = {},
+            isVisibleAll = true,
+            scrollBehavior = scrollBehavior,
+            doneCount = toDoItemsList.count { it.isDone }
+        )
     }
 }
 
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_NO, showBackground = true)
-@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES, showBackground = true)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    showBackground = true,
+    name = "Light homeScreen"
+)
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    showBackground = true,
+    name = "Dark homeScreen"
+)
 @Composable
 private fun HomeScreenPreview() {
     ToDoListTheme {
-        HomeScreen(onItemClick = {})
+        HomeScreen(
+            onItemClick = {}
+        )
     }
 }
