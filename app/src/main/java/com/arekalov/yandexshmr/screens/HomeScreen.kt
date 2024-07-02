@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -40,18 +42,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -121,6 +122,16 @@ fun Item(
             Text(
                 text = item.task,
                 style = MaterialTheme.typography.bodyMedium,
+                color = if (item.isDone) {
+                    MaterialTheme.colorScheme.onSurface.copy(0.7f)
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                },
+                textDecoration = if (item.isDone) {
+                    TextDecoration.LineThrough
+                } else {
+                    null
+                },
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 3
             )
@@ -137,21 +148,43 @@ fun Item(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DismissBackground(dismissState: SwipeToDismissBoxState) {
-    val color = when (dismissState.dismissDirection) {
-        SwipeToDismissBoxValue.StartToEnd -> MaterialTheme.colorScheme.tertiary
-        SwipeToDismissBoxValue.EndToStart -> MaterialTheme.colorScheme.tertiary
-        else -> Color.Transparent
-    }
+private fun SwipeBackgroundContent(dismissState: SwipeToDismissBoxState) {
+    when (dismissState.dismissDirection) {
+        SwipeToDismissBoxValue.StartToEnd -> {
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.secondary)
+                    .fillMaxSize()
+                    .padding(start = 20.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Icon(
+                    modifier = Modifier.size(24.dp),
+                    painter = painterResource(id = R.drawable.ic_check),
+                    contentDescription = "complete icon",
+                    tint = MaterialTheme.colorScheme.onSecondary
+                )
+            }
+        }
 
-    Row(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color)
-            .padding(12.dp, 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {}
+        SwipeToDismissBoxValue.EndToStart -> {
+            Box(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.tertiary)
+                    .fillMaxSize()
+                    .padding(end = 20.dp), contentAlignment = Alignment.CenterEnd
+            ) {
+                Icon(
+                    modifier = Modifier.size(24.dp),
+                    painter = painterResource(id = R.drawable.ic_delete),
+                    contentDescription = "delete icon",
+                    tint = MaterialTheme.colorScheme.onTertiary
+                )
+            }
+        }
+
+        SwipeToDismissBoxValue.Settled -> {}
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -160,31 +193,45 @@ fun ItemWithSwipe(
     item: ToDoItem,
     modifier: Modifier = Modifier,
     onCheckChanged: (Boolean) -> Unit,
+    onCheckChangedSwipe: (ToDoItem, Boolean) -> Unit,
     onClickItem: (String) -> Unit,
     onDeleteSwipe: (String) -> Unit,
 ) {
-    val currentItem by rememberUpdatedState(item)
     val dismissState = rememberSwipeToDismissBoxState(
         confirmValueChange = {
-            when (it) {
-                SwipeToDismissBoxValue.StartToEnd -> onDeleteSwipe(currentItem.id)
-                SwipeToDismissBoxValue.EndToStart -> onDeleteSwipe(currentItem.id)
-                SwipeToDismissBoxValue.Settled -> return@rememberSwipeToDismissBoxState false
+            return@rememberSwipeToDismissBoxState when (it) {
+                SwipeToDismissBoxValue.StartToEnd -> {
+                    onCheckChangedSwipe(item, item.isDone)
+                    false
+                }
+
+                SwipeToDismissBoxValue.EndToStart -> {
+                    onDeleteSwipe(item.id)
+                    true
+                }
+
+                SwipeToDismissBoxValue.Settled -> false
             }
-            return@rememberSwipeToDismissBoxState true
         },
-        positionalThreshold = { it * .75f })
+        positionalThreshold = { it * 0.25F },
+    )
     SwipeToDismissBox(
         state = dismissState,
         modifier = modifier,
-        backgroundContent = { DismissBackground(dismissState) },
+        backgroundContent = {
+            SwipeBackgroundContent(dismissState)
+        },
         content = {
-            Item(
-                item = item,
-                onClickEdit = onClickItem,
-                onCheckedChange = onCheckChanged
-            )
-        })
+            Column {
+                Item(
+                    item = item,
+                    onCheckedChange = onCheckChanged,
+                    onClickEdit = onClickItem,
+                    modifier = Modifier.background(MaterialTheme.colorScheme.background)
+                )
+            }
+        },
+    )
 }
 
 
@@ -199,13 +246,10 @@ fun ItemsList(
     Surface(
         color = MaterialTheme.colorScheme.surface,
         modifier = modifier
-            .padding(3.dp)
+            .padding(5.dp)
             .shadow(3.dp, shape = RoundedCornerShape(3))
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .clip(MaterialTheme.shapes.extraLarge)
-        ) {
+        LazyColumn {
             items(
                 items = toDoItems,
                 key = { it.id }
@@ -214,6 +258,7 @@ fun ItemsList(
                     item = toDoItem,
                     onCheckChanged = { checked -> onCheckedChange(toDoItem, checked) },
                     onClickItem = onClickItem,
+                    onCheckChangedSwipe = { item, checked -> onCheckedChange(item, checked) },
                     onDeleteSwipe = onDeleteSwipe,
                 )
             }
@@ -261,12 +306,14 @@ fun AppBar(
                     Column(
                         modifier = Modifier
                             .padding(start = 25.dp)
+                            .align(Alignment.CenterVertically)
                     ) {
                         if (scrollBehavior.state.collapsedFraction >= 0.5) {
                             Text(
                                 text = stringResource(R.string.myItemsLabel),
                                 style = MaterialTheme.typography.titleLarge,
-                                modifier = Modifier.padding(start = 26.dp),
+                                modifier = Modifier
+                                    .padding(start = 26.dp),
                                 color = MaterialTheme.colorScheme.onBackground,
                             )
                         } else {
@@ -289,16 +336,16 @@ fun AppBar(
                     IconButton(
                         onClick = onVisibleClick,
                         modifier = Modifier
-                            .align(Alignment.Bottom)
+                            .align(Alignment.CenterVertically)
                             .padding(end = 15.dp)
                     ) {
                         Icon(
                             painter = painterResource(
                                 id =
                                 if (isVisibleAll) {
-                                    R.drawable.ic_visibile
-                                } else {
                                     R.drawable.ic_invisible
+                                } else {
+                                    R.drawable.ic_visibile
                                 }
                             ),
                             contentDescription = "visible icon",
@@ -326,7 +373,7 @@ fun HomeScreen(
         rememberTopAppBarState()
     )
     var isVisibleAll by rememberSaveable {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
     if (error != null) {
         Toast.makeText(
@@ -371,8 +418,12 @@ fun HomeScreen(
         }
     ) { paddingValues ->
         ItemsList(
-            toDoItems = if (isVisibleAll) toDoItems else toDoItems.filter { !it.isDone },
-            onCheckedChange = { id, _ -> toDoItemsViewModel.changeIsDone(id) },
+            toDoItems = if (isVisibleAll) {
+                toDoItems
+            } else {
+                toDoItems.filter { !it.isDone }
+            },
+            onCheckedChange = { item, _ -> toDoItemsViewModel.changeIsDone(item) },
             onDeleteSwipe = { id -> toDoItemsViewModel.deleteItem(id) },
             onClickItem = { id -> onItemClick(id) },
             modifier = Modifier
@@ -397,6 +448,7 @@ private fun ItemPreview() {
 }
 
 @Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun ItemListPreview() {
     ToDoListTheme {
@@ -412,7 +464,7 @@ private fun ItemListPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-private fun AppBarPreview() {
+private fun AppBarPreviewUncollapsed() {
     ToDoListTheme {
         val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             rememberTopAppBarState()
@@ -425,6 +477,7 @@ private fun AppBarPreview() {
         )
     }
 }
+
 
 @Preview(
     uiMode = Configuration.UI_MODE_NIGHT_NO,

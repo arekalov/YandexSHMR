@@ -61,7 +61,8 @@ class ToDoItemsViewModel : ViewModel() {
     }
 
     fun changeIsDone(item: ToDoItem) {
-        viewModelScope.launch(Dispatchers.Default) {
+        val id = item.id
+        viewModelScope.launch(Dispatchers.Default + errorHandler) {
             update(id = item.id, item = item.copy(isDone = !item.isDone))
         }
     }
