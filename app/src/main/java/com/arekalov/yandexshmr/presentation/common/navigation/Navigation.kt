@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr.navigation
+package com.arekalov.yandexshmr.presentation.common.navigation
 
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -9,9 +9,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.arekalov.yandexshmr.ToDoItemsViewModel
-import com.arekalov.yandexshmr.screens.EditScreen
-import com.arekalov.yandexshmr.screens.HomeScreen
+import com.arekalov.yandexshmr.presentation.ToDoItemsViewModel
+import com.arekalov.yandexshmr.presentation.edit.EditScreen
+import com.arekalov.yandexshmr.presentation.home.HomeScreen
 
 
 @Composable

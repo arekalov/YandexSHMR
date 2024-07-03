@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr.navigation
+package com.arekalov.yandexshmr.presentation.common.navigation
 
 const val HOME = "home"
 const val EDIT_WITH_ARG = "edit/{id}"

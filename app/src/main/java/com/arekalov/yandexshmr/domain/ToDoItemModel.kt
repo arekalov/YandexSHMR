@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr.models
+package com.arekalov.yandexshmr.domain
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize

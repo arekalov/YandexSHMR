@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr.screens
+package com.arekalov.yandexshmr.presentation.home
 
 import android.content.res.Configuration
 import android.widget.Toast
@@ -56,12 +56,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arekalov.yandexshmr.R
-import com.arekalov.yandexshmr.ToDoItemsViewModel
-import com.arekalov.yandexshmr.models.Priority
-import com.arekalov.yandexshmr.models.ToDoItem
-import com.arekalov.yandexshmr.models.ToDoItemRepository
-import com.arekalov.yandexshmr.navigation.NEW_ITEM
-import com.arekalov.yandexshmr.ui.ToDoListTheme
+import com.arekalov.yandexshmr.data.repository.ToDoItemRepositoryImpl
+import com.arekalov.yandexshmr.domain.Priority
+import com.arekalov.yandexshmr.domain.ToDoItem
+import com.arekalov.yandexshmr.presentation.ToDoItemsViewModel
+import com.arekalov.yandexshmr.presentation.common.navigation.NEW_ITEM
+import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 
 
 @Composable
@@ -413,7 +413,7 @@ fun HomeScreen(
     }
 }
 
-val toDoItemsList = ToDoItemRepository().itemsList
+val toDoItemsList = ToDoItemRepositoryImpl().itemsList
 
 @Preview(showBackground = true)
 @Composable

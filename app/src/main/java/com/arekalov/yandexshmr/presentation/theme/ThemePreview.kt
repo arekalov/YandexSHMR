@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr.ui
+package com.arekalov.yandexshmr.presentation.theme
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Column

@@ -1,11 +1,13 @@
-package com.arekalov.yandexshmr.models
+package com.arekalov.yandexshmr.data.repository
 
+import com.arekalov.yandexshmr.domain.Priority
+import com.arekalov.yandexshmr.domain.ToDoItem
+import com.arekalov.yandexshmr.domain.repository.ToDoItemRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import java.time.LocalDate
 
-class ToDoItemRepository {
+class ToDoItemRepositoryImpl : ToDoItemRepository {
     val itemsList = listOf(
         ToDoItem(
             id = "id1",
@@ -146,26 +148,28 @@ class ToDoItemRepository {
     )
 
     private val _todoItems = MutableStateFlow(itemsList)
-    val todoItems: Flow<List<ToDoItem>> = _todoItems.asStateFlow()
-    suspend fun addTodoItem(todo: ToDoItem) {
+    override val todoItems: Flow<List<ToDoItem>>
+        get() = _todoItems
+
+    override fun addTodoItem(item: ToDoItem) {
         val currentList = _todoItems.value.toMutableList()
-        currentList.add(todo)
+        currentList.add(item)
         _todoItems.value = currentList
     }
 
-    fun updateTodoItem(id: String, updatedTodo: ToDoItem) {
+    override fun updateTodoItem(id: String, itemToUpdate: ToDoItem) {
         val currentList = _todoItems.value.toMutableList()
         val item = currentList.find { it.id == id }
         if (item != null) {
             val index = currentList.indexOf(item)
-            currentList[index] = updatedTodo
+            currentList[index] = itemToUpdate
             _todoItems.value = currentList
         }
     }
 
-    fun deleteTodoItem(todoId: String) {
+    override fun deleteTodoItem(id: String) {
         val currentList = _todoItems.value.toMutableList()
-        currentList.removeAll { it.id == todoId }
+        currentList.removeAll { it.id == id }
         _todoItems.value = currentList
     }
 }

@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr
+package com.arekalov.yandexshmr.presentation
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -6,8 +6,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.compose.rememberNavController
-import com.arekalov.yandexshmr.navigation.Navigation
-import com.arekalov.yandexshmr.ui.ToDoListTheme
+import com.arekalov.yandexshmr.presentation.common.navigation.Navigation
+import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 
 
 class MainActivity : AppCompatActivity() {

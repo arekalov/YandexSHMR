@@ -1,9 +1,9 @@
-package com.arekalov.yandexshmr
+package com.arekalov.yandexshmr.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.arekalov.yandexshmr.models.ToDoItem
-import com.arekalov.yandexshmr.models.ToDoItemRepository
+import com.arekalov.yandexshmr.data.repository.ToDoItemRepositoryImpl
+import com.arekalov.yandexshmr.domain.ToDoItem
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 
 class ToDoItemsViewModel : ViewModel() {
-    private val repository = ToDoItemRepository()
+    private val repository = ToDoItemRepositoryImpl()
 
     private val _items = MutableStateFlow<List<ToDoItem>>(emptyList())
     val items: StateFlow<List<ToDoItem>>

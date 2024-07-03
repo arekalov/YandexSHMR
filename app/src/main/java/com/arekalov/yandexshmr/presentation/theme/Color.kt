@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr.ui
+package com.arekalov.yandexshmr.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
