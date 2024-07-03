@@ -1,10 +1,8 @@
 package com.arekalov.yandexshmr.models
 
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 class ToDoItemRepository {
@@ -146,26 +144,26 @@ class ToDoItemRepository {
             editDate = null
         )
     )
+
     private val _todoItems = MutableStateFlow(itemsList)
     val todoItems: Flow<List<ToDoItem>> = _todoItems.asStateFlow()
-    suspend fun addTodoItem(todo: ToDoItem) = withContext(Dispatchers.Default) {
+    suspend fun addTodoItem(todo: ToDoItem) {
         val currentList = _todoItems.value.toMutableList()
         currentList.add(todo)
         _todoItems.value = currentList
     }
 
-    suspend fun updateTodoItem(id: String, updatedTodo: ToDoItem) =
-        withContext(Dispatchers.Default) {
-            val currentList = _todoItems.value.toMutableList()
-            val item = currentList.find { it.id == id }
-            if (item != null) {
-                val index = currentList.indexOf(item)
-                currentList[index] = updatedTodo
-                _todoItems.value = currentList
-            }
+    fun updateTodoItem(id: String, updatedTodo: ToDoItem) {
+        val currentList = _todoItems.value.toMutableList()
+        val item = currentList.find { it.id == id }
+        if (item != null) {
+            val index = currentList.indexOf(item)
+            currentList[index] = updatedTodo
+            _todoItems.value = currentList
         }
+    }
 
-    suspend fun deleteTodoItem(todoId: String) = withContext(Dispatchers.Default) {
+    fun deleteTodoItem(todoId: String) {
         val currentList = _todoItems.value.toMutableList()
         currentList.removeAll { it.id == todoId }
         _todoItems.value = currentList

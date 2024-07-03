@@ -14,20 +14,26 @@ import kotlinx.coroutines.launch
 
 class ToDoItemsViewModel : ViewModel() {
     private val repository = ToDoItemRepository()
+
     private val _items = MutableStateFlow<List<ToDoItem>>(emptyList())
-    val items: StateFlow<List<ToDoItem>> = _items.asStateFlow()
+    val items: StateFlow<List<ToDoItem>>
+        get() = _items.asStateFlow()
+
     private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error.asStateFlow()
+    val error: StateFlow<String?>
+        get() = _error.asStateFlow()
+
     private val errorHandler = CoroutineExceptionHandler { _, exception ->
         _error.value = exception.message.toString()
     }
+    private val defaultCoroutineContext = Dispatchers.IO + errorHandler
 
     init {
-        fetchItems()
+        startObservingItems()
     }
 
-    private fun fetchItems() {
-        viewModelScope.launch(Dispatchers.Default + errorHandler) {
+    private fun startObservingItems() {
+        viewModelScope.launch(defaultCoroutineContext) {
             repository.todoItems.collect { todos ->
                 _items.value = todos
             }
@@ -35,19 +41,19 @@ class ToDoItemsViewModel : ViewModel() {
     }
 
     fun addItem(item: ToDoItem) {
-        viewModelScope.launch(Dispatchers.Default + errorHandler) {
+        viewModelScope.launch(defaultCoroutineContext) {
             repository.addTodoItem(item)
         }
     }
 
     fun deleteItem(id: String) {
-        viewModelScope.launch(Dispatchers.Default + errorHandler) {
+        viewModelScope.launch(defaultCoroutineContext) {
             repository.deleteTodoItem(id)
         }
     }
 
     fun update(id: String, item: ToDoItem) {
-        viewModelScope.launch(Dispatchers.Default + errorHandler) {
+        viewModelScope.launch(defaultCoroutineContext) {
             repository.updateTodoItem(id, item)
         }
     }
@@ -61,13 +67,14 @@ class ToDoItemsViewModel : ViewModel() {
     }
 
     fun changeIsDone(item: ToDoItem) {
-        val id = item.id
-        viewModelScope.launch(Dispatchers.Default + errorHandler) {
+        viewModelScope.launch(defaultCoroutineContext) {
             update(id = item.id, item = item.copy(isDone = !item.isDone))
         }
     }
 
     fun clearError() {
-        _error.value = null
+        viewModelScope.launch(defaultCoroutineContext) {
+            _error.value = null
+        }
     }
 }

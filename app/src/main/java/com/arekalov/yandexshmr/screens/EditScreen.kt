@@ -208,11 +208,7 @@ fun DeadlinePicker(
     ) {
         if (showDialog) {
             val datePickerState = rememberDatePickerState(
-                if (deadline != null) {
-                    deadline.atStartOfDay()?.toInstant(ZoneOffset.MIN)?.toEpochMilli()
-                } else {
-                    null
-                }
+                deadline?.atStartOfDay()?.toInstant(ZoneOffset.MIN)?.toEpochMilli()
             )
             DatePickerDialog(
                 tonalElevation = 300.dp,
