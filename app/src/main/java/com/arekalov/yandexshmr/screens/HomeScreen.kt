@@ -7,7 +7,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,7 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -146,44 +144,28 @@ fun Item(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SwipeBackgroundContent(dismissState: SwipeToDismissBoxState) {
-    when (dismissState.dismissDirection) {
-        SwipeToDismissBoxValue.StartToEnd -> {
-            Box(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.secondary)
-                    .fillMaxSize()
-                    .padding(start = 20.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(id = R.drawable.ic_check),
-                    contentDescription = "complete icon",
-                    tint = MaterialTheme.colorScheme.onSecondary
-                )
-            }
-        }
-
-        SwipeToDismissBoxValue.EndToStart -> {
-            Box(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.tertiary)
-                    .fillMaxSize()
-                    .padding(end = 20.dp), contentAlignment = Alignment.CenterEnd
-            ) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(id = R.drawable.ic_delete),
-                    contentDescription = "delete icon",
-                    tint = MaterialTheme.colorScheme.onTertiary
-                )
-            }
-        }
-
-        SwipeToDismissBoxValue.Settled -> {}
+private fun SwipeBackgroundContent() {
+    Row(
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.tertiary)
+            .fillMaxSize()
+            .padding(end = 20.dp, start = 20.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            modifier = Modifier.size(24.dp),
+            painter = painterResource(id = R.drawable.ic_delete),
+            contentDescription = "delete icon",
+            tint = MaterialTheme.colorScheme.onTertiary
+        )
+        Icon(
+            modifier = Modifier.size(24.dp),
+            painter = painterResource(id = R.drawable.ic_delete),
+            contentDescription = "delete icon",
+            tint = MaterialTheme.colorScheme.onTertiary
+        )
     }
 }
 
@@ -193,7 +175,6 @@ fun ItemWithSwipe(
     item: ToDoItem,
     modifier: Modifier = Modifier,
     onCheckChanged: (Boolean) -> Unit,
-    onCheckChangedSwipe: (ToDoItem, Boolean) -> Unit,
     onClickItem: (String) -> Unit,
     onDeleteSwipe: (String) -> Unit,
 ) {
@@ -201,8 +182,8 @@ fun ItemWithSwipe(
         confirmValueChange = {
             return@rememberSwipeToDismissBoxState when (it) {
                 SwipeToDismissBoxValue.StartToEnd -> {
-                    onCheckChangedSwipe(item, item.isDone)
-                    false
+                    onDeleteSwipe(item.id)
+                    true
                 }
 
                 SwipeToDismissBoxValue.EndToStart -> {
@@ -219,7 +200,7 @@ fun ItemWithSwipe(
         state = dismissState,
         modifier = modifier,
         backgroundContent = {
-            SwipeBackgroundContent(dismissState)
+            SwipeBackgroundContent()
         },
         content = {
             Column {
@@ -258,7 +239,6 @@ fun ItemsList(
                     item = toDoItem,
                     onCheckChanged = { checked -> onCheckedChange(toDoItem, checked) },
                     onClickItem = onClickItem,
-                    onCheckChangedSwipe = { item, checked -> onCheckedChange(item, checked) },
                     onDeleteSwipe = onDeleteSwipe,
                 )
             }
