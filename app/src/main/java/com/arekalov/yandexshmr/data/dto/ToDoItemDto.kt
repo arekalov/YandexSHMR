@@ -1,11 +1,11 @@
-package com.arekalov.yandexshmr.domain
+package com.arekalov.yandexshmr.data.dto
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 
 @Parcelize
-data class ToDoItem(
+data class ToDoItemDto(
     val id: String,
     val task: String,
     val priority: Priority,

@@ -11,13 +11,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.arekalov.yandexshmr.presentation.ToDoItemsViewModel
 import com.arekalov.yandexshmr.presentation.edit.EditScreen
-import com.arekalov.yandexshmr.presentation.home.HomeScreen
+import com.arekalov.yandexshmr.presentation.home.HomeViewModel
+import com.arekalov.yandexshmr.presentation.home.views.HomeScreen
 
 
 @Composable
 fun Navigation(
     navController: NavHostController,
     toDoItemsViewModel: ToDoItemsViewModel,
+    homeViewModel: HomeViewModel
 ) {
     NavHost(navController = navController, startDestination = HOME) {
         composable(
@@ -29,10 +31,9 @@ fun Navigation(
         )
         {
             HomeScreen(
-                toDoItemsViewModel = toDoItemsViewModel,
-                onItemClick = { itemId: String ->
-                    navController.navigate("$EDIT/$itemId")
-                })
+                homeViwModel = homeViewModel,
+                navController = navController
+            )
         }
         composable(
             route = EDIT_WITH_ARG,
