@@ -6,7 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface ToDoItemRepository {
     val todoItems: Flow<ToDoItemModel>
-    fun addTodoItem(item: ToDoItemDto)
-    fun updateTodoItem(id: String, itemToUpdate: ToDoItemDto)
-    fun deleteTodoItem(id: String)
+    suspend fun addTodoItem(item: ToDoItemDto)
+    suspend fun updateTodoItem(id: String, itemToUpdate: ToDoItemDto)
+    suspend fun deleteTodoItem(id: String)
+    suspend fun getOrCreateItem(id: String): ToDoItemDto
 }

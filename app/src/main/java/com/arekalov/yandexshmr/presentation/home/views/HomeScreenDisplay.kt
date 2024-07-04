@@ -27,6 +27,8 @@ import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 @Composable
 fun HomeScreenDisplay(
     onItemClick: (String) -> Unit,
+    navigateTOEditReset: () -> Unit,
+    goEdit: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewState: HomeViewState.Display,
     onCheckedChange: (String) -> Unit,
@@ -34,6 +36,11 @@ fun HomeScreenDisplay(
     onVisibleClick: () -> Unit
 
 ) {
+    if (viewState.navigateToEdit != null) {
+        val destination = viewState.navigateToEdit
+        navigateTOEditReset()
+        goEdit(destination)
+    }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
     )
@@ -99,7 +106,9 @@ fun HomeScreenDisplayPreview() {
             ),
             onCheckedChange = {},
             onDeleteSwipe = {},
-            onVisibleClick = {}
+            onVisibleClick = {},
+            goEdit = {},
+            navigateTOEditReset = {}
         )
     }
 }

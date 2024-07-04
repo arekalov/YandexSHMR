@@ -1,29 +1,30 @@
 package com.arekalov.yandexshmr.presentation.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.arekalov.yandexshmr.data.dto.ToDoItemDto
-import com.arekalov.yandexshmr.data.repository.ToDoItemRepositoryImpl
+import com.arekalov.yandexshmr.domain.repository.ToDoItemRepository
 import com.arekalov.yandexshmr.presentation.home.models.HomeIntent
 import com.arekalov.yandexshmr.presentation.home.models.HomeViewState
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class HomeViewModel : ViewModel() {
-    private val repository = ToDoItemRepositoryImpl()
-
+class HomeViewModel(
+    private val repository: ToDoItemRepository
+) : ViewModel() {
     private val _homeViewState = MutableStateFlow<HomeViewState>(HomeViewState.Loading)
     val homeViewState: StateFlow<HomeViewState>
         get() = _homeViewState.asStateFlow()
 
     private val errorHandler = CoroutineExceptionHandler { _, exception ->
-//        _error.value = exception.message.toString()
+        _homeViewState.value = HomeViewState.Error(
+            message = exception.message.toString()
+        )
     }
     private val defaultCoroutineContext = Dispatchers.IO + errorHandler
 
@@ -59,18 +60,15 @@ class HomeViewModel : ViewModel() {
 
     private fun reduce(intent: HomeIntent, currentState: HomeViewState.Empty) {
         when (intent) {
-            is HomeIntent.VisibleClick -> isAllVisibleChange()
-
+            is HomeIntent.OnVisibleClick -> isAllVisibleChange()
             is HomeIntent.EditScreen -> navigateToEditChange(itemId = intent.itemId)
-
             else -> {}
         }
     }
 
     private fun reduce(intent: HomeIntent, currentState: HomeViewState.Display) {
         when (intent) {
-            is HomeIntent.VisibleClick -> isAllVisibleChange()
-
+            is HomeIntent.OnVisibleClick -> isAllVisibleChange()
             is HomeIntent.RemoveSwipe -> {
                 deleteItem(intent.itemId)
             }
@@ -80,6 +78,7 @@ class HomeViewModel : ViewModel() {
             }
 
             is HomeIntent.EditScreen -> navigateToEditChange(itemId = intent.itemId)
+            is HomeIntent.ResetEditScreen -> navigateToEditChange(null)
         }
     }
 
@@ -89,7 +88,7 @@ class HomeViewModel : ViewModel() {
         )
     }
 
-    private fun navigateToEditChange(itemId: String) {
+    private fun navigateToEditChange(itemId: String?) {
         _homeViewState.value = (_homeViewState.value as HomeViewState.Display).copy(
             navigateToEdit = itemId
         )
@@ -97,10 +96,7 @@ class HomeViewModel : ViewModel() {
 
     private fun deleteItem(id: String) {
         viewModelScope.launch(defaultCoroutineContext) {
-            Log.e("!!!", (homeViewState.value as HomeViewState.Display).items.count().toString())
             repository.deleteTodoItem(id)
-            delay(100)
-            Log.e("!!!", (homeViewState.value as HomeViewState.Display).items.count().toString())
         }
     }
 
@@ -117,5 +113,11 @@ class HomeViewModel : ViewModel() {
                 update(id = id, item = item.copy(isDone = !item.isDone))
             }
         }
+    }
+}
+
+class HomeViewModelFactory(private val repository: ToDoItemRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return HomeViewModel(repository = repository) as T
     }
 }

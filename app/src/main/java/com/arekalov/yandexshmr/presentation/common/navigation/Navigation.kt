@@ -9,8 +9,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.arekalov.yandexshmr.presentation.ToDoItemsViewModel
-import com.arekalov.yandexshmr.presentation.edit.EditScreen
+import com.arekalov.yandexshmr.presentation.edit.EditViewModel
+import com.arekalov.yandexshmr.presentation.edit.views.EditScreen
 import com.arekalov.yandexshmr.presentation.home.HomeViewModel
 import com.arekalov.yandexshmr.presentation.home.views.HomeScreen
 
@@ -18,7 +18,7 @@ import com.arekalov.yandexshmr.presentation.home.views.HomeScreen
 @Composable
 fun Navigation(
     navController: NavHostController,
-    toDoItemsViewModel: ToDoItemsViewModel,
+    editViewModel: EditViewModel,
     homeViewModel: HomeViewModel
 ) {
     NavHost(navController = navController, startDestination = HOME) {
@@ -44,9 +44,9 @@ fun Navigation(
             arguments = listOf(navArgument(ITEM_ARG) { type = NavType.StringType })
         ) {
             EditScreen(
-                toDoItemsViewModel = toDoItemsViewModel,
-                id = it.arguments?.getString(ITEM_ARG) ?: NEW_ITEM,
-                onBack = { navController.popBackStack() }
+                editViewModel = editViewModel,
+                itemId = it.arguments?.getString(ITEM_ARG) ?: NEW_ITEM,
+                navController = navController
             )
         }
     }

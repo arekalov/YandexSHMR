@@ -17,11 +17,13 @@ fun HomeScreen(
     val viewState = homeViwModel.homeViewState.collectAsState()
     when (val state = viewState.value) {
         is HomeViewState.Display -> HomeScreenDisplay(
-            onItemClick = { navController.navigate(EDIT) },
+            goEdit = { itemId -> navController.navigate("$EDIT/$itemId") },
+            onItemClick = { id -> homeViwModel.obtainIntent(HomeIntent.EditScreen(id)) },
             onDeleteSwipe = { id -> homeViwModel.obtainIntent(HomeIntent.RemoveSwipe(id)) },
             onCheckedChange = { id -> homeViwModel.obtainIntent(HomeIntent.OnItemCheckBoxClick(id)) },
             viewState = state,
-            onVisibleClick = { homeViwModel.obtainIntent(HomeIntent.VisibleClick) }
+            onVisibleClick = { homeViwModel.obtainIntent(HomeIntent.OnVisibleClick) },
+            navigateTOEditReset = { homeViwModel.obtainIntent(HomeIntent.ResetEditScreen) }
         )
 
         is HomeViewState.Loading -> HomeScreenLoading(
@@ -30,7 +32,7 @@ fun HomeScreen(
 
         is HomeViewState.Empty -> HomeScreenEmpty(
             viewState = state,
-            onItemClick = { navController.navigate(EDIT) }
+            onItemClick = { itemId -> navController.navigate("$EDIT/$itemId") }
         )
 
         is HomeViewState.Error -> HomeScreenError(viewState = state)

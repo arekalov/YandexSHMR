@@ -9,8 +9,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import java.time.LocalDate
+import java.util.UUID
 
-internal class ToDoItemRepositoryImpl : ToDoItemRepository {
+class ToDoItemRepositoryImpl :
+    ToDoItemRepository { // временно public, после внедрения di станет internal
     val itemsList = listOf(
         ToDoItemDto(
             id = "id1",
@@ -154,7 +156,7 @@ internal class ToDoItemRepositoryImpl : ToDoItemRepository {
     override val todoItems: Flow<ToDoItemModel>
         get() = _todoItems
 
-    override fun addTodoItem(item: ToDoItemDto) {
+    override suspend fun addTodoItem(item: ToDoItemDto) {
         _todoItems.update { currentModel ->
             val updatedItemsMap = currentModel.itemsMap.toMutableMap()
             updatedItemsMap[item.id] = item
@@ -163,7 +165,7 @@ internal class ToDoItemRepositoryImpl : ToDoItemRepository {
         }
     }
 
-    override fun updateTodoItem(id: String, itemToUpdate: ToDoItemDto) {
+    override suspend fun updateTodoItem(id: String, itemToUpdate: ToDoItemDto) {
         _todoItems.update { currentModel ->
             val updatedItemsMap = currentModel.itemsMap.toMutableMap()
             if (updatedItemsMap.containsKey(id)) {
@@ -174,12 +176,27 @@ internal class ToDoItemRepositoryImpl : ToDoItemRepository {
         }
     }
 
-    override fun deleteTodoItem(id: String) {
+    override suspend fun deleteTodoItem(id: String) {
         _todoItems.update { currentModel ->
             val updatedItemsMap = currentModel.itemsMap.toMutableMap()
             updatedItemsMap.remove(id)
             val updatedList = updatedItemsMap.values.toList()
             mapToDoItemsToModel(updatedList)
         }
+    }
+
+    override suspend fun getOrCreateItem(id: String): ToDoItemDto {
+        if (_todoItems.value.itemsMap.containsKey(id)) {
+            return _todoItems.value.itemsMap[id]!!
+        }
+        val item = ToDoItemDto(
+            id = UUID.randomUUID().toString(),
+            task = "",
+            priority = Priority.REGULAR,
+            isDone = false,
+            creationDate = LocalDate.now()
+        )
+        addTodoItem(item)
+        return item
     }
 }
