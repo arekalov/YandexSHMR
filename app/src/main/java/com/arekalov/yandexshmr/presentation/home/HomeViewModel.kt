@@ -1,5 +1,6 @@
 package com.arekalov.yandexshmr.presentation.home
 
+import NetworkConnectionManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -18,7 +19,8 @@ import kotlinx.coroutines.launch
 import com.arekalov.yandexshmr.presentation.common.models.Error as DataClassError
 
 class HomeViewModel(
-    private val repository: ToDoItemRepository
+    private val repository: ToDoItemRepository,
+    private val networkConnectionManager: NetworkConnectionManager
 ) : ViewModel() {
     private val _homeViewState = MutableStateFlow<HomeViewState>(HomeViewState.Loading)
     val homeViewState: StateFlow<HomeViewState>
@@ -33,6 +35,13 @@ class HomeViewModel(
     private val defaultCoroutineContext = Dispatchers.IO + errorHandler
 
     init {
+        viewModelScope.launch {
+            networkConnectionManager.isNetworkAvailable.collect { isConnected ->
+                if (isConnected) {
+                    startObservingItems()
+                }
+            }
+        }
         startObservingItems()
     }
 
@@ -128,8 +137,14 @@ class HomeViewModel(
     }
 }
 
-class HomeViewModelFactory(private val repository: ToDoItemRepository) : ViewModelProvider.Factory {
+class HomeViewModelFactory(
+    private val repository: ToDoItemRepository,
+    private val networkConnectionManager: NetworkConnectionManager
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return HomeViewModel(repository = repository) as T
+        return HomeViewModel(
+            repository = repository,
+            networkConnectionManager = networkConnectionManager
+        ) as T
     }
 }

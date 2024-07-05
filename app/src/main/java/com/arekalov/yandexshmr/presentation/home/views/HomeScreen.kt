@@ -22,7 +22,8 @@ fun HomeScreen(
             onCheckedChange = { id -> homeViwModel.obtainIntent(HomeIntent.OnItemCheckBoxClick(id)) },
             viewState = state,
             onVisibleClick = { homeViwModel.obtainIntent(HomeIntent.OnVisibleClick) },
-            navigateTOEditReset = { homeViwModel.obtainIntent(HomeIntent.ResetEditScreen) }
+            navigateTOEditReset = { homeViwModel.obtainIntent(HomeIntent.ResetEditScreen) },
+
         )
 
         is HomeViewState.Loading -> HomeScreenLoading(

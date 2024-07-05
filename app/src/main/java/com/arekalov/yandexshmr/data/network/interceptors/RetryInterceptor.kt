@@ -7,7 +7,7 @@ import okhttp3.Response
 import java.io.IOException
 
 class RetryInterceptor(
-    private val maxRetry: Int = 10,
+    private val maxRetry: Int = 5,
     private val retryIntervalMillis: Long = 1000
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {

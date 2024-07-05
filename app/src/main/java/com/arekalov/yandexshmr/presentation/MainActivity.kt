@@ -1,5 +1,6 @@
 package com.arekalov.yandexshmr.presentation
 
+import NetworkConnectionManager
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -25,7 +26,9 @@ class MainActivity : AppCompatActivity() {
         val api = RetrofitClient.instance.create(ToDoItemApi::class.java)
         val repository = ToDoItemRepositoryImpl(api)
 
-        val homEViewModelFactory = HomeViewModelFactory(repository)
+        val networkConnectionManager = NetworkConnectionManager(this)
+
+        val homEViewModelFactory = HomeViewModelFactory(repository, networkConnectionManager)
         homeViewModel = ViewModelProvider(this, homEViewModelFactory).get(HomeViewModel::class.java)
 
         val editViewModelFactory = EditViewModelFactory(repository)

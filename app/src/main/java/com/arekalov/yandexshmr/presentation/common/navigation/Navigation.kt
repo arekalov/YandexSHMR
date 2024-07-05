@@ -19,7 +19,7 @@ import com.arekalov.yandexshmr.presentation.home.views.HomeScreen
 fun Navigation(
     navController: NavHostController,
     editViewModel: EditViewModel,
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
 ) {
     NavHost(navController = navController, startDestination = HOME) {
         composable(
@@ -32,7 +32,7 @@ fun Navigation(
         {
             HomeScreen(
                 homeViwModel = homeViewModel,
-                navController = navController
+                navController = navController,
             )
         }
         composable(
