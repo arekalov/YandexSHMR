@@ -12,12 +12,18 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -46,11 +52,35 @@ fun EditScreenDisplay(
     onTaskChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(viewState) {
+        if (viewState.error != null) {
+            val result = snackbarHostState.showSnackbar(
+                message = viewState.error.errorText,
+                actionLabel = viewState.error.actionText,
+                duration = SnackbarDuration.Long
+            )
+            if (result == SnackbarResult.ActionPerformed) {
+                viewState.error.onActionClick.invoke("")
+            }
+        }
+    }
     if (viewState.navigateToHome) {
         onBackReset()
         goHome()
     }
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = { snackbarData ->
+                    CustomSnackbar(
+                        snackbarData = snackbarData
+                    )
+                }
+            )
+        },
         topBar = {
             AppBar(
                 onBack = onBack,
@@ -151,7 +181,7 @@ private fun EditScreenDisplayPreview() {
             onSaveClick = {},
             onDeleteClick = {},
             goHome = {},
-            onBackReset = {}
+            onBackReset = {},
         )
     }
 }

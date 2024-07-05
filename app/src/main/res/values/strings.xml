@@ -17,4 +17,5 @@
     <string name="errorLabel">Ошибка: %1$s</string>
     <string name="unknownErrorLabel">unknown error</string>
     <string name="noItemsLabel">Нет задач</string>
+    <string name="reloadLabel">Повторить</string>
 </resources>

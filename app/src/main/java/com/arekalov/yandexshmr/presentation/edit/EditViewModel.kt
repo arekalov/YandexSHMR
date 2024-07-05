@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import com.arekalov.yandexshmr.presentation.edit.models.Error as ErrorDataClass
 
 class EditViewModel(
     private val repository: ToDoItemRepository
@@ -25,17 +26,35 @@ class EditViewModel(
     val editViewState: StateFlow<EditViewState>
         get() = _editViewState
     private val errorHandler = CoroutineExceptionHandler { _, exception ->
-        _editViewState.value = EditViewState.Error(
-            navigateToHome = false,
-            message = "Ошибка: ${exception.message.toString()}"
-        )
+        when (val currentState = _editViewState.value) {
+            is EditViewState.Display -> _editViewState.value = EditViewState.Display(
+                item = currentState.item,
+                error = (
+                        ErrorDataClass(
+                            errorText = exception.message.toString(),
+                            onActionClick = {},
+                            actionText = null
+                        )
+                        ),
+                navigateToHome = false
+            )
+
+            else -> _editViewState.value = EditViewState.Display(
+                item = repository.getEmptyToDoItemModel(),
+                error = ErrorDataClass(
+                    errorText = exception.message.toString(),
+                    onActionClick = {},
+                    actionText = null
+                ),
+                navigateToHome = false
+            )
+        }
     }
     private val defaultCoroutineContext = Dispatchers.IO + errorHandler
 
     fun obtainIntent(intent: EditIntent) {
         when (val currentState = _editViewState.value) {
             is EditViewState.Loading -> reduce(intent = intent, currentState = currentState)
-            is EditViewState.Error -> reduce(intent = intent, currentState = currentState)
             is EditViewState.Display -> reduce(intent = intent, currentState = currentState)
         }
     }
@@ -44,18 +63,12 @@ class EditViewModel(
         when (intent) {
             is EditIntent.InitState -> initState(intent.itemId)
             is EditIntent.BackToHome -> backToHome()
-            is EditIntent.OnSaveCLick -> {
-                update(
-                    id = currentState.item.id,
-                    item = currentState.item
-                )
-                backToHome()
-            }
+            is EditIntent.OnSaveCLick -> update(
+                id = currentState.item.id,
+                item = currentState.item
+            )
 
-            is EditIntent.OnDeleteClick -> {
-                deleteItem(id = currentState.item.id)
-                backToHome()
-            }
+            is EditIntent.OnDeleteClick -> deleteItem(id = currentState.item.id)
 
             is EditIntent.ItemTaskEdit -> editItemTask(intent.task)
             is EditIntent.ItemDeadlineEdit -> editItemDeadline(intent.deadline)
@@ -64,13 +77,6 @@ class EditViewModel(
         }
     }
 
-    private fun reduce(intent: EditIntent, currentState: EditViewState.Error) {
-        when (intent) {
-            is EditIntent.BackToHome -> backToHome()
-            is EditIntent.InitState -> initState(intent.itemId)
-            else -> {}
-        }
-    }
 
     private fun reduce(intent: EditIntent, currentState: EditViewState.Loading) {
         when (intent) {
@@ -120,9 +126,6 @@ class EditViewModel(
                 navigateToHome = !currentState.navigateToHome
             )
 
-            is EditViewState.Error -> _editViewState.value = currentState.copy(
-                navigateToHome = !currentState.navigateToHome
-            )
         }
     }
 
@@ -139,8 +142,12 @@ class EditViewModel(
                     navigateToHome = false
                 )
             } else {
-                _editViewState.value = EditViewState.Error(
-                    message = item.message.toString(),
+                _editViewState.value = EditViewState.Display(
+                    item = repository.getEmptyToDoItemModel(),
+                    error = ErrorDataClass(
+                        errorText = item.message.toString(),
+                        onActionClick = { id: String -> obtainIntent(EditIntent.InitState(id)) }
+                    ),
                     navigateToHome = false
                 )
             }
@@ -149,13 +156,38 @@ class EditViewModel(
 
     private fun deleteItem(id: String) {
         viewModelScope.launch(defaultCoroutineContext) {
-            repository.deleteItem(id)
+            val answer = repository.deleteItem(id)
+            if (answer is Resource.Error) {
+                _editViewState.value = EditViewState.Display(
+                    item = (_editViewState.value as EditViewState.Display).item,
+                    navigateToHome = false,
+                    error = ErrorDataClass(
+                        errorText = answer.message.toString(),
+                        onActionClick = { obtainIntent(EditIntent.OnDeleteClick) }
+                    )
+                )
+            } else {
+                backToHome()
+            }
         }
     }
 
     private fun update(id: String, item: ToDoItemModel) {
         viewModelScope.launch(defaultCoroutineContext) {
             repository.updateOrAddItem(id, item)
+            val answer = repository.updateOrAddItem(id = id, item = item)
+            if (answer is Resource.Error) {
+                _editViewState.value = EditViewState.Display(
+                    item = (_editViewState.value as EditViewState.Display).item,
+                    navigateToHome = false,
+                    error = ErrorDataClass(
+                        errorText = answer.message.toString(),
+                        onActionClick = { obtainIntent(EditIntent.OnSaveCLick) }
+                    )
+                )
+            } else {
+                backToHome()
+            }
         }
     }
 }

@@ -150,7 +150,7 @@ class ToDoItemRepositoryImpl(
         }
     }
 
-    private fun getEmptyToDoItemModel(): ToDoItemModel {
+    override fun getEmptyToDoItemModel(): ToDoItemModel {
         return ToDoItemModel(
             id = UUID.randomUUID().toString(),
             task = "",

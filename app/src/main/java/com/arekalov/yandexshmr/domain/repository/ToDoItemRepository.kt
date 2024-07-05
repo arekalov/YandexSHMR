@@ -15,4 +15,5 @@ interface ToDoItemRepository {
     suspend fun addItem(item: ToDoItemModel): Resource<ToDoItemModel>
     suspend fun updateToDoItemsFlow()
     suspend fun updateOrAddItem(id: String, item: ToDoItemModel): Resource<ToDoItemModel>
+    fun getEmptyToDoItemModel(): ToDoItemModel
 }

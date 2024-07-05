@@ -29,14 +29,6 @@ fun EditScreen(
             onBackReset = { editViewModel.obtainIntent(intent = EditIntent.ResetBackToHome) },
             goHome = { navController.popBackStack() })
 
-        is EditViewState.Error -> EditScreenError(
-            viewState = state,
-            onBack = { editViewModel.obtainIntent(intent = EditIntent.BackToHome) },
-            onBackReset = { editViewModel.obtainIntent(intent = EditIntent.ResetBackToHome) },
-            goHome = { navController.popBackStack() },
-            onReloadClick = { editViewModel.obtainIntent(EditIntent.InitState(itemId)) }
-        )
-
         is EditViewState.Display -> EditScreenDisplay(
             viewState = state,
             goHome = { navController.popBackStack() },
