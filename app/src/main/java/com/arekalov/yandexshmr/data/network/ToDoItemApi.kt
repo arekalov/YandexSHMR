@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr.data.api
+package com.arekalov.yandexshmr.data.network
 
 import com.arekalov.yandexshmr.data.dto.ToDoItemElementDto
 import com.arekalov.yandexshmr.data.dto.ToDoItemElementToSendDto

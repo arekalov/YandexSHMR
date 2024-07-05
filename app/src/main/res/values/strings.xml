@@ -18,4 +18,5 @@
     <string name="unknownErrorLabel">unknown error</string>
     <string name="noItemsLabel">Нет задач</string>
     <string name="reloadLabel">Повторить</string>
+    <string name="notItemsLabel">Нет задач!</string>
 </resources>

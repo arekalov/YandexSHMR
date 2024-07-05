@@ -6,8 +6,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
-import com.arekalov.yandexshmr.data.api.RetrofitClient
-import com.arekalov.yandexshmr.data.api.ToDoItemApi
+import com.arekalov.yandexshmr.data.network.RetrofitClient
+import com.arekalov.yandexshmr.data.network.ToDoItemApi
 import com.arekalov.yandexshmr.data.repository.ToDoItemRepositoryImpl
 import com.arekalov.yandexshmr.presentation.common.navigation.Navigation
 import com.arekalov.yandexshmr.presentation.edit.EditViewModel

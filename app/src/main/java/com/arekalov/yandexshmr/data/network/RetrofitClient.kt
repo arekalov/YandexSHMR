@@ -1,5 +1,8 @@
-package com.arekalov.yandexshmr.data.api
+package com.arekalov.yandexshmr.data.network
 
+import com.arekalov.yandexshmr.data.network.interceptors.AuthInterceptor
+import com.arekalov.yandexshmr.data.network.interceptors.ErrorGeneratorInterceptor
+import com.arekalov.yandexshmr.data.network.interceptors.RetryInterceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -12,6 +15,8 @@ object RetrofitClient {
     }
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(AuthInterceptor())
+        .addInterceptor(ErrorGeneratorInterceptor())
+        .addInterceptor(RetryInterceptor())
         .addInterceptor(loggingInterceptor)
         .build()
 

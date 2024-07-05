@@ -1,10 +1,11 @@
 package com.arekalov.yandexshmr.data.repository
 
-import com.arekalov.yandexshmr.data.api.ToDoItemApi
+import android.util.Log
 import com.arekalov.yandexshmr.data.mappers.mapToDoItemModelToListItemModel
 import com.arekalov.yandexshmr.data.mappers.toToDoItemElementToSend
 import com.arekalov.yandexshmr.data.mappers.toToDoItemListModel
 import com.arekalov.yandexshmr.data.mappers.toToDoItemModel
+import com.arekalov.yandexshmr.data.network.ToDoItemApi
 import com.arekalov.yandexshmr.domain.model.Priority
 import com.arekalov.yandexshmr.domain.model.ToDoItemListModel
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel
@@ -42,6 +43,7 @@ class ToDoItemRepositoryImpl(
 
     override suspend fun getToDoItemListModel(): Resource<ToDoItemListModel> {
         return try {
+            Log.e("!!!", "!!!!")
             val response = toDoItemApi.getToDoList()
             if (response.isSuccessful) {
                 val toDoItemListDto = response.body()!!

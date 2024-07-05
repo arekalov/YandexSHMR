@@ -30,11 +30,6 @@ fun HomeScreen(
             viewState = state,
         )
 
-        is HomeViewState.Empty -> HomeScreenEmpty(
-            viewState = state,
-            onItemClick = { itemId -> navController.navigate("$EDIT/$itemId") }
-        )
-
         is HomeViewState.Error -> HomeScreenError(viewState = state)
     }
 }

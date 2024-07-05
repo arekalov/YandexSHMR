@@ -10,6 +10,7 @@ import com.arekalov.yandexshmr.presentation.home.models.HomeIntent
 import com.arekalov.yandexshmr.presentation.home.models.HomeViewState
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +25,8 @@ class HomeViewModel(
 
     private val errorHandler = CoroutineExceptionHandler { _, exception ->
         _homeViewState.value = HomeViewState.Error(
-            message = exception.message.toString()
+            message = exception.message.toString(),
+            onReloadClick = {}
         )
     }
     private val defaultCoroutineContext = Dispatchers.IO + errorHandler
@@ -35,6 +37,8 @@ class HomeViewModel(
 
     private fun startObservingItems() {
         viewModelScope.launch(defaultCoroutineContext) {
+            _homeViewState.value = HomeViewState.Loading
+            delay(300)
             repository.updateToDoItemsFlow()
             if (repository.todoItems.value is Resource.Success<*>) {
                 repository.todoItems.collect { toDoItemModel ->
@@ -52,7 +56,8 @@ class HomeViewModel(
             } else if (repository.todoItems.value is Resource.Error<*>) {
                 repository.todoItems.collect {
                     _homeViewState.value = HomeViewState.Error(
-                        message = it.message.toString()
+                        message = it.message.toString(),
+                        onReloadClick = { startObservingItems() }
                     )
                 }
             }
@@ -60,27 +65,19 @@ class HomeViewModel(
     }
 
     fun obtainIntent(intent: HomeIntent) {
-        when (val currentState = _homeViewState.value) {
-            is HomeViewState.Loading -> {}
-            is HomeViewState.Empty -> reduce(intent = intent, currentState = currentState)
-            is HomeViewState.Error -> {}
-            is HomeViewState.Display -> reduce(intent = intent, currentState = currentState)
-        }
+//        when (val currentState = _homeViewState.value) {
+//            is HomeViewState.Loading -> {}
+//            is HomeViewState.Error -> {}
+//            is HomeViewState.Display -> reduce(intent = intent, currentState = currentState)
+//        }
     }
 
-    private fun reduce(intent: HomeIntent, currentState: HomeViewState.Empty) {
-        when (intent) {
-            is HomeIntent.OnVisibleClick -> isAllVisibleChange()
-            is HomeIntent.EditScreen -> navigateToEditChange(itemId = intent.itemId)
-            else -> {}
-        }
-    }
 
     private fun reduce(intent: HomeIntent, currentState: HomeViewState.Display) {
         when (intent) {
             is HomeIntent.OnVisibleClick -> isAllVisibleChange()
             is HomeIntent.RemoveSwipe -> {
-                deleteItem(intent.itemId)
+//                deleteItem(intent.itemId)
             }
 
             is HomeIntent.OnItemCheckBoxClick -> {
@@ -104,11 +101,61 @@ class HomeViewModel(
         )
     }
 
-    private fun deleteItem(id: String) {
-        viewModelScope.launch(defaultCoroutineContext) {
-            repository.deleteItem(id)
-        }
-    }
+//    private fun deleteItem(id: String) {
+//        viewModelScope.launch(defaultCoroutineContext) {
+//            val answer = repository.deleteItem(id)
+//            if (answer is Resource.Error) {
+//                _homeViewState.value = HomeViewState.Error(
+//                    message = answer.message.toString(),
+//                    onReloadClick = {obtainIntent(EditIntent.O)},
+//
+//                    item = (_editViewState.value as EditViewState.Display).item,
+//                    navigateToHome = false,
+//                    error = Error(
+//                        errorText = answer.message.toString(),
+//                        onActionClick = { obtainIntent(EditIntent.OnDeleteClick) }
+//                    )
+//                )
+//            }
+//        }
+//    }
+
+//    private fun deleteItem(id: String) {
+//        viewModelScope.launch(defaultCoroutineContext) {
+//            val answer = repository.deleteItem(id)
+//            if (answer is Resource.Error) {
+//                _editViewState.value = EditViewState.Display(
+//                    item = (_editViewState.value as EditViewState.Display).item,
+//                    navigateToHome = false,
+//                    error = Error(
+//                        errorText = answer.message.toString(),
+//                        onActionClick = { obtainIntent(EditIntent.OnDeleteClick) }
+//                    )
+//                )
+//            } else {
+//                backToHome()
+//            }
+//        }
+//    }
+//
+//    private fun update(id: String, item: ToDoItemModel) {
+//        viewModelScope.launch(defaultCoroutineContext) {
+//            repository.updateOrAddItem(id, item)
+//            val answer = repository.updateOrAddItem(id = id, item = item)
+//            if (answer is Resource.Error) {
+//                _editViewState.value = EditViewState.Display(
+//                    item = (_editViewState.value as EditViewState.Display).item,
+//                    navigateToHome = false,
+//                    error = Error(
+//                        errorText = answer.message.toString(),
+//                        onActionClick = { obtainIntent(EditIntent.OnSaveCLick) }
+//                    )
+//                )
+//            } else {
+//                backToHome()
+//            }
+//        }
+//    }
 
     private fun update(id: String, item: ToDoItemModel) {
         viewModelScope.launch(defaultCoroutineContext) {
@@ -118,7 +165,8 @@ class HomeViewModel(
 
     private fun changeIsDone(id: String) {
         viewModelScope.launch(defaultCoroutineContext) {
-            val item = (_homeViewState.value as HomeViewState.Display).items.find { it.id == id }
+            val item =
+                (_homeViewState.value as HomeViewState.Display).items.find { it.id == id }
             if (item != null) {
                 update(id = id, item = item.copy(isDone = !item.isDone))
             }
