@@ -1,6 +1,5 @@
 package com.arekalov.yandexshmr.data.repository
 
-import android.util.Log
 import com.arekalov.yandexshmr.data.mappers.mapToDoItemModelToListItemModel
 import com.arekalov.yandexshmr.data.mappers.toToDoItemElementToSend
 import com.arekalov.yandexshmr.data.mappers.toToDoItemListModel
@@ -43,7 +42,6 @@ class ToDoItemRepositoryImpl(
 
     override suspend fun getToDoItemListModel(): Resource<ToDoItemListModel> {
         return try {
-            Log.e("!!!", "!!!!")
             val response = toDoItemApi.getToDoList()
             if (response.isSuccessful) {
                 val toDoItemListDto = response.body()!!
@@ -52,10 +50,10 @@ class ToDoItemRepositoryImpl(
                     mapToDoItemModelToListItemModel(toDoItemListDto.toToDoItemListModel())
                 Resource.Success(toDoItemListWithMapModel)
             } else {
-                Resource.Error(response.message())
+                Resource.Error(GET_ERROR)
             }
         } catch (ex: Exception) {
-            Resource.Error(message = ex.message.toString())
+            Resource.Error(GET_ERROR)
         }
     }
 
@@ -70,7 +68,7 @@ class ToDoItemRepositoryImpl(
                 Resource.Success(getEmptyToDoItemModel())
             }
         } catch (ex: Exception) {
-            Resource.Error(message = ex.message.toString())
+            Resource.Error(GET_ERROR)
         }
     }
 
@@ -85,7 +83,7 @@ class ToDoItemRepositoryImpl(
                 Resource.Error(response.message())
             }
         } catch (ex: Exception) {
-            Resource.Error(message = ex.message.toString())
+            Resource.Error(GET_ERROR)
         }
     }
 
@@ -97,10 +95,10 @@ class ToDoItemRepositoryImpl(
                 updateToDoItemsFlow()
                 Resource.Success(toDoItemDto)
             } else {
-                Resource.Error(response.message())
+                Resource.Error(DELETE_ERROR)
             }
         } catch (ex: Exception) {
-            Resource.Error(message = ex.message.toString())
+            Resource.Error(DELETE_ERROR)
         }
     }
 
@@ -113,10 +111,10 @@ class ToDoItemRepositoryImpl(
                 updateToDoItemsFlow()
                 Resource.Success(toDoItemDto)
             } else {
-                Resource.Error(response.message())
+                Resource.Error(UPDATE_ERROR)
             }
         } catch (ex: Exception) {
-            Resource.Error(message = ex.message.toString())
+            Resource.Error(UPDATE_ERROR)
         }
     }
 
@@ -129,10 +127,10 @@ class ToDoItemRepositoryImpl(
                 updateToDoItemsFlow()
                 Resource.Success(toDoItemDto)
             } else {
-                Resource.Error(response.message())
+                Resource.Error(ADD_ERROR)
             }
         } catch (ex: Exception) {
-            Resource.Error(message = ex.message.toString())
+            Resource.Error(ADD_ERROR)
         }
     }
 
@@ -148,7 +146,7 @@ class ToDoItemRepositoryImpl(
                 addItem(item)
             }
         } catch (ex: Exception) {
-            Resource.Error(message = ex.message.toString())
+            Resource.Error(UPDATE_ERROR)
         }
     }
 

@@ -20,7 +20,6 @@ import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 fun ItemsList(
     toDoItemModels: List<ToDoItemModel>,
     onCheckedChange: (String, Boolean) -> Unit,
-    onDeleteSwipe: (String) -> Unit,
     onClickItem: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -35,11 +34,10 @@ fun ItemsList(
                 items = toDoItemModels,
                 key = { it.id }
             ) { toDoItem ->
-                ItemWithSwipe(
+                Item(
                     item = toDoItem,
-                    onCheckChanged = { checked -> onCheckedChange(toDoItem.id, checked) },
-                    onClickItem = onClickItem,
-                    onDeleteSwipe = onDeleteSwipe,
+                    onCheckedChange = { checked -> onCheckedChange(toDoItem.id, checked) },
+                    onClickEdit = onClickItem,
                 )
             }
         }
@@ -54,7 +52,6 @@ private fun ItemListPreview() {
         ItemsList(
             toDoItemModels = FakeHardCodeToDoItemRepository().itemsList,
             onCheckedChange = { _, _ -> },
-            onDeleteSwipe = {},
             onClickItem = {}
         )
     }

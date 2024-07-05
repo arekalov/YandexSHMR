@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr.presentation.edit.views
+package com.arekalov.yandexshmr.presentation.common.views
 
 
 import androidx.compose.foundation.layout.padding

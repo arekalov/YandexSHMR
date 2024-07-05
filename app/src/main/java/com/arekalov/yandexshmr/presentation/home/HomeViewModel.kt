@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import com.arekalov.yandexshmr.presentation.common.models.Error as DataClassError
 
 class HomeViewModel(
     private val repository: ToDoItemRepository
@@ -65,21 +66,17 @@ class HomeViewModel(
     }
 
     fun obtainIntent(intent: HomeIntent) {
-//        when (val currentState = _homeViewState.value) {
-//            is HomeViewState.Loading -> {}
-//            is HomeViewState.Error -> {}
-//            is HomeViewState.Display -> reduce(intent = intent, currentState = currentState)
-//        }
+        when (val currentState = _homeViewState.value) {
+            is HomeViewState.Loading -> {}
+            is HomeViewState.Error -> {}
+            is HomeViewState.Display -> reduce(intent = intent, currentState = currentState)
+        }
     }
 
 
     private fun reduce(intent: HomeIntent, currentState: HomeViewState.Display) {
         when (intent) {
             is HomeIntent.OnVisibleClick -> isAllVisibleChange()
-            is HomeIntent.RemoveSwipe -> {
-//                deleteItem(intent.itemId)
-            }
-
             is HomeIntent.OnItemCheckBoxClick -> {
                 changeIsDone(intent.itemId)
             }
@@ -101,67 +98,24 @@ class HomeViewModel(
         )
     }
 
-//    private fun deleteItem(id: String) {
-//        viewModelScope.launch(defaultCoroutineContext) {
-//            val answer = repository.deleteItem(id)
-//            if (answer is Resource.Error) {
-//                _homeViewState.value = HomeViewState.Error(
-//                    message = answer.message.toString(),
-//                    onReloadClick = {obtainIntent(EditIntent.O)},
-//
-//                    item = (_editViewState.value as EditViewState.Display).item,
-//                    navigateToHome = false,
-//                    error = Error(
-//                        errorText = answer.message.toString(),
-//                        onActionClick = { obtainIntent(EditIntent.OnDeleteClick) }
-//                    )
-//                )
-//            }
-//        }
-//    }
-
-//    private fun deleteItem(id: String) {
-//        viewModelScope.launch(defaultCoroutineContext) {
-//            val answer = repository.deleteItem(id)
-//            if (answer is Resource.Error) {
-//                _editViewState.value = EditViewState.Display(
-//                    item = (_editViewState.value as EditViewState.Display).item,
-//                    navigateToHome = false,
-//                    error = Error(
-//                        errorText = answer.message.toString(),
-//                        onActionClick = { obtainIntent(EditIntent.OnDeleteClick) }
-//                    )
-//                )
-//            } else {
-//                backToHome()
-//            }
-//        }
-//    }
-//
-//    private fun update(id: String, item: ToDoItemModel) {
-//        viewModelScope.launch(defaultCoroutineContext) {
-//            repository.updateOrAddItem(id, item)
-//            val answer = repository.updateOrAddItem(id = id, item = item)
-//            if (answer is Resource.Error) {
-//                _editViewState.value = EditViewState.Display(
-//                    item = (_editViewState.value as EditViewState.Display).item,
-//                    navigateToHome = false,
-//                    error = Error(
-//                        errorText = answer.message.toString(),
-//                        onActionClick = { obtainIntent(EditIntent.OnSaveCLick) }
-//                    )
-//                )
-//            } else {
-//                backToHome()
-//            }
-//        }
-//    }
-
     private fun update(id: String, item: ToDoItemModel) {
         viewModelScope.launch(defaultCoroutineContext) {
-            repository.updateItem(id, item)
+            val answer = repository.updateItem(id = id, item = item)
+            if (answer is Resource.Error) {
+                _homeViewState.value = HomeViewState.Display(
+                    items = (_homeViewState.value as HomeViewState.Display).items,
+                    doneCount = (_homeViewState.value as HomeViewState.Display).doneCount,
+                    isAllVisible = (_homeViewState.value as HomeViewState.Display).isAllVisible,
+                    navigateToEdit = (_homeViewState.value as HomeViewState.Display).navigateToEdit,
+                    error = DataClassError(
+                        errorText = answer.message.toString(),
+                        onActionClick = { obtainIntent(HomeIntent.OnItemCheckBoxClick(id)) }
+                    )
+                )
+            }
         }
     }
+
 
     private fun changeIsDone(id: String) {
         viewModelScope.launch(defaultCoroutineContext) {

@@ -1,6 +1,7 @@
 package com.arekalov.yandexshmr.presentation.home.models
 
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel
+import com.arekalov.yandexshmr.presentation.common.models.Error as DataClassError
 
 sealed class HomeViewState {
     data object Loading : HomeViewState()
@@ -14,6 +15,7 @@ sealed class HomeViewState {
         val doneCount: Int,
         val isAllVisible: Boolean,
         val navigateToEdit: String?,
+        val error: DataClassError? = null
     ) : HomeViewState()
 
 }

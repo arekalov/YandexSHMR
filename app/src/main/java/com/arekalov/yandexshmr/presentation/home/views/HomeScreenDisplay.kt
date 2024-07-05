@@ -12,10 +12,16 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -26,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.R
 import com.arekalov.yandexshmr.data.repository.FakeHardCodeToDoItemRepository
 import com.arekalov.yandexshmr.presentation.common.navigation.NEW_ITEM
+import com.arekalov.yandexshmr.presentation.common.views.CustomSnackbar
 import com.arekalov.yandexshmr.presentation.home.models.HomeViewState
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 
@@ -38,10 +45,22 @@ fun HomeScreenDisplay(
     modifier: Modifier = Modifier,
     viewState: HomeViewState.Display,
     onCheckedChange: (String) -> Unit,
-    onDeleteSwipe: (String) -> Unit,
     onVisibleClick: () -> Unit
 
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(viewState) {
+        if (viewState.error != null) {
+            val result = snackbarHostState.showSnackbar(
+                message = viewState.error.errorText,
+                actionLabel = viewState.error.actionText,
+                duration = SnackbarDuration.Long
+            )
+            if (result == SnackbarResult.ActionPerformed) {
+                viewState.error.onActionClick.invoke("")
+            }
+        }
+    }
     if (viewState.navigateToEdit != null) {
         val destination = viewState.navigateToEdit
         navigateTOEditReset()
@@ -51,6 +70,16 @@ fun HomeScreenDisplay(
         rememberTopAppBarState()
     )
     Scaffold(
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = { snackbarData ->
+                    CustomSnackbar(
+                        snackbarData = snackbarData
+                    )
+                }
+            )
+        },
         topBar = {
             AppBar(
                 onVisibleClick = onVisibleClick,
@@ -89,7 +118,6 @@ fun HomeScreenDisplay(
                     viewState.items.filter { !it.isDone }
                 },
                 onCheckedChange = { id, _ -> onCheckedChange(id) },
-                onDeleteSwipe = onDeleteSwipe,
                 onClickItem = { id -> onItemClick(id) },
                 modifier = Modifier
                     .padding(horizontal = 10.dp)
@@ -138,10 +166,9 @@ fun HomeScreenDisplayPreview() {
                 items = FakeHardCodeToDoItemRepository().itemsList,
                 doneCount = FakeHardCodeToDoItemRepository().itemsList.count { it.isDone },
                 isAllVisible = false,
-                navigateToEdit = null
+                navigateToEdit = null,
             ),
             onCheckedChange = {},
-            onDeleteSwipe = {},
             onVisibleClick = {},
             goEdit = {},
             navigateTOEditReset = {}

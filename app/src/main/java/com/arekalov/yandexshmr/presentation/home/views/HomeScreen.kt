@@ -19,7 +19,6 @@ fun HomeScreen(
         is HomeViewState.Display -> HomeScreenDisplay(
             goEdit = { itemId -> navController.navigate("$EDIT/$itemId") },
             onItemClick = { id -> homeViwModel.obtainIntent(HomeIntent.EditScreen(id)) },
-            onDeleteSwipe = { id -> homeViwModel.obtainIntent(HomeIntent.RemoveSwipe(id)) },
             onCheckedChange = { id -> homeViwModel.obtainIntent(HomeIntent.OnItemCheckBoxClick(id)) },
             viewState = state,
             onVisibleClick = { homeViwModel.obtainIntent(HomeIntent.OnVisibleClick) },

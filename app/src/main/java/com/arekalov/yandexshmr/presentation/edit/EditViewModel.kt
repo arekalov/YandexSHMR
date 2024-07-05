@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import com.arekalov.yandexshmr.presentation.edit.models.Error as ErrorDataClass
+import com.arekalov.yandexshmr.presentation.common.models.Error as ErrorDataClass
 
 class EditViewModel(
     private val repository: ToDoItemRepository
