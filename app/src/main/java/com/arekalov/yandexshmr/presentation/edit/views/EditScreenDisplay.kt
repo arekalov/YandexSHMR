@@ -26,8 +26,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.R
-import com.arekalov.yandexshmr.data.dto.Priority
-import com.arekalov.yandexshmr.data.repository.ToDoItemRepositoryImpl
+import com.arekalov.yandexshmr.data.repository.FakeHardCodeToDoItemRepository
+import com.arekalov.yandexshmr.domain.model.Priority
 import com.arekalov.yandexshmr.presentation.edit.models.EditViewState
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 import java.time.LocalDate
@@ -141,7 +141,7 @@ private fun EditScreenDisplayPreview() {
     ToDoListTheme {
         EditScreenDisplay(
             viewState = EditViewState.Display(
-                item = ToDoItemRepositoryImpl().itemsList[0],
+                item = FakeHardCodeToDoItemRepository().itemsList[0],
                 navigateToHome = false
             ),
             onBack = {},

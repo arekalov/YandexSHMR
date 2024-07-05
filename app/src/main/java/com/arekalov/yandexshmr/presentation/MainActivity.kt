@@ -6,6 +6,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.rememberNavController
+import com.arekalov.yandexshmr.data.api.RetrofitClient
+import com.arekalov.yandexshmr.data.api.ToDoItemApi
 import com.arekalov.yandexshmr.data.repository.ToDoItemRepositoryImpl
 import com.arekalov.yandexshmr.presentation.common.navigation.Navigation
 import com.arekalov.yandexshmr.presentation.edit.EditViewModel
@@ -20,8 +22,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var homeViewModel: HomeViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val repository = ToDoItemRepositoryImpl()
+        val api = RetrofitClient.instance.create(ToDoItemApi::class.java)
+        val repository = ToDoItemRepositoryImpl(api)
 
         val homEViewModelFactory = HomeViewModelFactory(repository)
         homeViewModel = ViewModelProvider(this, homEViewModelFactory).get(HomeViewModel::class.java)

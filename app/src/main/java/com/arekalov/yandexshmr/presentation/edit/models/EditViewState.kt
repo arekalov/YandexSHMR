@@ -1,10 +1,10 @@
 package com.arekalov.yandexshmr.presentation.edit.models
 
-import com.arekalov.yandexshmr.data.dto.ToDoItemDto
+import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 
 sealed class EditViewState {
     data class Display(
-        val item: ToDoItemDto,
+        val item: ToDoItemModel,
         val navigateToHome: Boolean
     ) : EditViewState()
 

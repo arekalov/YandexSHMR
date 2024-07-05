@@ -1,9 +1,17 @@
 package com.arekalov.yandexshmr.domain.model
 
-import com.arekalov.yandexshmr.data.dto.ToDoItemDto
+import java.time.LocalDate
 
 data class ToDoItemModel(
-    val itemsMap: Map<String, ToDoItemDto>,
-    val items: List<ToDoItemDto>,
-    val doneCount: Int
+    val id: String,
+    val task: String,
+    val priority: Priority,
+    val deadline: LocalDate? = null,
+    val isDone: Boolean,
+    val creationDate: LocalDate,
+    val editDate: LocalDate? = null,
 )
+
+enum class Priority {
+    HIGH, REGULAR, LOW
+}

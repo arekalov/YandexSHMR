@@ -3,14 +3,16 @@ package com.arekalov.yandexshmr.presentation.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.arekalov.yandexshmr.data.dto.Priority
-import com.arekalov.yandexshmr.data.dto.ToDoItemDto
+import com.arekalov.yandexshmr.domain.model.Priority
+import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 import com.arekalov.yandexshmr.domain.repository.ToDoItemRepository
+import com.arekalov.yandexshmr.domain.util.Resource
 import com.arekalov.yandexshmr.presentation.edit.models.EditIntent
 import com.arekalov.yandexshmr.presentation.edit.models.EditViewState
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -41,18 +43,18 @@ class EditViewModel(
     private fun reduce(intent: EditIntent, currentState: EditViewState.Display) {
         when (intent) {
             is EditIntent.InitState -> initState(intent.itemId)
-            is EditIntent.BackToHome -> navigateToHomeChange()
+            is EditIntent.BackToHome -> backToHome()
             is EditIntent.OnSaveCLick -> {
                 update(
                     id = currentState.item.id,
                     item = currentState.item
                 )
-                navigateToHomeChange()
+                backToHome()
             }
 
             is EditIntent.OnDeleteClick -> {
                 deleteItem(id = currentState.item.id)
-                navigateToHomeChange()
+                backToHome()
             }
 
             is EditIntent.ItemTaskEdit -> editItemTask(intent.task)
@@ -64,7 +66,8 @@ class EditViewModel(
 
     private fun reduce(intent: EditIntent, currentState: EditViewState.Error) {
         when (intent) {
-            is EditIntent.BackToHome -> navigateToHomeChange()
+            is EditIntent.BackToHome -> backToHome()
+            is EditIntent.InitState -> initState(intent.itemId)
             else -> {}
         }
     }
@@ -72,10 +75,14 @@ class EditViewModel(
     private fun reduce(intent: EditIntent, currentState: EditViewState.Loading) {
         when (intent) {
             is EditIntent.InitState -> initState(intent.itemId)
-            is EditIntent.BackToHome -> navigateToHomeChange()
+            is EditIntent.BackToHome -> backToHome()
             is EditIntent.ResetBackToHome -> navigateToHomeChange()
             else -> {}
         }
+    }
+
+    private fun backToHome() {
+        _editViewState.value = EditViewState.Loading(true)
     }
 
     private fun editItemDeadline(deadline: LocalDate?) {
@@ -120,26 +127,35 @@ class EditViewModel(
     }
 
     private fun initState(id: String) {
+        _editViewState.value = EditViewState.Loading(navigateToHome = false)
         viewModelScope.launch(defaultCoroutineContext) {
+            delay(300)
             val item = async {
                 repository.getOrCreateItem(id)
             }.await()
-            _editViewState.value = EditViewState.Display(
-                item = item,
-                navigateToHome = false
-            )
+            if (item is Resource.Success) {
+                _editViewState.value = EditViewState.Display(
+                    item = item.data!!,
+                    navigateToHome = false
+                )
+            } else {
+                _editViewState.value = EditViewState.Error(
+                    message = item.message.toString(),
+                    navigateToHome = false
+                )
+            }
         }
     }
 
     private fun deleteItem(id: String) {
         viewModelScope.launch(defaultCoroutineContext) {
-            repository.deleteTodoItem(id)
+            repository.deleteItem(id)
         }
     }
 
-    private fun update(id: String, item: ToDoItemDto) {
+    private fun update(id: String, item: ToDoItemModel) {
         viewModelScope.launch(defaultCoroutineContext) {
-            repository.updateTodoItem(id, item)
+            repository.updateOrAddItem(id, item)
         }
     }
 }

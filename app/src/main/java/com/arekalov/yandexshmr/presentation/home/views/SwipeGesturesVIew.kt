@@ -11,6 +11,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
@@ -19,18 +20,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.R
-import com.arekalov.yandexshmr.data.dto.ToDoItemDto
+import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SwipeBackgroundContent() {
+private fun SwipeBackgroundContent(dismissState: SwipeToDismissBoxState) {
     Row(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.tertiary)
             .fillMaxSize()
             .padding(end = 20.dp, start = 20.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = if (dismissState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
+            Arrangement.End
+        } else {
+            Arrangement.Start
+        }
     ) {
         Icon(
             modifier = Modifier.size(24.dp),
@@ -38,19 +44,14 @@ private fun SwipeBackgroundContent() {
             contentDescription = "delete icon",
             tint = MaterialTheme.colorScheme.onTertiary
         )
-        Icon(
-            modifier = Modifier.size(24.dp),
-            painter = painterResource(id = R.drawable.ic_delete),
-            contentDescription = "delete icon",
-            tint = MaterialTheme.colorScheme.onTertiary
-        )
+
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ItemWithSwipe(
-    item: ToDoItemDto,
+    item: ToDoItemModel,
     modifier: Modifier = Modifier,
     onCheckChanged: (Boolean) -> Unit,
     onClickItem: (String) -> Unit,
@@ -78,7 +79,7 @@ fun ItemWithSwipe(
         state = dismissState,
         modifier = modifier,
         backgroundContent = {
-            SwipeBackgroundContent()
+            SwipeBackgroundContent(dismissState = dismissState)
         },
         content = {
             Column {

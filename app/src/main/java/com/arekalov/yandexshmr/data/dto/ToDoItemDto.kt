@@ -1,20 +1,13 @@
 package com.arekalov.yandexshmr.data.dto
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-import java.time.LocalDate
-
-@Parcelize
 data class ToDoItemDto(
     val id: String,
-    val task: String,
-    val priority: Priority,
-    val deadline: LocalDate? = null,
-    val isDone: Boolean,
-    val creationDate: LocalDate,
-    val editDate: LocalDate? = null,
-) : Parcelable
-
-enum class Priority {
-    HIGH, REGULAR, LOW
-}
+    val text: String,
+    val importance: String,
+    val deadline: Long?,
+    val done: Boolean,
+    val color: String?,
+    val created_at: Long,
+    val changed_at: Long,
+    val last_updated_by: String
+)

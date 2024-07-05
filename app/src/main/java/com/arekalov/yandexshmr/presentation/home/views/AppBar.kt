@@ -27,7 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.R
-import com.arekalov.yandexshmr.data.repository.ToDoItemRepositoryImpl
+import com.arekalov.yandexshmr.data.repository.FakeHardCodeToDoItemRepository
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -136,7 +136,7 @@ private fun AppBarPreviewUncollapsed() {
             onVisibleClick = {},
             isVisibleAll = true,
             scrollBehavior = scrollBehavior,
-            doneCount = ToDoItemRepositoryImpl().itemsList.count { it.isDone }
+            doneCount = FakeHardCodeToDoItemRepository().itemsList.count { it.isDone }
         )
     }
 }

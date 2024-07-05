@@ -1,13 +1,18 @@
 package com.arekalov.yandexshmr.domain.repository
 
-import com.arekalov.yandexshmr.data.dto.ToDoItemDto
+import com.arekalov.yandexshmr.domain.model.ToDoItemListModel
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel
-import kotlinx.coroutines.flow.Flow
+import com.arekalov.yandexshmr.domain.util.Resource
+import kotlinx.coroutines.flow.StateFlow
 
 interface ToDoItemRepository {
-    val todoItems: Flow<ToDoItemModel>
-    suspend fun addTodoItem(item: ToDoItemDto)
-    suspend fun updateTodoItem(id: String, itemToUpdate: ToDoItemDto)
-    suspend fun deleteTodoItem(id: String)
-    suspend fun getOrCreateItem(id: String): ToDoItemDto
+    val todoItems: StateFlow<Resource<ToDoItemListModel>>
+    suspend fun getToDoItemListModel(): Resource<ToDoItemListModel>
+    suspend fun getOrCreateItem(id: String): Resource<ToDoItemModel>
+    suspend fun getItem(id: String): Resource<ToDoItemModel>
+    suspend fun deleteItem(id: String): Resource<ToDoItemModel>
+    suspend fun updateItem(id: String, item: ToDoItemModel): Resource<ToDoItemModel>
+    suspend fun addItem(item: ToDoItemModel): Resource<ToDoItemModel>
+    suspend fun updateToDoItemsFlow()
+    suspend fun updateOrAddItem(id: String, item: ToDoItemModel): Resource<ToDoItemModel>
 }

@@ -1,8 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("kotlin-kapt")
-    id("kotlin-parcelize")
 }
 
 android {
@@ -70,6 +68,11 @@ dependencies {
 
 //    Navigation
     implementation(libs.androidx.navigation.compose)
+
+//    Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.retrofit2.converter.gson)
+    implementation(libs.logging.interceptor)
 
 
     implementation(libs.androidx.core.ktx)

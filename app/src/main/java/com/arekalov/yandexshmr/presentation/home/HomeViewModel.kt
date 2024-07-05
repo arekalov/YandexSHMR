@@ -3,8 +3,9 @@ package com.arekalov.yandexshmr.presentation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.arekalov.yandexshmr.data.dto.ToDoItemDto
+import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 import com.arekalov.yandexshmr.domain.repository.ToDoItemRepository
+import com.arekalov.yandexshmr.domain.util.Resource
 import com.arekalov.yandexshmr.presentation.home.models.HomeIntent
 import com.arekalov.yandexshmr.presentation.home.models.HomeViewState
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -34,17 +35,26 @@ class HomeViewModel(
 
     private fun startObservingItems() {
         viewModelScope.launch(defaultCoroutineContext) {
-            repository.todoItems.collect { toDoItemModel ->
-                _homeViewState.value = HomeViewState.Display(
-                    items = toDoItemModel.items,
-                    doneCount = toDoItemModel.doneCount,
-                    isAllVisible = if (homeViewState.value is HomeViewState.Display) {
-                        (homeViewState.value as HomeViewState.Display).isAllVisible
-                    } else false,
-                    navigateToEdit = if (homeViewState.value is HomeViewState.Display) {
-                        (homeViewState.value as HomeViewState.Display).navigateToEdit
-                    } else null
-                )
+            repository.updateToDoItemsFlow()
+            if (repository.todoItems.value is Resource.Success<*>) {
+                repository.todoItems.collect { toDoItemModel ->
+                    _homeViewState.value = HomeViewState.Display(
+                        items = toDoItemModel.data?.items ?: emptyList(),
+                        doneCount = toDoItemModel.data?.doneCount ?: 0,
+                        isAllVisible = if (homeViewState.value is HomeViewState.Display) {
+                            (homeViewState.value as HomeViewState.Display).isAllVisible
+                        } else false,
+                        navigateToEdit = if (homeViewState.value is HomeViewState.Display) {
+                            (homeViewState.value as HomeViewState.Display).navigateToEdit
+                        } else null
+                    )
+                }
+            } else if (repository.todoItems.value is Resource.Error<*>) {
+                repository.todoItems.collect {
+                    _homeViewState.value = HomeViewState.Error(
+                        message = it.message.toString()
+                    )
+                }
             }
         }
     }
@@ -96,13 +106,13 @@ class HomeViewModel(
 
     private fun deleteItem(id: String) {
         viewModelScope.launch(defaultCoroutineContext) {
-            repository.deleteTodoItem(id)
+            repository.deleteItem(id)
         }
     }
 
-    private fun update(id: String, item: ToDoItemDto) {
+    private fun update(id: String, item: ToDoItemModel) {
         viewModelScope.launch(defaultCoroutineContext) {
-            repository.updateTodoItem(id, item)
+            repository.updateItem(id, item)
         }
     }
 

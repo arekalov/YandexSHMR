@@ -18,7 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.R
-import com.arekalov.yandexshmr.data.repository.ToDoItemRepositoryImpl
+import com.arekalov.yandexshmr.data.repository.FakeHardCodeToDoItemRepository
 import com.arekalov.yandexshmr.presentation.common.navigation.NEW_ITEM
 import com.arekalov.yandexshmr.presentation.home.models.HomeViewState
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
@@ -76,7 +76,7 @@ fun HomeScreenDisplay(
         }
     ) { paddingValues ->
         ItemsList(
-            toDoItemDtos = if (viewState.isAllVisible) {
+            toDoItemModels = if (viewState.isAllVisible) {
                 viewState.items
             } else {
                 viewState.items.filter { !it.isDone }
@@ -99,8 +99,8 @@ fun HomeScreenDisplayPreview() {
         HomeScreenDisplay(
             onItemClick = {},
             viewState = HomeViewState.Display(
-                items = ToDoItemRepositoryImpl().itemsList,
-                doneCount = ToDoItemRepositoryImpl().itemsList.count { it.isDone },
+                items = FakeHardCodeToDoItemRepository().itemsList,
+                doneCount = FakeHardCodeToDoItemRepository().itemsList.count { it.isDone },
                 isAllVisible = false,
                 navigateToEdit = null
             ),

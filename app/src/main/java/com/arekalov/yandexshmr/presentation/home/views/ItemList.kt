@@ -12,13 +12,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.arekalov.yandexshmr.data.dto.ToDoItemDto
-import com.arekalov.yandexshmr.data.repository.ToDoItemRepositoryImpl
+import com.arekalov.yandexshmr.data.repository.FakeHardCodeToDoItemRepository
+import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 
 @Composable
 fun ItemsList(
-    toDoItemDtos: List<ToDoItemDto>,
+    toDoItemModels: List<ToDoItemModel>,
     onCheckedChange: (String, Boolean) -> Unit,
     onDeleteSwipe: (String) -> Unit,
     onClickItem: (String) -> Unit,
@@ -32,7 +32,7 @@ fun ItemsList(
     ) {
         LazyColumn {
             items(
-                items = toDoItemDtos,
+                items = toDoItemModels,
                 key = { it.id }
             ) { toDoItem ->
                 ItemWithSwipe(
@@ -52,7 +52,7 @@ fun ItemsList(
 private fun ItemListPreview() {
     ToDoListTheme {
         ItemsList(
-            toDoItemDtos = ToDoItemRepositoryImpl().itemsList,
+            toDoItemModels = FakeHardCodeToDoItemRepository().itemsList,
             onCheckedChange = { _, _ -> },
             onDeleteSwipe = {},
             onClickItem = {}

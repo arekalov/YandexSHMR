@@ -24,15 +24,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.R
-import com.arekalov.yandexshmr.data.dto.Priority
-import com.arekalov.yandexshmr.data.dto.ToDoItemDto
-import com.arekalov.yandexshmr.data.repository.ToDoItemRepositoryImpl
+import com.arekalov.yandexshmr.data.repository.FakeHardCodeToDoItemRepository
+import com.arekalov.yandexshmr.domain.model.Priority
+import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 
 
 @Composable
 fun Item(
-    item: ToDoItemDto,
+    item: ToDoItemModel,
     onCheckedChange: (Boolean) -> Unit,
     onClickEdit: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -116,7 +116,7 @@ fun Item(
 private fun ItemPreview() {
     ToDoListTheme {
         Item(
-            item = ToDoItemRepositoryImpl().itemsList[0],
+            item = FakeHardCodeToDoItemRepository().itemsList[0],
             onCheckedChange = {},
             onClickEdit = {}
         )

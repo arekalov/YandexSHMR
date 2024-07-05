@@ -1,6 +1,6 @@
 package com.arekalov.yandexshmr.presentation.edit.models
 
-import com.arekalov.yandexshmr.data.dto.Priority
+import com.arekalov.yandexshmr.domain.model.Priority
 import java.time.LocalDate
 
 sealed class EditIntent {

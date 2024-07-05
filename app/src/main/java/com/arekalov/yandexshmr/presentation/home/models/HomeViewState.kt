@@ -1,12 +1,12 @@
 package com.arekalov.yandexshmr.presentation.home.models
 
-import com.arekalov.yandexshmr.data.dto.ToDoItemDto
+import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 
 sealed class HomeViewState {
     data object Loading : HomeViewState()
     data class Error(val message: String) : HomeViewState()
     data class Display(
-        val items: List<ToDoItemDto>,
+        val items: List<ToDoItemModel>,
         val doneCount: Int,
         val isAllVisible: Boolean,
         val navigateToEdit: String?

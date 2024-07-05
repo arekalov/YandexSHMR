@@ -1,202 +1,163 @@
 package com.arekalov.yandexshmr.data.repository
 
-import com.arekalov.yandexshmr.data.dto.Priority
-import com.arekalov.yandexshmr.data.dto.ToDoItemDto
-import com.arekalov.yandexshmr.data.mappers.mapToDoItemsToModel
+import com.arekalov.yandexshmr.data.api.ToDoItemApi
+import com.arekalov.yandexshmr.data.mappers.mapToDoItemModelToListItemModel
+import com.arekalov.yandexshmr.data.mappers.toToDoItemElementToSend
+import com.arekalov.yandexshmr.data.mappers.toToDoItemListModel
+import com.arekalov.yandexshmr.data.mappers.toToDoItemModel
+import com.arekalov.yandexshmr.domain.model.Priority
+import com.arekalov.yandexshmr.domain.model.ToDoItemListModel
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 import com.arekalov.yandexshmr.domain.repository.ToDoItemRepository
-import kotlinx.coroutines.flow.Flow
+import com.arekalov.yandexshmr.domain.util.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate
 import java.util.UUID
+import kotlin.math.max
 
-class ToDoItemRepositoryImpl :
-    ToDoItemRepository { // временно public, после внедрения di станет internal
-    val itemsList = listOf(
-        ToDoItemDto(
-            id = "id1",
-            task = "Подготовка презентацию для встречи с очень очень очень очень очень очень очень" +
-                    " очень очень очень очень очень длинным текстом",
-            priority = Priority.HIGH,
-            deadline = null,
-            isDone = false,
-            creationDate = LocalDate.of(2024, 7, 15),
-            editDate = LocalDate.of(2024, 7, 14)
-        ),
-        ToDoItemDto(
-            id = "id2",
-            task = "Купить продукты в супермаркете",
-            priority = Priority.REGULAR,
-            deadline = LocalDate.of(2024, 7, 20),
-            isDone = false,
-            creationDate = LocalDate.of(2024, 7, 12),
-            editDate = null
-        ),
-        ToDoItemDto(
-            id = "id3",
-            task = "Выучить новый язык программирования",
-            priority = Priority.HIGH,
-            deadline = LocalDate.of(2024, 7, 25),
-            isDone = false,
-            creationDate = LocalDate.of(2024, 7, 5),
-            editDate = LocalDate.of(2024, 7, 20)
-        ),
-        ToDoItemDto(
-            id = "id4",
-            task = "Сделать зарядку каждое утро",
-            priority = Priority.LOW,
-            deadline = null,
-            isDone = true,
-            creationDate = LocalDate.of(2024, 7, 8),
-            editDate = null
-        ),
-        ToDoItemDto(
-            id = "id5",
-            task = "Подготовиться к экзамену по математике",
-            priority = Priority.HIGH,
-            deadline = null,
-            isDone = false,
-            creationDate = LocalDate.of(2024, 6, 25),
-            editDate = LocalDate.of(2024, 7, 28)
-        ),
-        ToDoItemDto(
-            id = "id6",
-            task = "Прочитать новую книгу",
-            priority = Priority.REGULAR,
-            deadline = LocalDate.of(2024, 8, 5),
-            isDone = false,
-            creationDate = LocalDate.of(2024, 7, 1),
-            editDate = null
-        ),
-        ToDoItemDto(
-            id = "id7",
-            task = "Сходить к врачу на осмотр",
-            priority = Priority.HIGH,
-            deadline = LocalDate.of(2024, 8, 10),
-            isDone = true,
-            creationDate = LocalDate.of(2024, 7, 3),
-            editDate = LocalDate.of(2024, 8, 9)
-        ),
-        ToDoItemDto(
-            id = "id8",
-            task = "Написать отчет о выполненной работе",
-            priority = Priority.REGULAR,
-            deadline = LocalDate.of(2024, 8, 15),
-            isDone = false,
-            creationDate = LocalDate.of(2024, 7, 7),
-            editDate = LocalDate.of(2024, 8, 14)
-        ),
-        ToDoItemDto(
-            id = "id9",
-            task = "Провести ремонт в квартире",
-            priority = Priority.LOW,
-            deadline = LocalDate.of(2024, 8, 20),
-            isDone = false,
-            creationDate = LocalDate.of(2024, 7, 20),
-            editDate = null
-        ),
-        ToDoItemDto(
-            id = "id10",
-            task = "Заказать подарок на день рождения друга",
-            priority = Priority.REGULAR,
-            deadline = LocalDate.of(2024, 8, 25),
-            isDone = true,
-            creationDate = LocalDate.of(2024, 7, 15),
-            editDate = LocalDate.of(2024, 8, 22)
-        ),
-        ToDoItemDto(
-            id = "id11",
-            task = "Планирование отпуска на следующий год",
-            priority = Priority.LOW,
-            deadline = LocalDate.of(2024, 9, 1),
-            isDone = false,
-            creationDate = LocalDate.of(2024, 7, 30),
-            editDate = null
-        ),
-        ToDoItemDto(
-            id = "id12",
-            task = "Заняться спортом три раза в неделю",
-            priority = Priority.REGULAR,
-            deadline = LocalDate.of(2024, 9, 5),
-            isDone = false,
-            creationDate = LocalDate.of(2024, 8, 1),
-            editDate = LocalDate.of(2024, 9, 3)
-        ),
-        ToDoItemDto(
-            id = "id13",
-            task = "Подготовиться к интервью на новую работу",
-            priority = Priority.HIGH,
-            deadline = LocalDate.of(2024, 9, 10),
-            isDone = true,
-            creationDate = LocalDate.of(2024, 8, 3),
-            editDate = null
-        ),
-        ToDoItemDto(
-            id = "id14",
-            task = "Провести вечеринку в выходной день",
-            priority = Priority.REGULAR,
-            deadline = LocalDate.of(2024, 9, 15),
-            isDone = false,
-            creationDate = LocalDate.of(2024, 8, 5),
-            editDate = LocalDate.of(2024, 9, 14)
-        ),
-        ToDoItemDto(
-            id = "id15",
-            task = "Найти и оформить новое жилье",
-            priority = Priority.HIGH,
-            deadline = LocalDate.of(2024, 9, 20),
-            isDone = false,
-            creationDate = LocalDate.of(2024, 8, 10),
-            editDate = null
-        )
-    )
+class ToDoItemRepositoryImpl(
+    private val toDoItemApi: ToDoItemApi
+) : ToDoItemRepository { // временно public, после внедрения di станет internal
+    private var revision: Int = -1
 
-    private val _todoItems = MutableStateFlow(mapToDoItemsToModel(itemsList))
-    override val todoItems: Flow<ToDoItemModel>
+    private val _todoItems: MutableStateFlow<Resource<ToDoItemListModel>> =
+        MutableStateFlow(Resource.Success(data = null))
+    override val todoItems: StateFlow<Resource<ToDoItemListModel>>
         get() = _todoItems
 
-    override suspend fun addTodoItem(item: ToDoItemDto) {
-        _todoItems.update { currentModel ->
-            val updatedItemsMap = currentModel.itemsMap.toMutableMap()
-            updatedItemsMap[item.id] = item
-            val updatedList = updatedItemsMap.values.toList()
-            mapToDoItemsToModel(updatedList)
+    override suspend fun updateToDoItemsFlow() {
+        _todoItems.value = getToDoItemListModel()
+    }
+
+
+    private suspend fun getRevision(): Int {
+        return if (revision == -1) {
+            getToDoItemListModel()
+            revision
+        } else {
+            revision
         }
     }
 
-    override suspend fun updateTodoItem(id: String, itemToUpdate: ToDoItemDto) {
-        _todoItems.update { currentModel ->
-            val updatedItemsMap = currentModel.itemsMap.toMutableMap()
-            if (updatedItemsMap.containsKey(id)) {
-                updatedItemsMap[id] = itemToUpdate
+    override suspend fun getToDoItemListModel(): Resource<ToDoItemListModel> {
+        return try {
+            val response = toDoItemApi.getToDoList()
+            if (response.isSuccessful) {
+                val toDoItemListDto = response.body()!!
+                revision = max(revision, toDoItemListDto.revision)
+                val toDoItemListWithMapModel =
+                    mapToDoItemModelToListItemModel(toDoItemListDto.toToDoItemListModel())
+                Resource.Success(toDoItemListWithMapModel)
+            } else {
+                Resource.Error(response.message())
             }
-            val updatedList = updatedItemsMap.values.toList()
-            mapToDoItemsToModel(updatedList)
+        } catch (ex: Exception) {
+            Resource.Error(message = ex.message.toString())
         }
     }
 
-    override suspend fun deleteTodoItem(id: String) {
-        _todoItems.update { currentModel ->
-            val updatedItemsMap = currentModel.itemsMap.toMutableMap()
-            updatedItemsMap.remove(id)
-            val updatedList = updatedItemsMap.values.toList()
-            mapToDoItemsToModel(updatedList)
+    override suspend fun getOrCreateItem(id: String): Resource<ToDoItemModel> {
+        return try {
+            val response = toDoItemApi.getToDoItem(id)
+            if (response.isSuccessful) {
+                val toDoItemDto = response.body()!!.toToDoItemModel()
+                updateToDoItemsFlow()
+                Resource.Success(toDoItemDto)
+            } else {
+                Resource.Success(getEmptyToDoItemModel())
+            }
+        } catch (ex: Exception) {
+            Resource.Error(message = ex.message.toString())
         }
     }
 
-    override suspend fun getOrCreateItem(id: String): ToDoItemDto {
-        if (_todoItems.value.itemsMap.containsKey(id)) {
-            return _todoItems.value.itemsMap[id]!!
+    override suspend fun getItem(id: String): Resource<ToDoItemModel> {
+        return try {
+            val response = toDoItemApi.getToDoItem(id)
+            if (response.isSuccessful) {
+                val toDoItemDto = response.body()!!.toToDoItemModel()
+                updateToDoItemsFlow()
+                Resource.Success(toDoItemDto)
+            } else {
+                Resource.Error(response.message())
+            }
+        } catch (ex: Exception) {
+            Resource.Error(message = ex.message.toString())
         }
-        val item = ToDoItemDto(
+    }
+
+    override suspend fun deleteItem(id: String): Resource<ToDoItemModel> {
+        return try {
+            val response = toDoItemApi.deleteToDoItem(getRevision(), id)
+            if (response.isSuccessful) {
+                val toDoItemDto = response.body()!!.toToDoItemModel()
+                updateToDoItemsFlow()
+                Resource.Success(toDoItemDto)
+            } else {
+                Resource.Error(response.message())
+            }
+        } catch (ex: Exception) {
+            Resource.Error(message = ex.message.toString())
+        }
+    }
+
+    override suspend fun updateItem(id: String, item: ToDoItemModel): Resource<ToDoItemModel> {
+        return try {
+            val itemToSend = item.toToDoItemElementToSend()
+            val response = toDoItemApi.updateToDoItem(getRevision(), id, itemToSend)
+            if (response.isSuccessful) {
+                val toDoItemDto = response.body()!!.toToDoItemModel()
+                updateToDoItemsFlow()
+                Resource.Success(toDoItemDto)
+            } else {
+                Resource.Error(response.message())
+            }
+        } catch (ex: Exception) {
+            Resource.Error(message = ex.message.toString())
+        }
+    }
+
+    override suspend fun addItem(item: ToDoItemModel): Resource<ToDoItemModel> {
+        return try {
+            val itemToSend = item.toToDoItemElementToSend()
+            val response = toDoItemApi.addToDoItem(getRevision(), itemToSend)
+            if (response.isSuccessful) {
+                val toDoItemDto = response.body()!!.toToDoItemModel()
+                updateToDoItemsFlow()
+                Resource.Success(toDoItemDto)
+            } else {
+                Resource.Error(response.message())
+            }
+        } catch (ex: Exception) {
+            Resource.Error(message = ex.message.toString())
+        }
+    }
+
+    override suspend fun updateOrAddItem(id: String, item: ToDoItemModel): Resource<ToDoItemModel> {
+        return try {
+            val itemToSend = item.toToDoItemElementToSend()
+            val response = toDoItemApi.updateToDoItem(getRevision(), id, itemToSend)
+            if (response.isSuccessful) {
+                val toDoItemDto = response.body()!!.toToDoItemModel()
+                updateToDoItemsFlow()
+                Resource.Success(toDoItemDto)
+            } else {
+                addItem(item)
+            }
+        } catch (ex: Exception) {
+            Resource.Error(message = ex.message.toString())
+        }
+    }
+
+    private fun getEmptyToDoItemModel(): ToDoItemModel {
+        return ToDoItemModel(
             id = UUID.randomUUID().toString(),
             task = "",
             priority = Priority.REGULAR,
             isDone = false,
             creationDate = LocalDate.now()
         )
-        addTodoItem(item)
-        return item
     }
+
 }
