@@ -1,27 +1,27 @@
 package com.arekalov.yandexshmr.data.network
 
-import com.arekalov.yandexshmr.data.network.interceptors.AuthInterceptor
-import com.arekalov.yandexshmr.data.network.interceptors.RetryInterceptor
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object RetrofitClient {
-    private const val BASE_URL = "https://hive.mrdekk.ru/todo/"
-    val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
-    }
-    private val okHttpClient = OkHttpClient.Builder()
-        .addInterceptor(AuthInterceptor())
-//        .addInterceptor(ErrorGeneratorInterceptor())
-        .addInterceptor(RetryInterceptor())
-        .addInterceptor(loggingInterceptor)
-        .build()
+/**
+Retrofit client, that implement api repository
+ **/
 
-    val instance: Retrofit by lazy {
-        Retrofit.Builder()
-            .baseUrl(BASE_URL)
+data class RetrofitConfig(
+    val baseUrl: String,
+    val interceptors: List<Interceptor> = emptyList()
+)
+
+object RetrofitClient {
+    fun getInstance(config: RetrofitConfig): Retrofit {
+        val okHttpClient = OkHttpClient.Builder().apply {
+            config.interceptors.forEach { addInterceptor(it) }
+        }.build()
+
+        return Retrofit.Builder()
+            .baseUrl(config.baseUrl)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

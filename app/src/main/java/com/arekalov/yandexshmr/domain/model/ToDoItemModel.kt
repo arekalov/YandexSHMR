@@ -2,6 +2,10 @@ package com.arekalov.yandexshmr.domain.model
 
 import java.time.LocalDate
 
+/**
+Clean ToDoItem, that use state.
+ **/
+
 data class ToDoItemModel(
     val id: String,
     val task: String,

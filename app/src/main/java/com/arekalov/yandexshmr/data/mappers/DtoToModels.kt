@@ -7,6 +7,9 @@ import com.arekalov.yandexshmr.domain.model.Priority
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 import java.time.LocalDate
 
+/**
+Extensions for mapping DTO to Models from domain
+ **/
 
 fun ToDoItemListDto.toToDoItemListModel(): List<ToDoItemModel> {
     return this.list.map { it.toToDoItemModel() }

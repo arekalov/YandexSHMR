@@ -7,6 +7,11 @@ import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 import java.time.LocalDate
 import java.time.ZoneOffset
 
+
+/**
+Extensions for mapping Models to DTO from domain
+ **/
+
 fun ToDoItemModel.toToDoItemElementToSend(): ToDoItemElementToSendDto {
     return ToDoItemElementToSendDto(
         element = this.toToDoItemDto()

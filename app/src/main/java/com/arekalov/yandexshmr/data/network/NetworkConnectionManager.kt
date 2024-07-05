@@ -8,6 +8,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
+
+/**
+Manager for retry request if the internet is available
+ **/
+
 class NetworkConnectionManager(context: Context) {
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -29,7 +34,6 @@ class NetworkConnectionManager(context: Context) {
 
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
 
-        // Initial value
         val isConnected = connectivityManager.activeNetwork?.let {
             connectivityManager.getNetworkCapabilities(it)
         }?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ?: false

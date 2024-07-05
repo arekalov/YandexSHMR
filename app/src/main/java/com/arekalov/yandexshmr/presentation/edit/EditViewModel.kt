@@ -19,6 +19,10 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import com.arekalov.yandexshmr.presentation.common.models.Error as ErrorDataClass
 
+/**
+ViewModel, that content editScreen state and work with it.
+ **/
+
 class EditViewModel(
     private val repository: ToDoItemRepository
 ) : ViewModel() {

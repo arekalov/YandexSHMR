@@ -18,6 +18,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import com.arekalov.yandexshmr.presentation.common.models.Error as DataClassError
 
+/**
+ViewModel, that contents homeScreen state and work with it.
+ **/
+
 class HomeViewModel(
     private val repository: ToDoItemRepository,
     private val networkConnectionManager: NetworkConnectionManager

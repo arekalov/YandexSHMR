@@ -16,6 +16,11 @@ import java.time.LocalDate
 import java.util.UUID
 import kotlin.math.max
 
+/**
+Repository that help change data with server. Contains logic and help catch errors
+ **/
+
+
 class ToDoItemRepositoryImpl(
     private val toDoItemApi: ToDoItemApi
 ) : ToDoItemRepository { // временно public, после внедрения di станет internal

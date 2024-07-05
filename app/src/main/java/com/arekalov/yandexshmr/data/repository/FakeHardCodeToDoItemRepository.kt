@@ -10,6 +10,10 @@ import kotlinx.coroutines.flow.update
 import java.time.LocalDate
 import java.util.UUID
 
+
+/**
+Fake repository with hardcode data for testing and previews
+ **/
 class FakeHardCodeToDoItemRepository { // временно public, после внедрения di станет internal
     val itemsList = listOf(
         ToDoItemModel(

@@ -1,5 +1,8 @@
 package com.arekalov.yandexshmr.data.dto
 
+/**
+DTO for receiving ToDoItem from the server
+ **/
 data class ToDoItemDto(
     val id: String,
     val text: String,

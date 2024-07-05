@@ -7,6 +7,7 @@ android {
     namespace = "com.arekalov.yandexshmr"
     compileSdk = 34
 
+
     defaultConfig {
         applicationId = "com.arekalov.yandexshmr"
         minSdk = 26
@@ -74,6 +75,11 @@ dependencies {
     implementation(libs.retrofit2.converter.gson)
     implementation(libs.logging.interceptor)
 
+//    WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+
+//  EncryptedSharedPreferences
+    implementation(libs.androidx.security.crypto.ktx)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

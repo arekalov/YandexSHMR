@@ -3,6 +3,10 @@ package com.arekalov.yandexshmr.presentation.edit.models
 import com.arekalov.yandexshmr.domain.model.Priority
 import java.time.LocalDate
 
+/**
+All editScreen items
+ **/
+
 sealed class EditIntent {
     data object OnSaveCLick : EditIntent()
     data object BackToHome : EditIntent()
