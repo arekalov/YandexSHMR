@@ -21,7 +21,6 @@ class TgPlugin : Plugin<Project> {
 
         val api = TelegramApi.create()
         androidComponents.onVariants { variant: Variant ->
-            println(variant.name)
             val artifacts = variant.artifacts.get(SingleArtifact.APK)
             project.tasks.register(
                 "tgReportFor${variant.name.capitalized()}",

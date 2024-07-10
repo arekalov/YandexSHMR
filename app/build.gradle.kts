@@ -1,22 +1,16 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("tg-plugin")
 }
 
-
-
-val localProperties = Properties()
-val localPropertiesFile = rootProject.file("local.properties")
-if (localPropertiesFile.exists()) {
-    localPropertiesFile.inputStream().use { localProperties.load(it) }
-}
-
+val telegramBotToken: String = System.getenv("TELEGRAM_BOT_TOKEN") ?: "no token"
+val telegramChatId: String =  System.getenv("TELEGRAM_CHAT_ID") ?: "no chatId"
+println(telegramBotToken)
+println(telegramChatId)
 tgPlugin {
-    token.set(localProperties.getProperty("telegramBotToken"))
-    chatId.set(localProperties.getProperty("telegramChatId"))
+    token.set(telegramBotToken)
+    chatId.set(telegramChatId)
 }
 
 android {
@@ -47,7 +41,6 @@ android {
     }
 
     buildFeatures {
-        dataBinding = true
         compose = true
     }
 

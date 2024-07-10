@@ -9,3 +9,4 @@ local.properties
 /app/.gitignore
 .idea
 /app/src/main/java/com/arekalov/yandexshmr/presentation/token.kt
+assets

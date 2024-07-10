@@ -24,8 +24,10 @@ retrofit = "2.9.0"
 securityCrypto = "1.1.0"
 workRuntimeKtx = "2.9.0"
 securityCryptoKtx = "1.1.0-alpha02"
+dnet = "6.2.2"
 
 [libraries]
+io-github-cdimascio-dotenv-kotlin = {group="io.github.cdimascio", name="dotenv-kotlin", version.ref="dnet"}
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
