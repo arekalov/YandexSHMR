@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("tg-plugin")
+    id("android-app-convention")
 }
 
 val telegramBotToken: String = System.getenv("TELEGRAM_BOT_TOKEN") ?: "no token"
@@ -10,8 +11,6 @@ val oauthAuthorization = System.getenv("OAUTH_AUTHORIZATION") ?: "no oauth"
 tgPlugin {
     token.set(telegramBotToken)
     chatId.set(telegramChatId)
-//    validateFileSizeTaskEnabled.set(false)
-//    apkFileSizeLimit.set(1)
     detailInfoEnabled.set(true)
 }
 
@@ -21,8 +20,6 @@ android {
 
     defaultConfig {
         applicationId = "com.arekalov.yandexshmr"
-        minSdk = 26
-        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -41,37 +38,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-    }
-
-    buildFeatures {
-        compose = true
-        buildConfig = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            excludes += "META-INF/DEPENDENCIES"
-            excludes += "META-INF/LICENSE"
-            excludes += "META-INF/LICENSE.txt"
-            excludes += "META-INF/NOTICE"
-            excludes += "META-INF/NOTICE.txt"
-            excludes += "META-INF/ASL2.0"
-            excludes += "META-INF/*.kotlin_module"
         }
     }
 }
