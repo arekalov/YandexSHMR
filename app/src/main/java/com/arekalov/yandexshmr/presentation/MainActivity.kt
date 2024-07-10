@@ -1,10 +1,8 @@
 package com.arekalov.yandexshmr.presentation
 
 import NetworkConnectionManager
-import android.content.ContentValues.TAG
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -102,8 +100,7 @@ class MainActivity : AppCompatActivity() {
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
-        Log.d("!!!!!!!!!!!!!!!!!!!", "OAUTH_TOKEN: ${BuildConfig.OAUTH_TOKEN}")
-        encryptedSharedPreferences.edit().putString(TOKEN, BuildConfig.OAUTH_TOKEN).apply()
+        encryptedSharedPreferences.edit().putString(TOKEN, BuildConfig.OAUTH_AUTHORIZATION).apply()
         return encryptedSharedPreferences
     }
 

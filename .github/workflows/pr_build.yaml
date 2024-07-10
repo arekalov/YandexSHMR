@@ -7,8 +7,9 @@ on:
 
 env:
   gradleFlags: --parallel --stacktrace --no-configuration-cache --no-daemon
-  TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
-  TG_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  OAUTH_AUTHORIZATION: ${{ secrets.OAUTH_AUTHORIZATION }}
 
 jobs:
   build-and-telegram-report:
