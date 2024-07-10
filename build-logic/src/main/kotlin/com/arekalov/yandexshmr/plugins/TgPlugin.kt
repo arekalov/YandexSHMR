@@ -4,6 +4,7 @@ import com.android.build.api.artifact.SingleArtifact
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.Variant
 import com.arekalov.yandexshmr.plugins.api.TelegramApi
+import com.arekalov.yandexshmr.plugins.tasks.DetailInfoTask
 import com.arekalov.yandexshmr.plugins.tasks.UploadTask
 import com.arekalov.yandexshmr.plugins.tasks.ValidateSizeTask
 import org.gradle.api.GradleException
@@ -14,6 +15,7 @@ import org.gradle.configurationcache.extensions.capitalized
 
 const val APK_FILE_SIZE_LIMIT_DEFAULT = 1000
 const val IS_VALIDATE_FILE_SIZE_TASK_ENABLED = true
+const val DETAIL_INFO_ENABLED = false
 
 class TgPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -24,6 +26,7 @@ class TgPlugin : Plugin<Project> {
         val ext = project.extensions.create("tgPlugin", TgExtension::class.java).apply {
             apkFileSizeLimit.convention(APK_FILE_SIZE_LIMIT_DEFAULT)
             validateFileSizeTaskEnabled.convention(IS_VALIDATE_FILE_SIZE_TASK_ENABLED)
+            detailInfoEnabled.convention(DETAIL_INFO_ENABLED)
         }
         val api = TelegramApi.create()
         androidComponents.onVariants { variant: Variant ->
@@ -51,6 +54,17 @@ class TgPlugin : Plugin<Project> {
                 validateFileSizeTaskEnabled.set(ext.validateFileSizeTaskEnabled)
 
             }
+
+            project.tasks.register(
+                "apkDetailInfoFor${variant.name.capitalized()}",
+                DetailInfoTask::class.java,
+                api
+            ).configure {
+                apkDir.set(artifacts)
+                token.set(ext.token)
+                chatId.set(ext.chatId)
+            }
+
             if (ext.validateFileSizeTaskEnabled.get()) {
                 project.afterEvaluate {
                     project.tasks.named("tgReportForRelease").configure {
@@ -61,12 +75,23 @@ class TgPlugin : Plugin<Project> {
                     }
                 }
             }
+            if (ext.detailInfoEnabled.get()) {
+                project.afterEvaluate {
+                    project.tasks.named("tgReportForDebug").configure {
+                        finalizedBy("apkDetailInfoForDebug")
+                    }
+                    project.tasks.named("tgReportForRelease").configure {
+                        finalizedBy("apkDetailInfoForRelease")
+                    }
+                }
+            }
         }
     }
 }
 
 
 interface TgExtension {
+    val detailInfoEnabled: Property<Boolean>
     val validateFileSizeTaskEnabled: Property<Boolean>
     val token: Property<String>
     val chatId: Property<String>

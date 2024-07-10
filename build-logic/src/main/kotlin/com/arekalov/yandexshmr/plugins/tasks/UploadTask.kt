@@ -54,9 +54,18 @@ abstract class UploadTask @Inject constructor(
                             } else {
                                 "APK uploaded: ${renamedFile.name}"
                             }
-                            tgApi.upload(renamedFile, token.get(), chatId.get())
+                            tgApi.sendMessage(
+                                message = "Hi, new apk for you:",
+                                token = token.get(),
+                                chatId = chatId.get()
+                            )
                             tgApi.sendMessage(
                                 message = textToSend,
+                                token = token.get(),
+                                chatId = chatId.get()
+                            )
+                            tgApi.upload(
+                                file = renamedFile,
                                 token = token.get(),
                                 chatId = chatId.get()
                             )

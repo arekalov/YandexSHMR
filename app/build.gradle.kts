@@ -12,6 +12,7 @@ tgPlugin {
     chatId.set(telegramChatId)
 //    validateFileSizeTaskEnabled.set(false)
 //    apkFileSizeLimit.set(1)
+    detailInfoEnabled.set(true)
 }
 
 android {
