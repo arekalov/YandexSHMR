@@ -1,8 +1,10 @@
 package com.arekalov.yandexshmr.presentation
 
 import NetworkConnectionManager
+import android.content.ContentValues.TAG
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +14,7 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.arekalov.yandexshmr.BuildConfig
 import com.arekalov.yandexshmr.data.network.RetrofitClient
 import com.arekalov.yandexshmr.data.network.RetrofitConfig
 import com.arekalov.yandexshmr.data.network.ToDoItemApi
@@ -99,7 +102,8 @@ class MainActivity : AppCompatActivity() {
             EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
             EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
         )
-        encryptedSharedPreferences.edit().putString(TOKEN, MY_TOKEN).apply()
+        Log.d("!!!!!!!!!!!!!!!!!!!", "OAUTH_TOKEN: ${BuildConfig.OAUTH_TOKEN}")
+        encryptedSharedPreferences.edit().putString(TOKEN, BuildConfig.OAUTH_TOKEN).apply()
         return encryptedSharedPreferences
     }
 

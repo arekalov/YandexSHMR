@@ -3,11 +3,12 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("tg-plugin")
 }
-
-val telegramBotToken: String = System.getenv("TELEGRAM_BOT_TOKEN") ?: "no token"
-val telegramChatId: String =  System.getenv("TELEGRAM_CHAT_ID") ?: "no chatId"
+val telegramBotToken: String = env.TELEGRAM_BOT_TOKEN.value
+val telegramChatId: String =  env.TELEGRAM_CHAT_ID.value
+val oauth: String = env.OUTH_AUTHORIZATION.value
 println(telegramBotToken)
 println(telegramChatId)
+println(oauth)
 tgPlugin {
     token.set(telegramBotToken)
     chatId.set(telegramChatId)
@@ -27,7 +28,10 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+
         }
+        buildConfigField("String", "OAUTH_TOKEN", "\"$oauth\"")
+//        buildConfigField("String", "OAUTH_TOKEN", System.getenv("OAUTH_TOKEN")?: "")
     }
 
     buildTypes {
