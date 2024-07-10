@@ -27,7 +27,6 @@ class TelegramApi(
     }
 
     suspend fun sendMessage(message: String, token: String, chatId: String) {
-        println("$message $token $chatId")
         return withContext(Dispatchers.IO) {
             apiService.sendMessage(token, chatId, message)
         }

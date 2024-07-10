@@ -5,14 +5,13 @@ plugins {
 }
 
 val telegramBotToken: String = System.getenv("TELEGRAM_BOT_TOKEN") ?: "no token"
-val telegramChatId: String =  System.getenv("TELEGRAM_CHAT_ID") ?: "no chatId"
-val oauthAuthorization = System.getenv("OAUTH_AUTHORIZATION")?: "no oauth"
-println(telegramBotToken)
-println(telegramChatId)
-println(oauthAuthorization)
+val telegramChatId: String = System.getenv("TELEGRAM_CHAT_ID") ?: "no chatId"
+val oauthAuthorization = System.getenv("OAUTH_AUTHORIZATION") ?: "no oauth"
 tgPlugin {
     token.set(telegramBotToken)
     chatId.set(telegramChatId)
+//    validateFileSizeTaskEnabled.set(false)
+//    apkFileSizeLimit.set(1)
 }
 
 android {
@@ -46,6 +45,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     composeOptions {
