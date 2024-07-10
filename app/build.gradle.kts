@@ -1,13 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("kotlin-kapt")
-    id("kotlin-parcelize")
 }
 
 android {
     namespace = "com.arekalov.yandexshmr"
     compileSdk = 34
+
 
     defaultConfig {
         applicationId = "com.arekalov.yandexshmr"
@@ -71,6 +70,16 @@ dependencies {
 //    Navigation
     implementation(libs.androidx.navigation.compose)
 
+//    Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.retrofit2.converter.gson)
+    implementation(libs.logging.interceptor)
+
+//    WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+
+//  EncryptedSharedPreferences
+    implementation(libs.androidx.security.crypto.ktx)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

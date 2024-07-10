@@ -16,4 +16,7 @@
     <string name="doneLabel">Выполнено - %1$s</string>
     <string name="errorLabel">Ошибка: %1$s</string>
     <string name="unknownErrorLabel">unknown error</string>
+    <string name="noItemsLabel">Нет задач</string>
+    <string name="reloadLabel">Повторить</string>
+    <string name="notItemsLabel">Нет задач!</string>
 </resources>
