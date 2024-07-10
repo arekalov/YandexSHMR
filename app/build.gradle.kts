@@ -1,12 +1,27 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("tg-plugin")
+}
+
+
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { localProperties.load(it) }
+}
+
+tgPlugin {
+    token.set(localProperties.getProperty("telegramBotToken"))
+    chatId.set(localProperties.getProperty("telegramChatId"))
 }
 
 android {
     namespace = "com.arekalov.yandexshmr"
     compileSdk = 34
-
 
     defaultConfig {
         applicationId = "com.arekalov.yandexshmr"
