@@ -7,6 +7,9 @@ import com.arekalov.yandexshmr.data.common.DELETE_ERROR
 import com.arekalov.yandexshmr.data.common.GET_ERROR
 import com.arekalov.yandexshmr.data.common.UPDATE_ERROR
 import com.arekalov.yandexshmr.data.common.mapToDoItemModelToListItemModel
+import com.arekalov.yandexshmr.data.db.dao.RevisionDao
+import com.arekalov.yandexshmr.data.db.dao.ToDoItemsDao
+import com.arekalov.yandexshmr.data.db.dto.RevisionDbDto
 import com.arekalov.yandexshmr.data.db.mappers.toToDoItemElementDbDto
 import com.arekalov.yandexshmr.data.db.mappers.toToDoItemModel
 import com.arekalov.yandexshmr.domain.model.ToDoItemListModel
@@ -14,8 +17,33 @@ import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 import com.arekalov.yandexshmr.domain.util.Resource
 
 class ToDoItemsDbDataSource(
-    private val toDoItemsDao: ToDoItemsDao
+    private val toDoItemsDao: ToDoItemsDao,
+    private val revisionDao: RevisionDao
 ) {
+
+    suspend fun updateAll(itemListModel: ToDoItemListModel) {
+        toDoItemsDao.deleteAllToDoItems()
+        for (i in itemListModel.items) {
+            toDoItemsDao.addToDoItem(item = i.toToDoItemElementDbDto())
+        }
+    }
+    suspend fun getRevision(): Int {
+        try {
+            return revisionDao.getRevision().revisionNumber
+        } catch (ex: Exception) {
+            revisionDao.insertOrUpdateRevision(RevisionDbDto())
+            return revisionDao.getRevision().revisionNumber
+        }
+    }
+
+    suspend fun setRevision(revision: Int) {
+        revisionDao.updateRevisionTo(revision)
+    }
+
+    private suspend fun incrementRevision() {
+        revisionDao.incrementRevision()
+    }
+
     suspend fun getToDoItemListModel(): Resource<ToDoItemListModel> {
         return try {
             val response = toDoItemsDao.getToDoItems()
@@ -40,9 +68,10 @@ class ToDoItemsDbDataSource(
     suspend fun deleteItem(id: String): Resource<ToDoItemModel> {
         return try {
             toDoItemsDao.deleteToDoItem(id)
+            incrementRevision()
             Resource.Success(null)
         } catch (ex: Exception) {
-            Log.e(TAG, ex.toString(), )
+            Log.e(TAG, ex.toString())
             Resource.Error(DELETE_ERROR)
 
         }
@@ -52,6 +81,7 @@ class ToDoItemsDbDataSource(
         return try {
             val elementToUpdate = item.toToDoItemElementDbDto()
             toDoItemsDao.updateToDoItem(elementToUpdate)
+            incrementRevision()
             Resource.Success(item)
         } catch (ex: Exception) {
             Resource.Error(UPDATE_ERROR)
@@ -63,6 +93,7 @@ class ToDoItemsDbDataSource(
         return try {
             val itemToAdd = item.toToDoItemElementDbDto()
             toDoItemsDao.addToDoItem(itemToAdd)
+            incrementRevision()
             Resource.Success(item)
         } catch (ex: Exception) {
             Resource.Error(ADD_ERROR)
@@ -76,6 +107,7 @@ class ToDoItemsDbDataSource(
         return try {
             Resource.Success(toDoItemsDao.getToDoItem(id).toToDoItemModel())
         } catch (ex: Exception) {
+            incrementRevision()
             Resource.Success(emptyToDoItemModel)
         }
     }
@@ -85,6 +117,7 @@ class ToDoItemsDbDataSource(
             val itemToSave = item.toToDoItemElementDbDto()
             toDoItemsDao.getToDoItem(item.id).toToDoItemModel()
             toDoItemsDao.updateToDoItem(itemToSave)
+            incrementRevision()
             Resource.Success(item)
         } catch (ex: Exception) {
             try {

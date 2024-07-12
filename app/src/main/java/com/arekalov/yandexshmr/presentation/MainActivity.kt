@@ -78,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         val api = RetrofitClient.getInstance(config).create(ToDoItemApi::class.java)
         val db = ToDoItemsDB.getDatabase(this)
         val netDS = ToDoItemsNetworkDataSource(api)
-        val dbDS = ToDoItemsDbDataSource(db.userDao())
+        val dbDS = ToDoItemsDbDataSource(db.userDao(), db.revisionDao())
         repository = ToDoItemRepositoryImpl(netDS, dbDS)
         networkConnectionManager = NetworkConnectionManager(this)
     }

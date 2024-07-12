@@ -1,5 +1,7 @@
 package com.arekalov.yandexshmr.data.repository
 
+import android.util.Log
+import com.arekalov.yandexshmr.data.common.GET_ERROR
 import com.arekalov.yandexshmr.data.db.ToDoItemsDbDataSource
 import com.arekalov.yandexshmr.data.network.ToDoItemsNetworkDataSource
 import com.arekalov.yandexshmr.domain.model.Priority
@@ -74,12 +76,19 @@ class ToDoItemRepositoryImpl(
     }
 
     override suspend fun updateToDoItemsFlow() {
-        val network = networkDataSource.getToDoItemListModel()
-        val db = dbDataSource.getToDoItemListModel()
-            if (db != network) {
-                db.data?.let { networkDataSource.updateAllItems(it) }
+        if (networkDataSource.getRevision() >= dbDataSource.getRevision()) {
+            val newData = networkDataSource.getToDoItemListModel()
+            if (newData is Resource.Success) {
+                dbDataSource.updateAll(newData.data!!)
+                updateFlowFromDb()
+            } else {
+                _todoItems.value = Resource.Error(GET_ERROR)
             }
-        _todoItems.value = db
+        } else {
+            updateFlowFromDb()
+            dbDataSource.getToDoItemListModel().data?.let { networkDataSource.updateAllItems(it) }
+        }
+        dbDataSource.setRevision(networkDataSource.getRevision())
 
     }
 
@@ -94,6 +103,10 @@ class ToDoItemRepositoryImpl(
 
     private suspend fun updateFlowFromDb() {
         _todoItems.value = dbDataSource.getToDoItemListModel()
+    }
+
+    private suspend fun updateFlowFromNetwork() {
+        _todoItems.value = networkDataSource.getToDoItemListModel()
     }
 
     override fun getEmptyToDoItemModel(): ToDoItemModel {

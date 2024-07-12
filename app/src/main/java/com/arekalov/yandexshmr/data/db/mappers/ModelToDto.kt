@@ -5,10 +5,6 @@ import com.arekalov.yandexshmr.data.db.dto.ToDoItemElementDbDto
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 
 fun ToDoItemModel.toToDoItemElementDbDto(): ToDoItemElementDbDto {
-
-//    Log.e("!!!", "Zdeadlein: ${this.deadline}", )
-//    Log.e("!!!", "Zcreation: ${this.creationDate}", )
-//    Log.e("!!!", "Zedit: ${this.editDate}", )
     return ToDoItemElementDbDto(
         id = this.id,
         itemType = "", // will be changed in next HW

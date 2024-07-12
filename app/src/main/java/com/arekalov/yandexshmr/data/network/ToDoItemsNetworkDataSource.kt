@@ -27,7 +27,6 @@ class ToDoItemsNetworkDataSource(
 
     }
 
-
     suspend fun getOrCreateItem(id: String, emptyItem: ToDoItemModel): Resource<ToDoItemModel> {
         return try {
             val response = toDoItemApi.getToDoItem(id)

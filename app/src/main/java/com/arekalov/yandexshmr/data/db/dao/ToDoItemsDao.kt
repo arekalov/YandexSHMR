@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr.data.db
+package com.arekalov.yandexshmr.data.db.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -28,4 +28,7 @@ interface ToDoItemsDao {
 
     @Query("""DELETE FROM items WHERE id = :id""")
     suspend fun deleteToDoItem(id: String)
+
+    @Query("""DELETE FROM items""")
+    suspend fun deleteAllToDoItems()
 }

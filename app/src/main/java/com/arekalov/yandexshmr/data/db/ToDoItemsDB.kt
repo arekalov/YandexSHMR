@@ -4,15 +4,19 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.arekalov.yandexshmr.data.db.dao.RevisionDao
+import com.arekalov.yandexshmr.data.db.dao.ToDoItemsDao
+import com.arekalov.yandexshmr.data.db.dto.RevisionDbDto
 import com.arekalov.yandexshmr.data.db.dto.ToDoItemElementDbDto
 
 /**
  * DB implementation class
  */
 
-@Database(entities = [ToDoItemElementDbDto::class], version = 1)
+@Database(entities = [ToDoItemElementDbDto::class, RevisionDbDto::class], version = 1)
 abstract class ToDoItemsDB : RoomDatabase() {
     abstract fun userDao(): ToDoItemsDao
+    abstract fun revisionDao(): RevisionDao
     companion object {
         @Volatile
         private var INSTANCE: ToDoItemsDB? = null
