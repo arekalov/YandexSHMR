@@ -35,7 +35,8 @@ fun EditScreenLoading(
             AppBar(
                 onBack = onBack,
                 isReadyToSave = false,
-                onSave = {}
+                onSave = {},
+                onBackButtonVisible = false
             )
         },
     ) {

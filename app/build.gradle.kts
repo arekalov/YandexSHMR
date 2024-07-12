@@ -4,6 +4,7 @@ plugins {
     id("tg-plugin")
     id("android-app-convention")
     id("com.google.devtools.ksp") version "2.0.0-1.0.21"
+    id("kotlin-kapt")
 }
 
 val telegramBotToken: String = System.getenv("TELEGRAM_BOT_TOKEN") ?: "no token"
@@ -63,7 +64,8 @@ dependencies {
 
 //    Room
     implementation(libs.androidx.room.runtime)
-    ksp(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    kapt(libs.androidx.room.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

@@ -24,7 +24,8 @@ fun AppBar(
     isReadyToSave: Boolean,
     onBack: () -> Unit,
     onSave: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBackButtonVisible: Boolean = true
 ) {
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -33,15 +34,17 @@ fun AppBar(
             scrolledContainerColor = MaterialTheme.colorScheme.background
         ),
         title = {},
-        navigationIcon = {
-            IconButton(onClick = onBack) {
+        navigationIcon = {if (onBackButtonVisible) {
+            IconButton(
+                onClick = onBack,
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_close),
                     contentDescription = "Back",
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }
-        },
+        }},
         actions = {
             TextButton(
                 onClick = onSave,

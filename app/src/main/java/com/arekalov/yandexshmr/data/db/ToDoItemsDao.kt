@@ -26,6 +26,6 @@ interface ToDoItemsDao {
     @Update
     suspend fun updateToDoItem(item: ToDoItemElementDbDto)
 
-    @Delete
-    suspend fun deleteToDoItem(item: ToDoItemElementDbDto)
+    @Query("""DELETE FROM items WHERE id = :id""")
+    suspend fun deleteToDoItem(id: String)
 }

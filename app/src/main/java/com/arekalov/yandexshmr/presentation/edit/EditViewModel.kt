@@ -138,7 +138,7 @@ class EditViewModel(
         viewModelScope.launch(defaultCoroutineContext) {
             delay(300)
             val item = async {
-                repository.getOrCreateItem(id)
+               repository.getOrCreateItem(id=id)
             }.await()
             if (item is Resource.Success) {
                 _editViewState.value = EditViewState.Display(

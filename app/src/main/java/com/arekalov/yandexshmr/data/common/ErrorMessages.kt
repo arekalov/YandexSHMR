@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr.data.repository
+package com.arekalov.yandexshmr.data.common
 
 const val ADD_ERROR = "Ошибка добавления дела"
 const val UPDATE_ERROR = "Ошибка обновления дела"

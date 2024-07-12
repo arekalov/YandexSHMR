@@ -14,9 +14,11 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.arekalov.yandexshmr.BuildConfig
 import com.arekalov.yandexshmr.data.db.ToDoItemsDB
+import com.arekalov.yandexshmr.data.db.ToDoItemsDbDataSource
 import com.arekalov.yandexshmr.data.network.RetrofitClient
 import com.arekalov.yandexshmr.data.network.RetrofitConfig
 import com.arekalov.yandexshmr.data.network.ToDoItemApi
+import com.arekalov.yandexshmr.data.network.ToDoItemsNetworkDataSource
 import com.arekalov.yandexshmr.data.network.interceptors.AuthInterceptor
 import com.arekalov.yandexshmr.data.network.interceptors.RetryInterceptor
 import com.arekalov.yandexshmr.data.repository.ToDoItemRepositoryImpl
@@ -75,7 +77,9 @@ class MainActivity : AppCompatActivity() {
         )
         val api = RetrofitClient.getInstance(config).create(ToDoItemApi::class.java)
         val db = ToDoItemsDB.getDatabase(this)
-        repository = ToDoItemRepositoryImpl(api, db.userDao())
+        val netDS = ToDoItemsNetworkDataSource(api)
+        val dbDS = ToDoItemsDbDataSource(db.userDao())
+        repository = ToDoItemRepositoryImpl(netDS, dbDS)
         networkConnectionManager = NetworkConnectionManager(this)
     }
 

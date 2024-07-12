@@ -1,11 +1,14 @@
 package com.arekalov.yandexshmr.data.repository
 
+import android.util.Log
 import com.arekalov.yandexshmr.data.common.mapToDoItemModelToListItemModel
 import com.arekalov.yandexshmr.data.db.ToDoItemsDao
+import com.arekalov.yandexshmr.data.db.ToDoItemsDbDataSource
 import com.arekalov.yandexshmr.data.network.mappers.toToDoItemElementToSend
 import com.arekalov.yandexshmr.data.network.mappers.toToDoItemListModel
 import com.arekalov.yandexshmr.data.network.mappers.toToDoItemModel
 import com.arekalov.yandexshmr.data.network.ToDoItemApi
+import com.arekalov.yandexshmr.data.network.ToDoItemsNetworkDataSource
 import com.arekalov.yandexshmr.domain.model.Priority
 import com.arekalov.yandexshmr.domain.model.ToDoItemListModel
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel
@@ -23,9 +26,9 @@ Repository that help change data with server. Contains logic and help catch erro
 
 
 class ToDoItemRepositoryImpl(
-    private val toDoItemApi: ToDoItemApi,
-    private val toDoItemsDao: ToDoItemsDao
-) : ToDoItemRepository { // временно public, после внедрения di станет internal
+    private val networkDataSource: ToDoItemsNetworkDataSource,
+    private val dbDataSource: ToDoItemsDbDataSource
+) : ToDoItemRepository {
     private var revision: Int = -1
 
     private val _todoItems: MutableStateFlow<Resource<ToDoItemListModel>> =
@@ -33,128 +36,54 @@ class ToDoItemRepositoryImpl(
     override val todoItems: StateFlow<Resource<ToDoItemListModel>>
         get() = _todoItems
 
-    override suspend fun updateToDoItemsFlow() {
-        _todoItems.value = getToDoItemListModel()
-    }
-
-
-    private suspend fun getRevision(): Int {
-        return if (revision == -1) {
-            getToDoItemListModel()
-            revision
-        } else {
-            revision
-        }
-    }
-
     override suspend fun getToDoItemListModel(): Resource<ToDoItemListModel> {
-        return try {
-            val response = toDoItemApi.getToDoItems()
-            if (response.isSuccessful) {
-                val toDoItemListDto = response.body()!!
-                revision = max(revision, toDoItemListDto.revision)
-                val toDoItemListWithMapModel =
-                    mapToDoItemModelToListItemModel(toDoItemListDto.toToDoItemListModel())
-                Resource.Success(toDoItemListWithMapModel)
-            } else {
-                Resource.Error(GET_ERROR)
-            }
-        } catch (ex: Exception) {
-            Resource.Error(GET_ERROR)
-        }
+        return dbDataSource.getToDoItemListModel()
     }
 
     override suspend fun getOrCreateItem(id: String): Resource<ToDoItemModel> {
-        return try {
-            val response = toDoItemApi.getToDoItem(id)
-            if (response.isSuccessful) {
-                val toDoItemDto = response.body()!!.toToDoItemModel()
-                updateToDoItemsFlow()
-                Resource.Success(toDoItemDto)
-            } else {
-                Resource.Success(getEmptyToDoItemModel())
-            }
-        } catch (ex: Exception) {
-            Resource.Error(GET_ERROR)
-        }
+        val response = dbDataSource.getOrCreate(id, getEmptyToDoItemModel())
+        updateFlowFromDb()
+        return response
     }
 
     override suspend fun getItem(id: String): Resource<ToDoItemModel> {
-        return try {
-            val response = toDoItemApi.getToDoItem(id)
-            if (response.isSuccessful) {
-                val toDoItemDto = response.body()!!.toToDoItemModel()
-                updateToDoItemsFlow()
-                Resource.Success(toDoItemDto)
-            } else {
-                Resource.Error(response.message())
-            }
-        } catch (ex: Exception) {
-            Resource.Error(GET_ERROR)
-        }
+        return dbDataSource.getItem(id)
     }
 
     override suspend fun deleteItem(id: String): Resource<ToDoItemModel> {
-        return try {
-            val response = toDoItemApi.deleteToDoItem(getRevision(), id)
-            if (response.isSuccessful) {
-                val toDoItemDto = response.body()!!.toToDoItemModel()
-                updateToDoItemsFlow()
-                Resource.Success(toDoItemDto)
-            } else {
-                Resource.Error(DELETE_ERROR)
-            }
-        } catch (ex: Exception) {
-            Resource.Error(DELETE_ERROR)
-        }
+        val res = dbDataSource.deleteItem(id)
+        updateFlowFromDb()
+        return res
     }
 
     override suspend fun updateItem(id: String, item: ToDoItemModel): Resource<ToDoItemModel> {
-        return try {
-            val itemToSend = item.toToDoItemElementToSend()
-            val response = toDoItemApi.updateToDoItem(getRevision(), id, itemToSend)
-            if (response.isSuccessful) {
-                val toDoItemDto = response.body()!!.toToDoItemModel()
-                updateToDoItemsFlow()
-                Resource.Success(toDoItemDto)
-            } else {
-                Resource.Error(UPDATE_ERROR)
-            }
-        } catch (ex: Exception) {
-            Resource.Error(UPDATE_ERROR)
-        }
+        val res = dbDataSource.updateItem(item = item)
+        updateFlowFromDb()
+        return res
     }
 
     override suspend fun addItem(item: ToDoItemModel): Resource<ToDoItemModel> {
-        return try {
-            val itemToSend = item.toToDoItemElementToSend()
-            val response = toDoItemApi.addToDoItem(getRevision(), itemToSend)
-            if (response.isSuccessful) {
-                val toDoItemDto = response.body()!!.toToDoItemModel()
-                updateToDoItemsFlow()
-                Resource.Success(toDoItemDto)
-            } else {
-                Resource.Error(ADD_ERROR)
-            }
-        } catch (ex: Exception) {
-            Resource.Error(ADD_ERROR)
-        }
+        val res = dbDataSource.addItem(item)
+        updateFlowFromDb()
+        return res
+    }
+
+    override suspend fun updateToDoItemsFlow() {
+        updateFlowFromDb()
     }
 
     override suspend fun updateOrAddItem(id: String, item: ToDoItemModel): Resource<ToDoItemModel> {
-        return try {
-            val itemToSend = item.toToDoItemElementToSend()
-            val response = toDoItemApi.updateToDoItem(getRevision(), id, itemToSend)
-            if (response.isSuccessful) {
-                val toDoItemDto = response.body()!!.toToDoItemModel()
-                updateToDoItemsFlow()
-                Resource.Success(toDoItemDto)
-            } else {
-                addItem(item)
-            }
-        } catch (ex: Exception) {
-            Resource.Error(UPDATE_ERROR)
-        }
+        val res = dbDataSource.updateOrAddItem(item)
+        updateFlowFromDb()
+        return res
+    }
+
+    suspend fun updateFlowFromNetwork() {
+        _todoItems.value = networkDataSource.getToDoItemListModel()
+    }
+
+    suspend fun updateFlowFromDb() {
+        _todoItems.value = dbDataSource.getToDoItemListModel()
     }
 
     override fun getEmptyToDoItemModel(): ToDoItemModel {

@@ -13,16 +13,12 @@ import java.time.LocalDate
 @Entity(tableName = "items")
 data class ToDoItemElementDbDto(
     @PrimaryKey @ColumnInfo(name = "id") val id: String,
-    @ColumnInfo(name = "item_type") val itemType: ItemType, // wil be add in next HW
+    @ColumnInfo(name = "item_type") val itemType: String, // wil be add in next HW
     @ColumnInfo(name = "task") val task: String?,
     @ColumnInfo(name = "voice_path") val voicePath: String?, // wil be add in next HW
     @ColumnInfo(name = "priority") val priority: Priority,
-    @ColumnInfo(name = "deadline") val deadline: LocalDate?,
+    @ColumnInfo(name = "deadline") val deadline: String?,
     @ColumnInfo(name = "isDone") val isDone: Boolean,
-    @ColumnInfo(name = "creationName") val creationDate: LocalDate,
-    @ColumnInfo(name = "editDate") val editDate: LocalDate?,
+    @ColumnInfo(name = "creationName") val creationDate: String,
+    @ColumnInfo(name = "editDate") val editDate: String?,
 )
-
-enum class ItemType {
-    TEXT, VOICE
-}
