@@ -23,7 +23,7 @@ fun HomeScreen(
             viewState = state,
             onVisibleClick = { homeViwModel.obtainIntent(HomeIntent.OnVisibleClick) },
             navigateTOEditReset = { homeViwModel.obtainIntent(HomeIntent.ResetEditScreen) },
-
+            onRefreshCLick = {homeViwModel.obtainIntent(HomeIntent.Refresh)}
         )
 
         is HomeViewState.Loading -> HomeScreenLoading(

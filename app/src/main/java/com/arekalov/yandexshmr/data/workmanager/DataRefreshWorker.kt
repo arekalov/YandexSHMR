@@ -19,7 +19,7 @@ class DataRefreshWorker(
     override suspend fun doWork(): Result {
         return try {
             withContext(Dispatchers.IO) {
-                repository.updateToDoItemsFlow()
+//                repository.updateToDoItemsFlow()
             }
             Result.success()
         } catch (e: Exception) {

@@ -1,19 +1,17 @@
 package com.arekalov.yandexshmr.data.db
 
+import android.content.ContentValues.TAG
 import android.util.Log
-import com.arekalov.yandexshmr.data.common.mapToDoItemModelToListItemModel
-import com.arekalov.yandexshmr.data.db.mappers.toToDoItemElementDbDto
-import com.arekalov.yandexshmr.data.db.mappers.toToDoItemModel
 import com.arekalov.yandexshmr.data.common.ADD_ERROR
 import com.arekalov.yandexshmr.data.common.DELETE_ERROR
 import com.arekalov.yandexshmr.data.common.GET_ERROR
 import com.arekalov.yandexshmr.data.common.UPDATE_ERROR
-import com.arekalov.yandexshmr.data.network.mappers.toToDoItemElementToSend
-import com.arekalov.yandexshmr.data.network.mappers.toToDoItemModel
+import com.arekalov.yandexshmr.data.common.mapToDoItemModelToListItemModel
+import com.arekalov.yandexshmr.data.db.mappers.toToDoItemElementDbDto
+import com.arekalov.yandexshmr.data.db.mappers.toToDoItemModel
 import com.arekalov.yandexshmr.domain.model.ToDoItemListModel
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 import com.arekalov.yandexshmr.domain.util.Resource
-import kotlin.math.log
 
 class ToDoItemsDbDataSource(
     private val toDoItemsDao: ToDoItemsDao
@@ -44,6 +42,7 @@ class ToDoItemsDbDataSource(
             toDoItemsDao.deleteToDoItem(id)
             Resource.Success(null)
         } catch (ex: Exception) {
+            Log.e(TAG, ex.toString(), )
             Resource.Error(DELETE_ERROR)
 
         }

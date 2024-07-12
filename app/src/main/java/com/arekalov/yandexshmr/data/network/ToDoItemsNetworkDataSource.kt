@@ -1,5 +1,6 @@
 package com.arekalov.yandexshmr.data.network
 
+import android.util.Log
 import com.arekalov.yandexshmr.data.common.mapToDoItemModelToListItemModel
 import com.arekalov.yandexshmr.data.network.mappers.toToDoItemElementToSend
 import com.arekalov.yandexshmr.data.network.mappers.toToDoItemListModel
@@ -7,22 +8,37 @@ import com.arekalov.yandexshmr.data.network.mappers.toToDoItemModel
 import com.arekalov.yandexshmr.data.common.ADD_ERROR
 import com.arekalov.yandexshmr.data.common.DELETE_ERROR
 import com.arekalov.yandexshmr.data.common.GET_ERROR
+import com.arekalov.yandexshmr.data.common.MERGE_ERROR
 import com.arekalov.yandexshmr.data.common.UPDATE_ERROR
+import com.arekalov.yandexshmr.data.network.mappers.toToDoItemListToSendNetworkDto
 import com.arekalov.yandexshmr.domain.model.ToDoItemListModel
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 import com.arekalov.yandexshmr.domain.util.Resource
+import kotlinx.coroutines.delay
 import kotlin.math.max
 
 class ToDoItemsNetworkDataSource(
     private val toDoItemApi: ToDoItemApi
 ) {
     private var revision: Int = -1
-    private suspend fun getRevision(): Int {
-        return if (revision == -1) {
-            getToDoItemListModel()
-            revision
-        } else {
-            revision
+    suspend fun getRevision(): Int {
+        getToDoItemListModel()
+        return revision
+
+    }
+
+
+    suspend fun getOrCreateItem(id: String, emptyItem: ToDoItemModel): Resource<ToDoItemModel> {
+        return try {
+            val response = toDoItemApi.getToDoItem(id)
+            if (response.isSuccessful) {
+                val toDoItemDto = response.body()!!.toToDoItemModel()
+                Resource.Success(toDoItemDto)
+            } else {
+                Resource.Success(emptyItem)
+            }
+        } catch (ex: Exception) {
+            Resource.Error(GET_ERROR)
         }
     }
 
@@ -59,7 +75,8 @@ class ToDoItemsNetworkDataSource(
 
     suspend fun deleteItem(id: String): Resource<ToDoItemModel> {
         return try {
-            val response = toDoItemApi.deleteToDoItem(getRevision(), id)
+            val revision = getRevision()
+            val response = toDoItemApi.deleteToDoItem(revision, id)
             if (response.isSuccessful) {
                 val toDoItemDto = response.body()!!.toToDoItemModel()
                 Resource.Success(toDoItemDto)
@@ -83,6 +100,20 @@ class ToDoItemsNetworkDataSource(
             }
         } catch (ex: Exception) {
             Resource.Error(UPDATE_ERROR)
+        }
+    }
+
+    suspend fun updateAllItems(items: ToDoItemListModel): Resource<ToDoItemListModel> {
+        return try {
+            val itemsToSend = items.toToDoItemListToSendNetworkDto()
+            val response = toDoItemApi.updateToDoList(getRevision(), itemsToSend)
+            if (response.isSuccessful) {
+                Resource.Success(items)
+            } else {
+                Resource.Error(MERGE_ERROR)
+            }
+        } catch (ex: Exception) {
+            Resource.Error(MERGE_ERROR)
         }
     }
 

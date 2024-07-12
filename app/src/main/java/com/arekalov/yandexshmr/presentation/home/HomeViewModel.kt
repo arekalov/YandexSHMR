@@ -1,6 +1,7 @@
 package com.arekalov.yandexshmr.presentation.home
 
 import NetworkConnectionManager
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -46,7 +47,6 @@ class HomeViewModel(
                 }
             }
         }
-        startObservingItems()
     }
 
     private fun startObservingItems() {
@@ -96,6 +96,13 @@ class HomeViewModel(
 
             is HomeIntent.EditScreen -> navigateToEditChange(itemId = intent.itemId)
             is HomeIntent.ResetEditScreen -> navigateToEditChange(null)
+            is HomeIntent.Refresh -> updateHomeViewStateFlow()
+        }
+    }
+
+    private fun updateHomeViewStateFlow() {
+        viewModelScope.launch(defaultCoroutineContext) {
+            repository.updateToDoItemsFlow()
         }
     }
 

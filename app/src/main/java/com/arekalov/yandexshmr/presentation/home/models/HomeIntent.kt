@@ -8,5 +8,5 @@ sealed class HomeIntent {
     data class EditScreen(val itemId: String) : HomeIntent()
     data object ResetEditScreen : HomeIntent()
     data class OnItemCheckBoxClick(val itemId: String) : HomeIntent()
-
+    data object Refresh: HomeIntent()
 }

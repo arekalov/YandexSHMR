@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -18,10 +19,15 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -35,8 +41,9 @@ import com.arekalov.yandexshmr.presentation.common.navigation.NEW_ITEM
 import com.arekalov.yandexshmr.presentation.common.views.CustomSnackbar
 import com.arekalov.yandexshmr.presentation.home.models.HomeViewState
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
+import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreenDisplay(
     onItemClick: (String) -> Unit,
@@ -45,10 +52,12 @@ fun HomeScreenDisplay(
     modifier: Modifier = Modifier,
     viewState: HomeViewState.Display,
     onCheckedChange: (String) -> Unit,
-    onVisibleClick: () -> Unit
+    onVisibleClick: () -> Unit,
+    onRefreshCLick: () -> Unit
 
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val pullToRefreshState = rememberPullToRefreshState()
     LaunchedEffect(viewState) {
         if (viewState.error != null) {
             val result = snackbarHostState.showSnackbar(
@@ -110,23 +119,44 @@ fun HomeScreenDisplay(
             }
         }
     ) { paddingValues ->
-        if (viewState.items.size > 0) {
-            ItemsList(
-                toDoItemModels = if (viewState.isAllVisible) {
-                    viewState.items
-                } else {
-                    viewState.items.filter { !it.isDone }
-                },
-                onCheckedChange = { id, _ -> onCheckedChange(id) },
-                onClickItem = { id -> onItemClick(id) },
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .nestedScroll(pullToRefreshState.nestedScrollConnection)
+                .padding(paddingValues)
+                .padding(horizontal = 10.dp)
+
+        ) {
+            if (viewState.items.isNotEmpty()) {
+                ItemsList(
+                    toDoItemModels = if (viewState.isAllVisible) {
+                        viewState.items
+                    } else {
+                        viewState.items.filter { !it.isDone }
+                    },
+                    onCheckedChange = { id, _ -> onCheckedChange(id) },
+                    onClickItem = { id -> onItemClick(id) },
+                )
+            } else {
+                EmptyList()
+            }
+            if (pullToRefreshState.isRefreshing) {
+                LaunchedEffect(key1 = Unit) {
+                    pullToRefreshState.startRefresh()
+                    onRefreshCLick()
+                    delay(200)
+                    pullToRefreshState.endRefresh()
+                }
+            }
+            PullToRefreshContainer(
+                state = pullToRefreshState,
                 modifier = Modifier
-                    .padding(horizontal = 10.dp)
-                    .padding(paddingValues)
+                    .align(Alignment.TopCenter),
+                contentColor = MaterialTheme.colorScheme.primary
             )
-        } else {
-            EmptyList()
         }
     }
+
 }
 
 @Composable
@@ -155,6 +185,7 @@ private fun EmptyListPreview() {
         EmptyList()
     }
 }
+
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
@@ -171,7 +202,8 @@ fun HomeScreenDisplayPreview() {
             onCheckedChange = {},
             onVisibleClick = {},
             goEdit = {},
-            navigateTOEditReset = {}
+            navigateTOEditReset = {},
+            onRefreshCLick = {}
         )
     }
 }
