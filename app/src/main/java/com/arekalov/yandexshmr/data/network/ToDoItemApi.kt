@@ -1,9 +1,9 @@
 package com.arekalov.yandexshmr.data.network
 
-import com.arekalov.yandexshmr.data.dto.ToDoItemElementDto
-import com.arekalov.yandexshmr.data.dto.ToDoItemElementToSendDto
-import com.arekalov.yandexshmr.data.dto.ToDoItemListDto
-import com.arekalov.yandexshmr.data.dto.ToDoItemListToSendDto
+import com.arekalov.yandexshmr.data.network.dto.ToDoItemElementNetworkDto
+import com.arekalov.yandexshmr.data.network.dto.ToDoItemElementToSendNetworkDto
+import com.arekalov.yandexshmr.data.network.dto.ToDoItemListNetworkDto
+import com.arekalov.yandexshmr.data.network.dto.ToDoItemListToSendNetworkDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -21,35 +21,35 @@ Methods for send and get data from server
 interface ToDoItemApi {
 
     @GET("list")
-    suspend fun getToDoList(): Response<ToDoItemListDto>
+    suspend fun getToDoItems(): Response<ToDoItemListNetworkDto>
 
     @PATCH("list")
     suspend fun updateToDoList(
         @Header("X-Last-Known-Revision") revision: Int,
-        @Body toDoList: ToDoItemListToSendDto
-    ): Response<ToDoItemListDto>
+        @Body toDoList: ToDoItemListToSendNetworkDto
+    ): Response<ToDoItemListNetworkDto>
 
     @GET("list/{id}")
     suspend fun getToDoItem(
         @Path("id") id: String
-    ): Response<ToDoItemElementDto>
+    ): Response<ToDoItemElementNetworkDto>
 
     @POST("list")
     suspend fun addToDoItem(
         @Header("X-Last-Known-Revision") revision: Int,
-        @Body toDoItem: ToDoItemElementToSendDto
-    ): Response<ToDoItemElementDto>
+        @Body toDoItem: ToDoItemElementToSendNetworkDto
+    ): Response<ToDoItemElementNetworkDto>
 
     @PUT("list/{id}")
     suspend fun updateToDoItem(
         @Header("X-Last-Known-Revision") revision: Int,
         @Path("id") id: String,
-        @Body toDoItem: ToDoItemElementToSendDto
-    ): Response<ToDoItemElementDto>
+        @Body toDoItem: ToDoItemElementToSendNetworkDto
+    ): Response<ToDoItemElementNetworkDto>
 
     @DELETE("list/{id}")
     suspend fun deleteToDoItem(
         @Header("X-Last-Known-Revision") revision: Int,
         @Path("id") id: String
-    ): Response<ToDoItemElementDto>
+    ): Response<ToDoItemElementNetworkDto>
 }

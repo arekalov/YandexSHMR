@@ -1,9 +1,10 @@
 package com.arekalov.yandexshmr.data.repository
 
-import com.arekalov.yandexshmr.data.mappers.mapToDoItemModelToListItemModel
-import com.arekalov.yandexshmr.data.mappers.toToDoItemElementToSend
-import com.arekalov.yandexshmr.data.mappers.toToDoItemListModel
-import com.arekalov.yandexshmr.data.mappers.toToDoItemModel
+import com.arekalov.yandexshmr.data.common.mapToDoItemModelToListItemModel
+import com.arekalov.yandexshmr.data.db.ToDoItemsDao
+import com.arekalov.yandexshmr.data.network.mappers.toToDoItemElementToSend
+import com.arekalov.yandexshmr.data.network.mappers.toToDoItemListModel
+import com.arekalov.yandexshmr.data.network.mappers.toToDoItemModel
 import com.arekalov.yandexshmr.data.network.ToDoItemApi
 import com.arekalov.yandexshmr.domain.model.Priority
 import com.arekalov.yandexshmr.domain.model.ToDoItemListModel
@@ -22,7 +23,8 @@ Repository that help change data with server. Contains logic and help catch erro
 
 
 class ToDoItemRepositoryImpl(
-    private val toDoItemApi: ToDoItemApi
+    private val toDoItemApi: ToDoItemApi,
+    private val toDoItemsDao: ToDoItemsDao
 ) : ToDoItemRepository { // временно public, после внедрения di станет internal
     private var revision: Int = -1
 
@@ -47,7 +49,7 @@ class ToDoItemRepositoryImpl(
 
     override suspend fun getToDoItemListModel(): Resource<ToDoItemListModel> {
         return try {
-            val response = toDoItemApi.getToDoList()
+            val response = toDoItemApi.getToDoItems()
             if (response.isSuccessful) {
                 val toDoItemListDto = response.body()!!
                 revision = max(revision, toDoItemListDto.revision)

@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("tg-plugin")
     id("android-app-convention")
+    id("com.google.devtools.ksp") version "2.0.0-1.0.21"
 }
 
 val telegramBotToken: String = System.getenv("TELEGRAM_BOT_TOKEN") ?: "no token"
@@ -57,8 +58,12 @@ dependencies {
 //    WorkManager
     implementation(libs.androidx.work.runtime.ktx)
 
-//  EncryptedSharedPreferences
+//    EncryptedSharedPreferences
     implementation(libs.androidx.security.crypto.ktx)
+
+//    Room
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

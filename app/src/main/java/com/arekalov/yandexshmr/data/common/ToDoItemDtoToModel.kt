@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr.data.mappers
+package com.arekalov.yandexshmr.data.common
 
 import com.arekalov.yandexshmr.domain.model.ToDoItemListModel
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel

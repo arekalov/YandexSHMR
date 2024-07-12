@@ -13,6 +13,7 @@ import androidx.security.crypto.MasterKeys
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.arekalov.yandexshmr.BuildConfig
+import com.arekalov.yandexshmr.data.db.ToDoItemsDB
 import com.arekalov.yandexshmr.data.network.RetrofitClient
 import com.arekalov.yandexshmr.data.network.RetrofitConfig
 import com.arekalov.yandexshmr.data.network.ToDoItemApi
@@ -73,7 +74,8 @@ class MainActivity : AppCompatActivity() {
             )
         )
         val api = RetrofitClient.getInstance(config).create(ToDoItemApi::class.java)
-        repository = ToDoItemRepositoryImpl(api)
+        val db = ToDoItemsDB.getDatabase(this)
+        repository = ToDoItemRepositoryImpl(api, db.userDao())
         networkConnectionManager = NetworkConnectionManager(this)
     }
 

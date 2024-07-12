@@ -1,9 +1,9 @@
-package com.arekalov.yandexshmr.data.dto
+package com.arekalov.yandexshmr.data.network.dto
 
 /**
 DTO for receiving ToDoItem from the server
  **/
-data class ToDoItemDto(
+data class ToDoItemNetworkDto(
     val id: String,
     val text: String,
     val importance: String,

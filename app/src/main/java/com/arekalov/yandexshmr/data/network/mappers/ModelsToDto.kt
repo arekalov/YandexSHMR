@@ -1,7 +1,7 @@
-package com.arekalov.yandexshmr.data.mappers
+package com.arekalov.yandexshmr.data.network.mappers
 
-import com.arekalov.yandexshmr.data.dto.ToDoItemDto
-import com.arekalov.yandexshmr.data.dto.ToDoItemElementToSendDto
+import com.arekalov.yandexshmr.data.network.dto.ToDoItemNetworkDto
+import com.arekalov.yandexshmr.data.network.dto.ToDoItemElementToSendNetworkDto
 import com.arekalov.yandexshmr.domain.model.Priority
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 import java.time.LocalDate
@@ -12,14 +12,14 @@ import java.time.ZoneOffset
 Extensions for mapping Models to DTO from domain
  **/
 
-fun ToDoItemModel.toToDoItemElementToSend(): ToDoItemElementToSendDto {
-    return ToDoItemElementToSendDto(
+fun ToDoItemModel.toToDoItemElementToSend(): ToDoItemElementToSendNetworkDto {
+    return ToDoItemElementToSendNetworkDto(
         element = this.toToDoItemDto()
     )
 }
 
-fun ToDoItemModel.toToDoItemDto(): ToDoItemDto {
-    return ToDoItemDto(
+fun ToDoItemModel.toToDoItemDto(): ToDoItemNetworkDto {
+    return ToDoItemNetworkDto(
         id = this.id,
         text = this.task,
         importance = this.priority.toImportanceString(),
