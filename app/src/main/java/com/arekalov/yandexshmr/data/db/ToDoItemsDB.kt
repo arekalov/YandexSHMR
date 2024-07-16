@@ -13,10 +13,17 @@ import com.arekalov.yandexshmr.data.db.dto.ToDoItemElementDbDto
  * DB implementation class
  */
 
-@Database(entities = [ToDoItemElementDbDto::class, RevisionDbDto::class], version = 1)
+private const val dbName = "items_database"
+
+@Database(
+    entities = [ToDoItemElementDbDto::class, RevisionDbDto::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class ToDoItemsDB : RoomDatabase() {
     abstract fun userDao(): ToDoItemsDao
     abstract fun revisionDao(): RevisionDao
+
     companion object {
         @Volatile
         private var INSTANCE: ToDoItemsDB? = null
@@ -26,7 +33,7 @@ abstract class ToDoItemsDB : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     ToDoItemsDB::class.java,
-                    "items_database"
+                    dbName
                 ).build()
                 INSTANCE = instance
                 instance

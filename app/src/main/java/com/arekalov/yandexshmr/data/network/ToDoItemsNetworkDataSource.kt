@@ -1,23 +1,24 @@
 package com.arekalov.yandexshmr.data.network
 
-import android.util.Log
-import com.arekalov.yandexshmr.data.common.mapToDoItemModelToListItemModel
-import com.arekalov.yandexshmr.data.network.mappers.toToDoItemElementToSend
-import com.arekalov.yandexshmr.data.network.mappers.toToDoItemListModel
-import com.arekalov.yandexshmr.data.network.mappers.toToDoItemModel
 import com.arekalov.yandexshmr.data.common.ADD_ERROR
 import com.arekalov.yandexshmr.data.common.DELETE_ERROR
 import com.arekalov.yandexshmr.data.common.GET_ERROR
 import com.arekalov.yandexshmr.data.common.MERGE_ERROR
 import com.arekalov.yandexshmr.data.common.UPDATE_ERROR
+import com.arekalov.yandexshmr.data.common.mapToDoItemModelToListItemModel
+import com.arekalov.yandexshmr.data.network.mappers.toToDoItemElementToSend
+import com.arekalov.yandexshmr.data.network.mappers.toToDoItemListModel
 import com.arekalov.yandexshmr.data.network.mappers.toToDoItemListToSendNetworkDto
+import com.arekalov.yandexshmr.data.network.mappers.toToDoItemModel
 import com.arekalov.yandexshmr.domain.model.ToDoItemListModel
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 import com.arekalov.yandexshmr.domain.util.Resource
-import kotlinx.coroutines.delay
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.math.max
 
-class ToDoItemsNetworkDataSource(
+@Singleton
+class ToDoItemsNetworkDataSource @Inject constructor(
     private val toDoItemApi: ToDoItemApi
 ) {
     private var revision: Int = -1

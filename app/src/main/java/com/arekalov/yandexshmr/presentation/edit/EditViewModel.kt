@@ -1,7 +1,6 @@
 package com.arekalov.yandexshmr.presentation.edit
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.arekalov.yandexshmr.domain.model.Priority
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel
@@ -9,6 +8,7 @@ import com.arekalov.yandexshmr.domain.repository.ToDoItemRepository
 import com.arekalov.yandexshmr.domain.util.Resource
 import com.arekalov.yandexshmr.presentation.edit.models.EditIntent
 import com.arekalov.yandexshmr.presentation.edit.models.EditViewState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -17,13 +17,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import javax.inject.Inject
 import com.arekalov.yandexshmr.presentation.common.models.Error as ErrorDataClass
 
 /**
 ViewModel, that content editScreen state and work with it.
  **/
 
-class EditViewModel(
+@HiltViewModel
+class EditViewModel @Inject constructor(
     private val repository: ToDoItemRepository
 ) : ViewModel() {
     private val _editViewState = MutableStateFlow<EditViewState>(EditViewState.Loading(false))
@@ -138,7 +140,7 @@ class EditViewModel(
         viewModelScope.launch(defaultCoroutineContext) {
             delay(300)
             val item = async {
-               repository.getOrCreateItem(id=id)
+                repository.getOrCreateItem(id = id)
             }.await()
             if (item is Resource.Success) {
                 _editViewState.value = EditViewState.Display(
@@ -193,11 +195,5 @@ class EditViewModel(
                 backToHome()
             }
         }
-    }
-}
-
-class EditViewModelFactory(private val repository: ToDoItemRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return EditViewModel(repository = repository) as T
     }
 }

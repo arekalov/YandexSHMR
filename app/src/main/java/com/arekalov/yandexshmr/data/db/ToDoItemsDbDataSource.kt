@@ -15,8 +15,9 @@ import com.arekalov.yandexshmr.data.db.mappers.toToDoItemModel
 import com.arekalov.yandexshmr.domain.model.ToDoItemListModel
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 import com.arekalov.yandexshmr.domain.util.Resource
+import javax.inject.Inject
 
-class ToDoItemsDbDataSource(
+class ToDoItemsDbDataSource @Inject constructor(
     private val toDoItemsDao: ToDoItemsDao,
     private val revisionDao: RevisionDao
 ) {

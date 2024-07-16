@@ -1,3 +1,5 @@
+package com.arekalov.yandexshmr.data.network
+
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
@@ -12,8 +14,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 /**
 Manager for retry request if the internet is available
  **/
-
-class NetworkConnectionManager(context: Context) {
+class NetworkConnectionManager(
+    context: Context
+) {
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 

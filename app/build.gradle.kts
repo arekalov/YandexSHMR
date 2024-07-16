@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("tg-plugin")
     id("android-app-convention")
-    id("com.google.devtools.ksp") version "2.0.0-1.0.21"
-    id("kotlin-kapt")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 val telegramBotToken: String = System.getenv("TELEGRAM_BOT_TOKEN") ?: "no token"
@@ -29,7 +29,15 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
-            useSupportLibrary = true
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            keyAlias = "yandexshmr"
+            keyPassword = "rx29na03"
+            storeFile = file("/home/arekalov/Documents/key.jks")
+            storePassword = "rx29na03"
         }
     }
 
@@ -45,8 +53,9 @@ android {
 }
 
 dependencies {
-//    ViewModel
-//    implementation(libs.androidx.lifecycle.viewmodel.compose)
+//    Hilt
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.hilt.android)
 
 //    Navigation
     implementation(libs.androidx.navigation.compose)
@@ -65,7 +74,7 @@ dependencies {
 //    Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    kapt(libs.androidx.room.compiler)
+    ksp(libs.androidx.room.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -90,4 +99,3 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
-

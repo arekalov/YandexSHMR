@@ -1,15 +1,14 @@
 package com.arekalov.yandexshmr.presentation.home
 
-import NetworkConnectionManager
-import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.arekalov.yandexshmr.data.network.NetworkConnectionManager
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel
 import com.arekalov.yandexshmr.domain.repository.ToDoItemRepository
 import com.arekalov.yandexshmr.domain.util.Resource
 import com.arekalov.yandexshmr.presentation.home.models.HomeIntent
 import com.arekalov.yandexshmr.presentation.home.models.HomeViewState
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -17,13 +16,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import com.arekalov.yandexshmr.presentation.common.models.Error as DataClassError
 
 /**
 ViewModel, that contents homeScreen state and work with it.
  **/
-
-class HomeViewModel(
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     private val repository: ToDoItemRepository,
     private val networkConnectionManager: NetworkConnectionManager
 ) : ViewModel() {
@@ -148,14 +148,3 @@ class HomeViewModel(
     }
 }
 
-class HomeViewModelFactory(
-    private val repository: ToDoItemRepository,
-    private val networkConnectionManager: NetworkConnectionManager
-) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return HomeViewModel(
-            repository = repository,
-            networkConnectionManager = networkConnectionManager
-        ) as T
-    }
-}

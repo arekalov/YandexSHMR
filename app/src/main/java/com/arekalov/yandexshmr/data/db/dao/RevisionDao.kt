@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import androidx.room.Update
 import com.arekalov.yandexshmr.data.db.dto.RevisionDbDto
 
 @Dao
@@ -15,9 +14,6 @@ interface RevisionDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateRevision(revision: RevisionDbDto)
-
-    @Update
-    suspend fun updateRevision(revision: RevisionDbDto)
 
     @Transaction
     suspend fun incrementRevision() {
