@@ -1,6 +1,6 @@
 package com.arekalov.yandexshmr.data.repository
 
-import com.arekalov.yandexshmr.data.mappers.mapToDoItemModelToListItemModel
+import com.arekalov.yandexshmr.data.common.mapToDoItemModelToListItemModel
 import com.arekalov.yandexshmr.domain.model.Priority
 import com.arekalov.yandexshmr.domain.model.ToDoItemListModel
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel

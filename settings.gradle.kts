@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "YandexSHMR"
 include(":app")
+includeBuild("build-logic")

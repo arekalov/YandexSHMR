@@ -1,23 +1,43 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    id("tg-plugin")
+    id("android-app-convention")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
+}
+
+val telegramBotToken: String = System.getenv("TELEGRAM_BOT_TOKEN") ?: "no token"
+val telegramChatId: String = System.getenv("TELEGRAM_CHAT_ID") ?: "no chatId"
+val oauthAuthorization = System.getenv("OAUTH_AUTHORIZATION") ?: "no oauth"
+tgPlugin {
+    token.set(telegramBotToken)
+    chatId.set(telegramChatId)
+    detailInfoEnabled.set(true)
 }
 
 android {
     namespace = "com.arekalov.yandexshmr"
     compileSdk = 34
 
-
     defaultConfig {
         applicationId = "com.arekalov.yandexshmr"
-        minSdk = 26
-        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
+        buildConfigField("String", "OAUTH_AUTHORIZATION", "\"$oauthAuthorization\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
-            useSupportLibrary = true
+        }
+    }
+
+    signingConfigs {
+        create("release") {
+            keyAlias = "yandexshmr"
+            keyPassword = "rx29na03"
+            storeFile = file("/home/arekalov/Documents/key.jks")
+            storePassword = "rx29na03"
         }
     }
 
@@ -30,42 +50,12 @@ android {
             )
         }
     }
-
-    buildFeatures {
-        dataBinding = true
-        compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            excludes += "META-INF/DEPENDENCIES"
-            excludes += "META-INF/LICENSE"
-            excludes += "META-INF/LICENSE.txt"
-            excludes += "META-INF/NOTICE"
-            excludes += "META-INF/NOTICE.txt"
-            excludes += "META-INF/ASL2.0"
-            excludes += "META-INF/*.kotlin_module"
-        }
-    }
 }
 
 dependencies {
-//    ViewModel
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
+//    Hilt
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.hilt.android)
 
 //    Navigation
     implementation(libs.androidx.navigation.compose)
@@ -78,12 +68,18 @@ dependencies {
 //    WorkManager
     implementation(libs.androidx.work.runtime.ktx)
 
-//  EncryptedSharedPreferences
+//    EncryptedSharedPreferences
     implementation(libs.androidx.security.crypto.ktx)
+
+//    Room
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation( libs.androidx.material)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
@@ -103,4 +99,3 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }
-
