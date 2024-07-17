@@ -24,10 +24,7 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -53,6 +50,7 @@ fun HomeScreenDisplay(
     viewState: HomeViewState.Display,
     onCheckedChange: (String) -> Unit,
     onVisibleClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onRefreshCLick: () -> Unit
 
 ) {
@@ -94,7 +92,8 @@ fun HomeScreenDisplay(
                 onVisibleClick = onVisibleClick,
                 isVisibleAll = viewState.isAllVisible,
                 doneCount = viewState.doneCount,
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                onSettingsClick = onSettingsClick
             )
         },
         modifier = modifier
@@ -203,7 +202,8 @@ fun HomeScreenDisplayPreview() {
             onVisibleClick = {},
             goEdit = {},
             navigateTOEditReset = {},
-            onRefreshCLick = {}
+            onRefreshCLick = {},
+            onSettingsClick = {}
         )
     }
 }

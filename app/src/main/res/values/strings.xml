@@ -19,4 +19,10 @@
     <string name="noItemsLabel">Нет задач</string>
     <string name="reloadLabel">Повторить</string>
     <string name="notItemsLabel">Нет задач!</string>
+    <string name="settingsLabel">Настройки</string>
+    <string name="appThemeLabel">Тема оформления</string>
+    <string name="aboutAppLabel">О приложении</string>
+    <string name="SystemTheme">Системная</string>
+    <string name="DarkTheme">Тёмная</string>
+    <string name="LightTheme">Светлая</string>
 </resources>

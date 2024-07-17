@@ -12,6 +12,7 @@ import com.arekalov.yandexshmr.data.workmanager.DataRefreshWorker
 import com.arekalov.yandexshmr.presentation.common.navigation.Navigation
 import com.arekalov.yandexshmr.presentation.edit.EditViewModel
 import com.arekalov.yandexshmr.presentation.home.HomeViewModel
+import com.arekalov.yandexshmr.presentation.settings.SettingsViewModel
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
@@ -26,6 +27,8 @@ class MainActivity : AppCompatActivity() {
 
     private val editViewModel: EditViewModel by viewModels()
     private val homeViewModel: HomeViewModel by viewModels()
+    private val settingsViewModel: SettingsViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -37,7 +40,8 @@ class MainActivity : AppCompatActivity() {
                 Navigation(
                     navController = navController,
                     editViewModel = editViewModel,
-                    homeViewModel = homeViewModel
+                    homeViewModel = homeViewModel,
+                    settingsViewModel = settingsViewModel
                 )
             }
         }

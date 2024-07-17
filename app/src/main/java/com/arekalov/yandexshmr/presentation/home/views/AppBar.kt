@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,6 +37,7 @@ import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 fun AppBar(
     scrollBehavior: TopAppBarScrollBehavior,
     onVisibleClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     isVisibleAll: Boolean,
     doneCount: Int,
     modifier: Modifier = Modifier
@@ -57,6 +60,20 @@ fun AppBar(
 
     ) {
         LargeTopAppBar(
+            actions = {
+                IconButton(
+                    onClick = onSettingsClick,
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(end = 10.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "settings",
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            },
             colors = TopAppBarDefaults.largeTopAppBarColors(
                 scrolledContainerColor = MaterialTheme.colorScheme.background,
                 containerColor = MaterialTheme.colorScheme.background
@@ -136,7 +153,8 @@ private fun AppBarPreviewUncollapsed() {
             onVisibleClick = {},
             isVisibleAll = true,
             scrollBehavior = scrollBehavior,
-            doneCount = FakeHardCodeToDoItemRepository().itemsList.count { it.isDone }
+            doneCount = FakeHardCodeToDoItemRepository().itemsList.count { it.isDone },
+            onSettingsClick = {}
         )
     }
 }

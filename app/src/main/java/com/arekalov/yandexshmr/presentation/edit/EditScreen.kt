@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr.presentation.edit.views
+package com.arekalov.yandexshmr.presentation.edit
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
@@ -7,9 +7,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.arekalov.yandexshmr.domain.model.Priority
-import com.arekalov.yandexshmr.presentation.edit.EditViewModel
 import com.arekalov.yandexshmr.presentation.edit.models.EditIntent
 import com.arekalov.yandexshmr.presentation.edit.models.EditViewState
+import com.arekalov.yandexshmr.presentation.edit.views.EditScreenDisplay
+import com.arekalov.yandexshmr.presentation.edit.views.EditScreenLoading
 import java.time.LocalDate
 
 @Composable

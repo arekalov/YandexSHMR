@@ -28,6 +28,7 @@ import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 fun HomeScreenLoading(
     modifier: Modifier = Modifier,
     viewState: HomeViewState.Loading,
+    onSettingsCLick: () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
@@ -38,7 +39,8 @@ fun HomeScreenLoading(
                 onVisibleClick = {},
                 isVisibleAll = false,
                 doneCount = 0,
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                onSettingsClick = onSettingsCLick
             )
         },
         modifier = modifier
@@ -68,6 +70,7 @@ fun HomeScreenLoadingPreview() {
     ToDoListTheme {
         HomeScreenLoading(
             viewState = HomeViewState.Loading,
+            onSettingsCLick = {}
         )
     }
 }

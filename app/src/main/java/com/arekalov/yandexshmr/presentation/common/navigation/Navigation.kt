@@ -9,15 +9,18 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.arekalov.yandexshmr.presentation.edit.EditScreen
 import com.arekalov.yandexshmr.presentation.edit.EditViewModel
-import com.arekalov.yandexshmr.presentation.edit.views.EditScreen
+import com.arekalov.yandexshmr.presentation.home.HomeScreen
 import com.arekalov.yandexshmr.presentation.home.HomeViewModel
-import com.arekalov.yandexshmr.presentation.home.views.HomeScreen
+import com.arekalov.yandexshmr.presentation.settings.SettingsScreen
+import com.arekalov.yandexshmr.presentation.settings.SettingsViewModel
 
 
 @Composable
 fun Navigation(
     navController: NavHostController,
+    settingsViewModel: SettingsViewModel,
     editViewModel: EditViewModel,
     homeViewModel: HomeViewModel,
 ) {
@@ -32,6 +35,19 @@ fun Navigation(
         {
             HomeScreen(
                 homeViwModel = homeViewModel,
+                navController = navController,
+            )
+        }
+        composable(
+            route = SETTINGS,
+            enterTransition = { fadeIn(animationSpec = tween(durationMillis = 250)) },
+            exitTransition = { fadeOut(animationSpec = tween(durationMillis = 250)) },
+            popEnterTransition = { fadeIn(animationSpec = tween(durationMillis = 250)) },
+            popExitTransition = { fadeOut(animationSpec = tween(durationMillis = 250)) }
+        )
+        {
+            SettingsScreen(
+                settingsViewModel = settingsViewModel,
                 navController = navController,
             )
         }

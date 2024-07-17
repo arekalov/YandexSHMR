@@ -1,13 +1,16 @@
-package com.arekalov.yandexshmr.presentation.home.views
+package com.arekalov.yandexshmr.presentation.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.arekalov.yandexshmr.presentation.common.navigation.EDIT
-import com.arekalov.yandexshmr.presentation.home.HomeViewModel
+import com.arekalov.yandexshmr.presentation.common.navigation.SETTINGS
 import com.arekalov.yandexshmr.presentation.home.models.HomeIntent
 import com.arekalov.yandexshmr.presentation.home.models.HomeViewState
+import com.arekalov.yandexshmr.presentation.home.views.HomeScreenDisplay
+import com.arekalov.yandexshmr.presentation.home.views.HomeScreenError
+import com.arekalov.yandexshmr.presentation.home.views.HomeScreenLoading
 
 @Composable
 fun HomeScreen(
@@ -23,13 +26,18 @@ fun HomeScreen(
             viewState = state,
             onVisibleClick = { homeViwModel.obtainIntent(HomeIntent.OnVisibleClick) },
             navigateTOEditReset = { homeViwModel.obtainIntent(HomeIntent.ResetEditScreen) },
-            onRefreshCLick = {homeViwModel.obtainIntent(HomeIntent.Refresh)}
+            onRefreshCLick = { homeViwModel.obtainIntent(HomeIntent.Refresh) },
+            onSettingsClick = { navController.navigate(SETTINGS) }
         )
 
         is HomeViewState.Loading -> HomeScreenLoading(
             viewState = state,
+            onSettingsCLick = { navController.navigate(SETTINGS) }
         )
 
-        is HomeViewState.Error -> HomeScreenError(viewState = state)
+        is HomeViewState.Error -> HomeScreenError(
+            viewState = state,
+            onSettingsClick = { navController.navigate(SETTINGS) }
+        )
     }
 }
