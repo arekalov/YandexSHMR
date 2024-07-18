@@ -14,12 +14,13 @@ import com.arekalov.yandexshmr.R
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 
 @Composable
-fun OneLineItem(
+fun AboutAppItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     TextButton(
         onClick = onClick,
+        modifier = modifier
     ) {
         Text(
             text = stringResource(R.string.aboutAppLabel),
@@ -38,7 +39,7 @@ fun OneLineItem(
 @Composable
 private fun AboutAppItemPreview() {
     ToDoListTheme {
-        OneLineItem(
+        AboutAppItem(
             onClick = {}
         )
     }

@@ -5,6 +5,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -24,7 +25,6 @@ App main activity start app and init components
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
     private val editViewModel: EditViewModel by viewModels()
     private val homeViewModel: HomeViewModel by viewModels()
     private val settingsViewModel: SettingsViewModel by viewModels()
@@ -36,7 +36,8 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
-            ToDoListTheme {
+            val theme = settingsViewModel.settingsState.collectAsState()
+            ToDoListTheme(theme = theme.value.theme) {
                 Navigation(
                     navController = navController,
                     editViewModel = editViewModel,

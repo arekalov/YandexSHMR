@@ -1,8 +1,8 @@
 package com.arekalov.yandexshmr.presentation.settings.models
 
-sealed class SettingsViewState {
-    data class Display(
-        val theme: AppTheme,
-        val isAppLiked: Boolean
-    ) : SettingsViewState()
-}
+import com.arekalov.yandexshmr.presentation.common.models.AppTheme
+
+data class SettingsViewState(
+    val theme: AppTheme,
+    val isAppLiked: UserMark
+)

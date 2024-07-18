@@ -20,14 +20,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.arekalov.yandexshmr.presentation.settings.models.AppTheme
+import com.arekalov.yandexshmr.presentation.common.models.AppTheme
+import com.arekalov.yandexshmr.presentation.settings.models.SettingsViewState
+import com.arekalov.yandexshmr.presentation.settings.models.UserMark
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreenDisplay(
     onBackClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    viewState: SettingsViewState,
+    modifier: Modifier = Modifier,
+    onThemeChanged: (AppTheme) -> Unit,
+    obAboutAppClick: () -> Unit
+
 ) {
     val themeBottomSheetState = rememberModalBottomSheetState()
     var isThemeBottomSheetShowed by rememberSaveable {
@@ -45,8 +51,8 @@ fun SettingsScreenDisplay(
             ThemeBottomSheet(
                 sheetState = themeBottomSheetState,
                 onDismissRequest = { isThemeBottomSheetShowed = false },
-                changeTheme = {},
-                nowTHeme = AppTheme.LIGHT
+                changeTheme = onThemeChanged,
+                nowTHeme = viewState.theme
             )
         }
         Surface(
@@ -59,10 +65,10 @@ fun SettingsScreenDisplay(
             Column {
                 SetThemeItem(
                     onClick = { isThemeBottomSheetShowed = true },
-                    nowTheme = AppTheme.SYSTEM
+                    nowTheme = viewState.theme
                 )
-                OneLineItem(
-                    onClick = {}
+                AboutAppItem(
+                    onClick = onBackClicked
                 )
             }
         }
@@ -75,7 +81,13 @@ fun SettingsScreenDisplay(
 private fun SettingsScreenDisplayPreview() {
     ToDoListTheme {
         SettingsScreenDisplay(
-            onBackClicked = {}
+            onBackClicked = {},
+            onThemeChanged = {},
+            obAboutAppClick = {},
+            viewState = SettingsViewState(
+                theme = AppTheme.DARK,
+                isAppLiked = UserMark.DISLIKE,
+            )
         )
     }
 }

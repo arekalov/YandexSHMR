@@ -4,7 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.arekalov.yandexshmr.presentation.settings.models.SettingsViewState
+import com.arekalov.yandexshmr.presentation.common.models.AppTheme
+import com.arekalov.yandexshmr.presentation.settings.models.SettingsIntent
 import com.arekalov.yandexshmr.presentation.settings.views.SettingsScreenDisplay
 
 @Composable
@@ -13,9 +14,16 @@ fun SettingsScreen(
     settingsViewModel: SettingsViewModel = viewModel()
 ) {
     val viewState = settingsViewModel.settingsState.collectAsState()
-    when (val state = viewState.value) {
-        is SettingsViewState.Display -> SettingsScreenDisplay(
-            onBackClicked = { navController.popBackStack() }
-        )
-    }
+    SettingsScreenDisplay(
+        onBackClicked = { navController.popBackStack() },
+        viewState = viewState.value,
+        onThemeChanged = { theme: AppTheme ->
+            settingsViewModel.obtainIntent(
+                intent = SettingsIntent.ChangeTheme(
+                    theme
+                )
+            )
+        },
+        obAboutAppClick = {}
+    )
 }

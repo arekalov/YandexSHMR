@@ -1,6 +1,7 @@
 package com.arekalov.yandexshmr.presentation.settings.views
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,7 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.R
-import com.arekalov.yandexshmr.presentation.settings.models.AppTheme
+import com.arekalov.yandexshmr.presentation.common.models.AppTheme
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,7 +48,7 @@ fun ThemeBottomSheet(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
+            modifier = Modifier.background(MaterialTheme.colorScheme.background)
         ) {
             Text(
                 text = stringResource(id = R.string.appThemeLabel),
@@ -64,6 +65,7 @@ fun ThemeBottomSheet(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .background(color = MaterialTheme.colorScheme.surface)
                 ) {
                     ThemeItem(
                         text = stringResource(id = R.string.SystemTheme),
@@ -99,6 +101,7 @@ fun ThemeItem(
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
@@ -109,6 +112,7 @@ fun ThemeItem(
             if (isSelected) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_check),
+                    modifier = Modifier.height(18.dp),
                     contentDescription = "theme selected"
                 )
             }

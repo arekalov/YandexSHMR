@@ -1,5 +1,5 @@
 package com.arekalov.yandexshmr.presentation.settings.models
 
-enum class AppTheme {
-    SYSTEM, LIGHT, DARK
+enum class UserMark {
+    NONE, LIKE, DISLIKE
 }

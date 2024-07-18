@@ -6,6 +6,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.arekalov.yandexshmr.presentation.common.models.AppTheme
 
 val LightScheme = lightColorScheme(
     primary = blueLight,
@@ -38,11 +39,17 @@ val DarkScheme = darkColorScheme(
 
 @Composable
 fun ToDoListTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
+    theme: AppTheme = AppTheme.SYSTEM,
+    content: @Composable () -> Unit,
 ) {
     val colorScheme =
-        if (!darkTheme) {
+        if (theme == AppTheme.SYSTEM) {
+            if (isSystemInDarkTheme()) {
+                DarkScheme
+            } else {
+                LightScheme
+            }
+        } else if (theme == AppTheme.LIGHT) {
             LightScheme
         } else {
             DarkScheme

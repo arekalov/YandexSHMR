@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.R
-import com.arekalov.yandexshmr.presentation.settings.models.AppTheme
+import com.arekalov.yandexshmr.presentation.common.models.AppTheme
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 
 @Composable
