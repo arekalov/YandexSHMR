@@ -1,18 +1,16 @@
 package com.arekalov.yandexshmr.presentation.edit.views
 
 import android.content.res.Configuration
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,14 +26,14 @@ import com.arekalov.yandexshmr.domain.model.Priority
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PriorityPicker(
     priority: Priority,
-    onRegularClick: () -> Unit,
-    onLowClick: () -> Unit,
-    onHighClick: () -> Unit,
+    onPriorityChange: (Priority) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val priorityBottomSheetState = rememberModalBottomSheetState()
     var expanded by rememberSaveable { mutableStateOf(false) }
     Box(
         modifier = modifier
@@ -74,54 +72,12 @@ fun PriorityPicker(
                 )
             }
         }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.surface)
-                .width(150.dp)
-        ) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        stringResource(R.string.reqularPriorityLabel),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(10.dp)
-                    )
-                },
-                onClick = {
-                    onRegularClick()
-                    expanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        stringResource(R.string.lowPriorityLabel),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.padding(10.dp)
-                    )
-                },
-                onClick = {
-                    onLowClick()
-                    expanded = false
-                }
-            )
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        stringResource(R.string.highPriorityLabel),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.padding(10.dp)
-                    )
-                },
-                onClick = {
-                    onHighClick()
-                    expanded = false
-                }
+        if (expanded) {
+            PriorityBottomSheet(
+                nowPriority = priority,
+                sheetState = priorityBottomSheetState,
+                onDismissRequest = { expanded = false },
+                changePriority = onPriorityChange
             )
         }
     }
@@ -135,9 +91,7 @@ private fun PriorityPickerPreview() {
     ToDoListTheme {
         PriorityPicker(
             priority = Priority.LOW,
-            onRegularClick = {},
-            onLowClick = {},
-            onHighClick = {}
+            onPriorityChange = {}
         )
     }
 }

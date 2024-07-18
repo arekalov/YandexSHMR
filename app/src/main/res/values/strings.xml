@@ -4,7 +4,7 @@
     <string name="taskPlaceHolder">Что надо сделать...</string>
     <string name="priorityLabel">Приоритет</string>
     <string name="reqularPriorityLabel">Обычный</string>
-    <string name="lowPriorityLabel">Низкий</string>
+    <string name="lowPriorityLabel">↓↓ Низкий</string>
     <string name="highPriorityLabel">!! Высокий</string>
     <string name="deadlinLabel">Сделать до</string>
     <string name="deleteLabel">Удалить</string>
