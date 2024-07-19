@@ -15,6 +15,8 @@ import com.arekalov.yandexshmr.presentation.home.HomeScreen
 import com.arekalov.yandexshmr.presentation.home.HomeViewModel
 import com.arekalov.yandexshmr.presentation.settings.SettingsScreen
 import com.arekalov.yandexshmr.presentation.settings.SettingsViewModel
+import com.arekalov.yandexshmr.presentation.settings.aboutscreen.AboutAppScreen
+import com.arekalov.yandexshmr.presentation.settings.models.SettingsIntent
 
 
 @Composable
@@ -49,6 +51,24 @@ fun Navigation(
             SettingsScreen(
                 settingsViewModel = settingsViewModel,
                 navController = navController,
+            )
+        }
+        composable(
+            route = ABOUT,
+            enterTransition = { fadeIn(animationSpec = tween(durationMillis = 250)) },
+            exitTransition = { fadeOut(animationSpec = tween(durationMillis = 250)) },
+            popEnterTransition = { fadeIn(animationSpec = tween(durationMillis = 250)) },
+            popExitTransition = { fadeOut(animationSpec = tween(durationMillis = 250)) }
+        )
+        {
+            AboutAppScreen(
+                settingsViewState = settingsViewModel.settingsState,
+                onIsAppLikedChanged = { value: Boolean ->
+                    settingsViewModel.obtainIntent(
+                        SettingsIntent.ChangeIsAppLiked(value)
+                    )
+                },
+                onBackClicked = { navController.popBackStack() }
             )
         }
         composable(

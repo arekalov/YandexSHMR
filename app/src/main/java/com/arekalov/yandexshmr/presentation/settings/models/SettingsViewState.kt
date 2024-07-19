@@ -4,5 +4,5 @@ import com.arekalov.yandexshmr.presentation.common.models.AppTheme
 
 data class SettingsViewState(
     val theme: AppTheme,
-    val isAppLiked: UserMark
+    val isAppLiked: Boolean
 )

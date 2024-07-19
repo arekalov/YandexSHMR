@@ -22,7 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.presentation.common.models.AppTheme
 import com.arekalov.yandexshmr.presentation.settings.models.SettingsViewState
-import com.arekalov.yandexshmr.presentation.settings.models.UserMark
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,7 +31,7 @@ fun SettingsScreenDisplay(
     viewState: SettingsViewState,
     modifier: Modifier = Modifier,
     onThemeChanged: (AppTheme) -> Unit,
-    obAboutAppClick: () -> Unit
+    onAboutAppClick: () -> Unit
 
 ) {
     val themeBottomSheetState = rememberModalBottomSheetState()
@@ -68,7 +67,7 @@ fun SettingsScreenDisplay(
                     nowTheme = viewState.theme
                 )
                 AboutAppItem(
-                    onClick = onBackClicked
+                    onClick = onAboutAppClick
                 )
             }
         }
@@ -83,10 +82,10 @@ private fun SettingsScreenDisplayPreview() {
         SettingsScreenDisplay(
             onBackClicked = {},
             onThemeChanged = {},
-            obAboutAppClick = {},
+            onAboutAppClick = {},
             viewState = SettingsViewState(
                 theme = AppTheme.DARK,
-                isAppLiked = UserMark.DISLIKE,
+                isAppLiked = false,
             )
         )
     }

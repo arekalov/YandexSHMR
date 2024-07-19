@@ -5,6 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.arekalov.yandexshmr.presentation.common.models.AppTheme
+import com.arekalov.yandexshmr.presentation.common.navigation.ABOUT
 import com.arekalov.yandexshmr.presentation.settings.models.SettingsIntent
 import com.arekalov.yandexshmr.presentation.settings.views.SettingsScreenDisplay
 
@@ -24,6 +25,6 @@ fun SettingsScreen(
                 )
             )
         },
-        obAboutAppClick = {}
+        onAboutAppClick = { navController.navigate(ABOUT) }
     )
 }

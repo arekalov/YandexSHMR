@@ -6,7 +6,6 @@ import com.arekalov.yandexshmr.R
 import com.arekalov.yandexshmr.presentation.common.models.AppTheme
 import com.arekalov.yandexshmr.presentation.settings.models.SettingsIntent
 import com.arekalov.yandexshmr.presentation.settings.models.SettingsViewState
-import com.arekalov.yandexshmr.presentation.settings.models.UserMark
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +24,7 @@ class SettingsViewModel @Inject constructor(
     private val _settingsViewState = MutableStateFlow(
         SettingsViewState(
             theme = AppTheme.SYSTEM,
-            isAppLiked = UserMark.NONE
+            isAppLiked = false
         )
     )
 
@@ -36,18 +35,15 @@ class SettingsViewModel @Inject constructor(
 
     private fun initUserMark() {
         when (sharedPreferences.getString(USER_MARK, "null")) {
-            UserMark.LIKE.toString() -> _settingsViewState.value =
-                _settingsViewState.value.copy(isAppLiked = UserMark.LIKE)
+            "false" -> _settingsViewState.value =
+                _settingsViewState.value.copy(isAppLiked = false)
 
-            UserMark.DISLIKE.toString() -> _settingsViewState.value =
-                _settingsViewState.value.copy(isAppLiked = UserMark.DISLIKE)
-
-            UserMark.NONE.toString() -> _settingsViewState.value =
-                _settingsViewState.value.copy(isAppLiked = UserMark.NONE)
+            "true" -> _settingsViewState.value =
+                _settingsViewState.value.copy(isAppLiked = true)
 
             else -> {
                 with(this.sharedPreferences.edit()) {
-                    putString(USER_MARK, UserMark.NONE.toString())
+                    putString(USER_MARK, "false")
                     apply()
                 }
             }
@@ -80,16 +76,16 @@ class SettingsViewModel @Inject constructor(
     fun obtainIntent(intent: SettingsIntent) {
         when (val currentIntent = intent) {
             is SettingsIntent.ChangeTheme -> changeTheme(currentIntent.theme)
-            is SettingsIntent.ChangeIsAppLiked -> changeIsAppLiked(currentIntent.userMark)
+            is SettingsIntent.ChangeIsAppLiked -> changeIsAppLiked(currentIntent.isAppLiked)
         }
     }
 
-    private fun changeIsAppLiked(appLiked: UserMark) {
+    private fun changeIsAppLiked(isAppLiked: Boolean) {
         _settingsViewState.value = _settingsViewState.value.copy(
-            isAppLiked = appLiked
+            isAppLiked = isAppLiked
         )
         with(this.sharedPreferences.edit()) {
-            putString(USER_MARK, appLiked.toString())
+            putString(USER_MARK, isAppLiked.toString())
             apply()
         }
     }
