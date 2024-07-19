@@ -9,14 +9,14 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.arekalov.yandexshmr.presentation.aboutapp.AboutAppScreen
+import com.arekalov.yandexshmr.presentation.aboutapp.AboutAppViewModel
 import com.arekalov.yandexshmr.presentation.edit.EditScreen
 import com.arekalov.yandexshmr.presentation.edit.EditViewModel
 import com.arekalov.yandexshmr.presentation.home.HomeScreen
 import com.arekalov.yandexshmr.presentation.home.HomeViewModel
 import com.arekalov.yandexshmr.presentation.settings.SettingsScreen
 import com.arekalov.yandexshmr.presentation.settings.SettingsViewModel
-import com.arekalov.yandexshmr.presentation.settings.aboutscreen.AboutAppScreen
-import com.arekalov.yandexshmr.presentation.settings.models.SettingsIntent
 
 
 @Composable
@@ -25,6 +25,7 @@ fun Navigation(
     settingsViewModel: SettingsViewModel,
     editViewModel: EditViewModel,
     homeViewModel: HomeViewModel,
+    aboutAppViewModel: AboutAppViewModel
 ) {
     NavHost(navController = navController, startDestination = HOME) {
         composable(
@@ -50,6 +51,7 @@ fun Navigation(
         {
             SettingsScreen(
                 settingsViewModel = settingsViewModel,
+                aboutAppViewModel = aboutAppViewModel,
                 navController = navController,
             )
         }
@@ -62,13 +64,8 @@ fun Navigation(
         )
         {
             AboutAppScreen(
-                settingsViewState = settingsViewModel.settingsState,
-                onIsAppLikedChanged = { value: Boolean ->
-                    settingsViewModel.obtainIntent(
-                        SettingsIntent.ChangeIsAppLiked(value)
-                    )
-                },
-                onBackClicked = { navController.popBackStack() }
+                aboutAppViewModel = aboutAppViewModel,
+                navController = navController
             )
         }
         composable(

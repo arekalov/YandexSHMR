@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.arekalov.yandexshmr.data.workmanager.DataRefreshWorker
+import com.arekalov.yandexshmr.presentation.aboutapp.AboutAppViewModel
 import com.arekalov.yandexshmr.presentation.common.navigation.Navigation
 import com.arekalov.yandexshmr.presentation.edit.EditViewModel
 import com.arekalov.yandexshmr.presentation.home.HomeViewModel
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     private val editViewModel: EditViewModel by viewModels()
     private val homeViewModel: HomeViewModel by viewModels()
     private val settingsViewModel: SettingsViewModel by viewModels()
+    private val aboutAppViewModel: AboutAppViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +44,8 @@ class MainActivity : AppCompatActivity() {
                     navController = navController,
                     editViewModel = editViewModel,
                     homeViewModel = homeViewModel,
-                    settingsViewModel = settingsViewModel
+                    settingsViewModel = settingsViewModel,
+                    aboutAppViewModel = aboutAppViewModel
                 )
             }
         }

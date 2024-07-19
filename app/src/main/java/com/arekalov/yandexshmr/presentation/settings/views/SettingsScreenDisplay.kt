@@ -85,7 +85,6 @@ private fun SettingsScreenDisplayPreview() {
             onAboutAppClick = {},
             viewState = SettingsViewState(
                 theme = AppTheme.DARK,
-                isAppLiked = false,
             )
         )
     }

@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr.presentation.settings.aboutscreen
+package com.arekalov.yandexshmr.presentation.aboutapp.views
 
 
 fun getJson(theme: String, isAppLiked: Boolean): String {
@@ -136,7 +136,7 @@ fun getJson(theme: String, isAppLiked: Boolean): String {
                 "items": [
                   {
                     "type": "text",
-                    "text": "Если вам нравится наше приложение нажмите на сердечко",
+                    "text": "Если вам нравится наше приложение сделайте сердечко красным",
                     "font_size": 16,
                     "width": {
                       "type": "wrap_content",
@@ -150,7 +150,7 @@ fun getJson(theme: String, isAppLiked: Boolean): String {
                   {
                     "type": "state",
                     "id": "like_state",
-                    "default_state_id": "disliked",
+                    "default_state_id": "${if (isAppLiked) "liked" else "disliked"}",
                     "states": [
                       {
                         "state_id": "liked",
@@ -306,7 +306,7 @@ fun getJson(theme: String, isAppLiked: Boolean): String {
         {
           "type": "string",
           "name": "theme",
-          "value": "light"
+          "value": "$theme"
         }
       ]
     },

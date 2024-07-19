@@ -1,4 +1,4 @@
-package com.arekalov.yandexshmr.presentation.settings.aboutscreen
+package com.arekalov.yandexshmr.presentation.aboutapp
 
 import android.content.Context
 import android.net.Uri
@@ -7,7 +7,7 @@ import com.yandex.div.core.DivViewFacade
 import com.yandex.div.json.expressions.ExpressionResolver
 import com.yandex.div2.DivAction
 
-class DivActionHandler(
+class MyDivActionHandler(
     private val onBackClick: () -> Unit,
     private val changeLike: (Boolean) -> Unit
 ) : DivActionHandler() {
