@@ -147,7 +147,7 @@ fun EditScreenDisplay(
                     }
                     Icon(
                         painter = painterResource(id = R.drawable.ic_delete),
-                        contentDescription = "delete",
+                        contentDescription = stringResource(R.string.deleteDescr),
                         tint = color,
                         modifier = Modifier.padding(end = 10.dp)
                     )

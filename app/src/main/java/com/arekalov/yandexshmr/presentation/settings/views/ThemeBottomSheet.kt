@@ -113,7 +113,7 @@ fun ThemeItem(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_check),
                     modifier = Modifier.height(18.dp),
-                    contentDescription = "theme selected"
+                    contentDescription = stringResource(R.string.selectedDescr)
                 )
             }
         }

@@ -69,7 +69,7 @@ fun AppBar(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Settings,
-                        contentDescription = "settings",
+                        contentDescription = stringResource(R.string.settingsDescr),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -129,7 +129,7 @@ fun AppBar(
                                     R.drawable.ic_visibile
                                 }
                             ),
-                            contentDescription = "visible icon",
+                            contentDescription = stringResource(R.string.visibleDescr),
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }

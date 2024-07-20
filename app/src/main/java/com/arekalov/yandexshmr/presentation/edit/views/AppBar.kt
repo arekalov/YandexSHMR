@@ -40,7 +40,7 @@ fun AppBar(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_close),
-                    contentDescription = "Back",
+                    contentDescription = stringResource(R.string.backDescr),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
             }

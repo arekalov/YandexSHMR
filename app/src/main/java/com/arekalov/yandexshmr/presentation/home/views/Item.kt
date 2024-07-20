@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -67,7 +68,7 @@ fun Item(
                     R.drawable.ic_down_arrow
                 }
             ),
-            contentDescription = "priority",
+            contentDescription = stringResource(R.string.priorityDescr),
             tint = when {
                 item.isDone && item.priority != Priority.REGULAR -> MaterialTheme.colorScheme.secondary
                 item.priority == Priority.HIGH -> MaterialTheme.colorScheme.tertiary

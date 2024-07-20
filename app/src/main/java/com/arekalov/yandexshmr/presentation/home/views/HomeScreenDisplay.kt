@@ -113,7 +113,7 @@ fun HomeScreenDisplay(
                         id = R.drawable.ic_plus
                     ),
                     tint = MaterialTheme.colorScheme.onPrimary,
-                    contentDescription = "add new"
+                    contentDescription = stringResource(R.string.addItemDescr)
                 )
             }
         }

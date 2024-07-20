@@ -25,4 +25,13 @@
     <string name="SystemTheme">Системная</string>
     <string name="DarkTheme">Тёмная</string>
     <string name="LightTheme">Светлая</string>
+    <string name="backDescr">назад</string>
+    <string name="deleteDescr">удалить</string>
+    <string name="deleteDeadlineDescr">удалить дедлайн</string>
+    <string name="settingsDescr">настройки</string>
+    <string name="visibleDescr">показать или скрыть выполненные дела</string>
+    <string name="addItemDescr">добавить дело</string>
+    <string name="updateDescr">обновить</string>
+    <string name="priorityDescr">приоритет</string>
+    <string name="selectedDescr">дело выбрано</string>
 </resources>
