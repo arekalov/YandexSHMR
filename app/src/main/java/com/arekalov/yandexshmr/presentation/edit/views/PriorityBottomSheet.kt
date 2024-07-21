@@ -23,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -62,14 +64,23 @@ fun PriorityItem(
     isSelected: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val isSelectedDescr = stringResource(R.string.isSelectedDescr)
+    val isNotSelectedDescr = stringResource(R.string.isNotSelectedDescr)
     val animatedColor by animateColorAsState(
         if (isSelected) color else color.copy(alpha = 0.4f),
-        label = ""
+        label = "selected animation"
     )
 
     TextButton(
         onClick = onClick,
         modifier = modifier
+            .semantics {
+                stateDescription = if (isSelected) {
+                    isSelectedDescr
+                } else {
+                    isNotSelectedDescr
+                }
+            }
     ) {
         Text(
             text = text,

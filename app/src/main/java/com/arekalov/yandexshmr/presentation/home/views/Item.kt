@@ -20,6 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,13 +44,25 @@ fun Item(
     onClickEdit: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val doneDescr = stringResource(id = R.string.doneDescr)
+    val notDoneDescr = stringResource(id = R.string.notDoneDescr)
+    val itemDescr = stringResource(id = R.string.itemDescr)
+    val onItemClickLabel = "открыть детали дела"
+    val changeToDoneCheckBoxClickLabel = stringResource(R.string.changeToDoneCheckBoxClickLabel)
+    val changeToNotDoneCheckBoxClickLabel =
+        stringResource(R.string.changeToNotDoneCheckBoxClickLabel)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
         modifier = modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable { onClickEdit(item.id) }
+            .clickable {
+                onClickEdit(item.id)
+            }
+            .semantics(mergeDescendants = true) {
+                onClick(label = onItemClickLabel, action = null)
+            }
     ) {
         Checkbox(
             checked = item.isDone,
@@ -57,7 +75,19 @@ fun Item(
                     MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                 }
 
-            )
+            ),
+            modifier = Modifier
+                .semantics {
+                    stateDescription = if (item.isDone) doneDescr else notDoneDescr
+                    role = Role.Checkbox
+                    onClick(
+                        label = if (item.isDone) {
+                            changeToNotDoneCheckBoxClickLabel
+                        } else {
+                            changeToDoneCheckBoxClickLabel
+                        }, action = null
+                    )
+                }
         )
 
         Icon(
@@ -68,7 +98,14 @@ fun Item(
                     R.drawable.ic_down_arrow
                 }
             ),
-            contentDescription = stringResource(R.string.priorityDescr),
+            contentDescription = stringResource(R.string.priorityLabel) +
+                    if (item.priority == Priority.HIGH) {
+                        stringResource(id = R.string.highPriorityLabel)
+                    } else if (item.priority == Priority.LOW) {
+                        stringResource(id = R.string.lowPriorityLabel)
+                    } else {
+                        stringResource(id = R.string.reqularPriorityLabel)
+                    },
             tint = when {
                 item.isDone && item.priority != Priority.REGULAR -> MaterialTheme.colorScheme.secondary
                 item.priority == Priority.HIGH -> MaterialTheme.colorScheme.tertiary
@@ -98,7 +135,11 @@ fun Item(
                     null
                 },
                 overflow = TextOverflow.Ellipsis,
-                maxLines = 3
+                maxLines = 3,
+                modifier = Modifier
+                    .semantics {
+                        contentDescription = itemDescr + item.task
+                    }
             )
             if (item.deadline != null) {
                 Spacer(modifier = Modifier.height(4.dp))

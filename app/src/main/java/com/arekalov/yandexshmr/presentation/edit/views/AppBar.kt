@@ -1,6 +1,7 @@
 package com.arekalov.yandexshmr.presentation.edit.views
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -13,6 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.tooling.preview.Preview
 import com.arekalov.yandexshmr.R
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
@@ -27,41 +31,57 @@ fun AppBar(
     modifier: Modifier = Modifier,
     onBackButtonVisible: Boolean = true
 ) {
-    CenterAlignedTopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
-            titleContentColor = MaterialTheme.colorScheme.primary,
-            scrolledContainerColor = MaterialTheme.colorScheme.background
-        ),
-        title = {},
-        navigationIcon = {if (onBackButtonVisible) {
-            IconButton(
-                onClick = onBack,
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_close),
-                    contentDescription = stringResource(R.string.backDescr),
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }},
-        actions = {
-            TextButton(
-                onClick = onSave,
-                enabled = (isReadyToSave),
-            ) {
-                Text(
-                    text = stringResource(R.string.saveLabel),
-                    color = if (isReadyToSave) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.primary.copy(0.2f)
-                    }
-                )
-            }
-        },
+    Box(
         modifier = modifier
-    )
+            .semantics {
+                isTraversalGroup = true
+            }
+    ) {
+        CenterAlignedTopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.background,
+                titleContentColor = MaterialTheme.colorScheme.primary,
+                scrolledContainerColor = MaterialTheme.colorScheme.background,
+            ),
+            title = {},
+            navigationIcon = {
+                if (onBackButtonVisible) {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier
+                            .semantics {
+                                traversalIndex = 0f
+                            }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_close),
+                            contentDescription = stringResource(R.string.backDescr),
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+            },
+            actions = {
+                TextButton(
+                    onClick = onSave,
+                    enabled = (isReadyToSave),
+                    modifier = Modifier
+                        .semantics {
+                            traversalIndex = 1f
+                        }
+                ) {
+                    Text(
+                        text = stringResource(R.string.saveLabel),
+                        color = if (isReadyToSave) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.primary.copy(0.2f)
+                        }
+                    )
+                }
+            }
+        )
+    }
 }
 
 

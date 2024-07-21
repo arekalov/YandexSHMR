@@ -30,6 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.R
@@ -93,12 +96,19 @@ fun HomeScreenDisplay(
                 isVisibleAll = viewState.isAllVisible,
                 doneCount = viewState.doneCount,
                 scrollBehavior = scrollBehavior,
-                onSettingsClick = onSettingsClick
+                onSettingsClick = onSettingsClick,
+                modifier = Modifier
+                    .semantics {
+
+                    }
             )
         },
         modifier = modifier
             .background(MaterialTheme.colorScheme.background)
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .semantics {
+                isTraversalGroup = true
+            },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -106,7 +116,11 @@ fun HomeScreenDisplay(
                 },
                 containerColor = MaterialTheme.colorScheme.primary,
                 shape = CircleShape,
-                modifier = Modifier.padding(10.dp)
+                modifier = Modifier
+                    .padding(10.dp)
+                    .semantics {
+                        traversalIndex = 1f
+                    }
             ) {
                 Icon(
                     painter = painterResource(
@@ -135,6 +149,10 @@ fun HomeScreenDisplay(
                     },
                     onCheckedChange = { id, _ -> onCheckedChange(id) },
                     onClickItem = { id -> onItemClick(id) },
+                    modifier = Modifier
+                        .semantics {
+                            traversalIndex = 2f
+                        }
                 )
             } else {
                 EmptyList()

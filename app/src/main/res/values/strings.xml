@@ -34,4 +34,18 @@
     <string name="updateDescr">обновить</string>
     <string name="priorityDescr">приоритет</string>
     <string name="selectedDescr">дело выбрано</string>
+    <string name="showAllDescr">показать все дела</string>
+    <string name="showNotDoneDescr">показать невыполненные дела</string>
+    <string name="loadingDescr">загрузка</string>
+    <string name="doneDescr">выполнено</string>
+    <string name="notDoneDescr">не выполнено</string>
+    <string name="itemDescr">"дело: "</string>
+    <string name="isSelectedDescr">выбрано</string>
+    <string name="isNotSelectedDescr">не выбрано</string>
+    <string name="onThemeClickLabel">открыть окно выбора темы</string>
+    <string name="changeToDoneCheckBoxClickLabel">отметить выполненным</string>
+    <string name="changeToNotDoneCheckBoxClickLabel">отметить невыполненным</string>
+    <string name="themeSelectedDescr">тема выбрана</string>
+    <string name="themeNotSelectedDescr">тема не выбрана</string>
+    <string name="onThemeOnClickLabel">применить тему</string>
 </resources>

@@ -86,9 +86,9 @@ fun EditScreenDisplay(
             AppBar(
                 onBack = onBack,
                 isReadyToSave = viewState.item.task.isNotEmpty(),
-                onSave = onSaveClick
+                onSave = onSaveClick,
             )
-        },
+        }
     ) {
         Column(
             Modifier
@@ -97,7 +97,7 @@ fun EditScreenDisplay(
         ) {
             Surface(
                 color = MaterialTheme.colorScheme.surface,
-                modifier = modifier
+                modifier = Modifier
                     .padding(it)
                     .fillMaxWidth()
                     .shadow(
@@ -130,7 +130,6 @@ fun EditScreenDisplay(
                 deadline = viewState.item.deadline,
                 onDeadlineButtonClick = { deadline -> onDeadlineChange(deadline) },
                 onRemoveDeadline = { onDeadlineChange(null) },
-                modifier = Modifier
             )
             HorizontalDivider()
             TextButton(
@@ -147,7 +146,7 @@ fun EditScreenDisplay(
                     }
                     Icon(
                         painter = painterResource(id = R.drawable.ic_delete),
-                        contentDescription = stringResource(R.string.deleteDescr),
+                        contentDescription = null,
                         tint = color,
                         modifier = Modifier.padding(end = 10.dp)
                     )

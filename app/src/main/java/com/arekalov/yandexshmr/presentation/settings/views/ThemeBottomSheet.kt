@@ -23,6 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.R
@@ -95,6 +98,9 @@ fun ThemeItem(
     isSelected: Boolean,
     modifier: Modifier = Modifier
 ) {
+    val themeSelectedDescr = stringResource(R.string.themeSelectedDescr)
+    val themeNotSelectedDescr = stringResource(R.string.themeNotSelectedDescr)
+    val onThemeClickLabel = stringResource(R.string.onThemeOnClickLabel)
     TextButton(
         onClick = changeTheme,
         modifier = modifier
@@ -102,18 +108,28 @@ fun ThemeItem(
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .semantics {
+                    onClick(label = onThemeClickLabel, action = null)
+                    stateDescription = if (isSelected) {
+                        themeSelectedDescr
+                    } else {
+                        themeNotSelectedDescr
+                    }
+                }
         ) {
             Text(
                 text = text,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(0.7f),
+                modifier = Modifier
             )
             if (isSelected) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_check),
                     modifier = Modifier.height(18.dp),
-                    contentDescription = stringResource(R.string.selectedDescr)
+                    contentDescription = null
                 )
             }
         }
