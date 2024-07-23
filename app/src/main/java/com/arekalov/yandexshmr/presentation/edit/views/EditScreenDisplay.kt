@@ -123,9 +123,7 @@ fun EditScreenDisplay(
             }
             PriorityPicker(
                 priority = viewState.item.priority,
-                onRegularClick = { onPriorityChange(Priority.REGULAR) },
-                onLowClick = { onPriorityChange(Priority.LOW) },
-                onHighClick = { onPriorityChange(Priority.HIGH) }
+                onPriorityChange = onPriorityChange
             )
             HorizontalDivider()
             DeadlinePicker(

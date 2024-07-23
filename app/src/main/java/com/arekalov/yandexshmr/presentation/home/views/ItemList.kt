@@ -27,7 +27,7 @@ fun ItemsList(
         color = MaterialTheme.colorScheme.surface,
         modifier = modifier
             .padding(5.dp)
-            .shadow(3.dp, shape = RoundedCornerShape(3))
+            .shadow(3.dp, shape = RoundedCornerShape(5))
     ) {
         LazyColumn {
             items(

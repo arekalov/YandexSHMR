@@ -32,7 +32,8 @@ import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 @Composable
 fun HomeScreenError(
     modifier: Modifier = Modifier,
-    viewState: HomeViewState.Error
+    viewState: HomeViewState.Error,
+    onSettingsClick: () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
@@ -43,7 +44,8 @@ fun HomeScreenError(
                 onVisibleClick = {},
                 isVisibleAll = false,
                 doneCount = 0,
-                scrollBehavior = scrollBehavior
+                scrollBehavior = scrollBehavior,
+                onSettingsClick = onSettingsClick
             )
         },
         modifier = modifier
@@ -87,8 +89,9 @@ fun HomeScreenErrorPreview() {
         HomeScreenError(
             viewState = HomeViewState.Error(
                 message = "Произошла ошибка",
-                onReloadClick = {}
+                onReloadClick = {},
             ),
+            onSettingsClick = {}
         )
     }
 }

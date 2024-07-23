@@ -1,16 +1,16 @@
 <resources>
     <string name="app_name">ToDo list</string>
     <string name="myTasks">Мои задачи</string>
-    <string name="taskPlaceHolder">Что надо сделать...</string>
+    <string name="taskPlaceHolder">Что надо сделать…</string>
     <string name="priorityLabel">Приоритет</string>
     <string name="reqularPriorityLabel">Обычный</string>
-    <string name="lowPriorityLabel">Низкий</string>
+    <string name="lowPriorityLabel">↓↓ Низкий</string>
     <string name="highPriorityLabel">!! Высокий</string>
     <string name="deadlinLabel">Сделать до</string>
     <string name="deleteLabel">Удалить</string>
     <string name="saveLabel">СОХРАНИТЬ</string>
     <string name="noDeadlineLabel">Дедлайн не задан</string>
-    <string name="okLabel">Ok</string>
+    <string name="okLabel">OK</string>
     <string name="cancelLabel">Отменить</string>
     <string name="myItemsLabel">Мои задачи</string>
     <string name="doneLabel">Выполнено - %1$s</string>
@@ -19,4 +19,10 @@
     <string name="noItemsLabel">Нет задач</string>
     <string name="reloadLabel">Повторить</string>
     <string name="notItemsLabel">Нет задач!</string>
+    <string name="settingsLabel">Настройки</string>
+    <string name="appThemeLabel">Тема оформления</string>
+    <string name="aboutAppLabel">О приложении</string>
+    <string name="SystemTheme">Системная</string>
+    <string name="DarkTheme">Тёмная</string>
+    <string name="LightTheme">Светлая</string>
 </resources>
