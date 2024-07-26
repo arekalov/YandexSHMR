@@ -28,6 +28,7 @@ class ToDoItemsDbDataSource @Inject constructor(
             toDoItemsDao.addToDoItem(item = i.toToDoItemElementDbDto())
         }
     }
+
     suspend fun getRevision(): Int {
         try {
             return revisionDao.getRevision().revisionNumber
@@ -116,16 +117,12 @@ class ToDoItemsDbDataSource @Inject constructor(
     suspend fun updateOrAddItem(item: ToDoItemModel): Resource<ToDoItemModel> {
         return try {
             val itemToSave = item.toToDoItemElementDbDto()
-            toDoItemsDao.getToDoItem(item.id).toToDoItemModel()
+            toDoItemsDao.getToDoItem(item.id)
             toDoItemsDao.updateToDoItem(itemToSave)
             incrementRevision()
             Resource.Success(item)
         } catch (ex: Exception) {
-            try {
-                addItem(item)
-            } catch (ex: Exception) {
-                Resource.Error(UPDATE_ERROR)
-            }
+            addItem(item)
         }
     }
 }

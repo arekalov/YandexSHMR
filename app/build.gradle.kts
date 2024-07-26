@@ -1,3 +1,4 @@
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -5,6 +6,7 @@ plugins {
     id("android-app-convention")
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    id("de.mannodermaus.android-junit5") version "1.8.2.1"
 }
 
 val telegramBotToken: String = System.getenv("TELEGRAM_BOT_TOKEN") ?: "no token"
@@ -16,9 +18,11 @@ tgPlugin {
     detailInfoEnabled.set(true)
 }
 
+
 android {
     namespace = "com.arekalov.yandexshmr"
     compileSdk = 34
+
 
     defaultConfig {
         applicationId = "com.arekalov.yandexshmr"
@@ -26,8 +30,7 @@ android {
         versionName = "1.0"
 
         buildConfigField("String", "OAUTH_AUTHORIZATION", "\"$oauthAuthorization\"")
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.arekalov.yandexshmr.CustomAndroidTestRunner"
         vectorDrawables {
         }
     }
@@ -53,7 +56,7 @@ android {
 }
 
 dependencies {
-//    Hilt
+    //    Hilt
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)
 
@@ -80,10 +83,11 @@ dependencies {
     implementation(libs.bundles.divkit)
     implementation(libs.glide)
 
+//    Platform and ui
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
-    implementation( libs.androidx.material)
+    implementation(libs.androidx.material)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
@@ -95,11 +99,25 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
+//   Testing
+    testImplementation(libs.junit.jupiter.v5103)
+    testRuntimeOnly(libs.junit.platform.launcher)
+    testImplementation(libs.turbine)
+    testImplementation(libs.kotlinx.coroutines.test.v173)
+    implementation(libs.truth)
+    testImplementation(libs.mockk)
+
+    androidTestImplementation(libs.junit.jupiter.v5103)
+    androidTestImplementation(libs.junit.platform.launcher)
+
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.android.compiler.v2511)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    androidTestImplementation(libs.ui.test.junit4)
+    debugImplementation(libs.ui.test.manifest)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

@@ -33,30 +33,38 @@ class EditViewModel @Inject constructor(
         get() = _editViewState
     private val errorHandler = CoroutineExceptionHandler { _, exception ->
         when (val currentState = _editViewState.value) {
-            is EditViewState.Display -> _editViewState.value = EditViewState.Display(
-                item = currentState.item,
-                error = (
-                        ErrorDataClass(
-                            errorText = exception.message.toString(),
-                            onActionClick = {},
-                            actionText = null
-                        )
-                        ),
-                navigateToHome = false
-            )
+            is EditViewState.Display -> {
+                _editViewState.value = EditViewState.Display(
+                    item = currentState.item,
+                    error = (
+                            ErrorDataClass(
+                                errorText = exception.message.toString(),
+                                onActionClick = {},
+                                actionText = null
+                            )
+                            ),
+                    navigateToHome = false
+                )
+            }
 
-            else -> _editViewState.value = EditViewState.Display(
-                item = repository.getEmptyToDoItemModel(),
-                error = ErrorDataClass(
-                    errorText = exception.message.toString(),
-                    onActionClick = {},
-                    actionText = null
-                ),
-                navigateToHome = false
-            )
+            else -> {
+                _editViewState.value = EditViewState.Display(
+                    item = repository.getEmptyToDoItemModel(),
+                    error = ErrorDataClass(
+                        errorText = exception.message.toString(),
+                        onActionClick = {},
+                        actionText = null
+                    ),
+                    navigateToHome = false
+                )
+            }
         }
     }
     private val defaultCoroutineContext = Dispatchers.IO + errorHandler
+
+    init {
+        _editViewState.value = EditViewState.Loading(navigateToHome = false)
+    }
 
     fun obtainIntent(intent: EditIntent) {
         when (val currentState = _editViewState.value) {
@@ -67,7 +75,10 @@ class EditViewModel @Inject constructor(
 
     private fun reduce(intent: EditIntent, currentState: EditViewState.Display) {
         when (intent) {
-            is EditIntent.InitState -> initState(intent.itemId)
+            is EditIntent.InitState -> {
+                initState(intent.itemId)
+            }
+
             is EditIntent.BackToHome -> backToHome()
             is EditIntent.OnSaveCLick -> update(
                 id = currentState.item.id,
@@ -86,7 +97,10 @@ class EditViewModel @Inject constructor(
 
     private fun reduce(intent: EditIntent, currentState: EditViewState.Loading) {
         when (intent) {
-            is EditIntent.InitState -> initState(intent.itemId)
+            is EditIntent.InitState -> {
+                initState(intent.itemId)
+            }
+
             is EditIntent.BackToHome -> backToHome()
             is EditIntent.ResetBackToHome -> navigateToHomeChange()
             else -> {}
@@ -94,6 +108,7 @@ class EditViewModel @Inject constructor(
     }
 
     private fun backToHome() {
+        println("home")
         _editViewState.value = EditViewState.Loading(true)
     }
 
@@ -136,12 +151,12 @@ class EditViewModel @Inject constructor(
     }
 
     private fun initState(id: String) {
-        _editViewState.value = EditViewState.Loading(navigateToHome = false)
         viewModelScope.launch(defaultCoroutineContext) {
             delay(300)
             val item = async {
                 repository.getOrCreateItem(id = id)
             }.await()
+            println("get or create")
             if (item is Resource.Success) {
                 _editViewState.value = EditViewState.Display(
                     item = item.data!!,
@@ -180,7 +195,6 @@ class EditViewModel @Inject constructor(
 
     private fun update(id: String, item: ToDoItemModel) {
         viewModelScope.launch(defaultCoroutineContext) {
-            repository.updateOrAddItem(id, item)
             val answer = repository.updateOrAddItem(id = id, item = item)
             if (answer is Resource.Error) {
                 _editViewState.value = EditViewState.Display(

@@ -88,7 +88,8 @@ fun EditScreenDisplay(
                 isReadyToSave = viewState.item.task.isNotEmpty(),
                 onSave = onSaveClick,
             )
-        }
+        },
+        modifier = modifier
     ) {
         Column(
             Modifier
