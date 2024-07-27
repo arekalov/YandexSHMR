@@ -16,7 +16,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.YandexSHMR"
-        tools:targetApi="31">
+        tools:targetApi="34">
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true">
@@ -25,6 +25,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".TestActivity"
+            android:exported="true">
+
         </activity>
     </application>
 

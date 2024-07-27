@@ -108,7 +108,6 @@ class EditViewModel @Inject constructor(
     }
 
     private fun backToHome() {
-        println("home")
         _editViewState.value = EditViewState.Loading(true)
     }
 
@@ -156,7 +155,6 @@ class EditViewModel @Inject constructor(
             val item = async {
                 repository.getOrCreateItem(id = id)
             }.await()
-            println("get or create")
             if (item is Resource.Success) {
                 _editViewState.value = EditViewState.Display(
                     item = item.data!!,

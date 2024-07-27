@@ -50,6 +50,7 @@ fun PriorityBottomSheet(
         containerColor = MaterialTheme.colorScheme.background
     ) {
         PriorityBottomSheetContent(
+            onDismissRequest = onDismissRequest,
             changePriority = changePriority,
             nowPriority = nowPriority
         )
@@ -62,6 +63,7 @@ fun PriorityItem(
     color: Color,
     onClick: () -> Unit,
     isSelected: Boolean,
+    onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isSelectedDescr = stringResource(R.string.isSelectedDescr)
@@ -72,7 +74,10 @@ fun PriorityItem(
     )
 
     TextButton(
-        onClick = onClick,
+        onClick = {
+            onClick()
+            onDismissRequest()
+        },
         modifier = modifier
             .semantics {
                 stateDescription = if (isSelected) {
@@ -98,6 +103,7 @@ fun PriorityItem(
 @Composable
 fun PriorityBottomSheetContent(
     nowPriority: Priority,
+    onDismissRequest: () -> Unit,
     changePriority: (Priority) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -123,18 +129,21 @@ fun PriorityBottomSheetContent(
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             PriorityItem(
+                onDismissRequest = onDismissRequest,
                 text = stringResource(id = R.string.highPriorityLabel),
                 color = MaterialTheme.colorScheme.tertiary,
                 onClick = { changePriority(Priority.HIGH) },
                 isSelected = nowPriority == Priority.HIGH
             )
             PriorityItem(
+                onDismissRequest = onDismissRequest,
                 text = stringResource(id = R.string.reqularPriorityLabel),
                 color = MaterialTheme.colorScheme.onSurface,
                 onClick = { changePriority(Priority.REGULAR) },
                 isSelected = nowPriority == Priority.REGULAR
             )
             PriorityItem(
+                onDismissRequest = onDismissRequest,
                 text = stringResource(id = R.string.lowPriorityLabel),
                 color = MaterialTheme.colorScheme.onBackground.copy(0.8f),
                 onClick = { changePriority(Priority.LOW) },
@@ -152,7 +161,8 @@ private fun PriorityItemPreview() {
     ToDoListTheme {
         PriorityBottomSheetContent(
             changePriority = {},
-            nowPriority = Priority.HIGH
+            nowPriority = Priority.HIGH,
+            onDismissRequest = {}
         )
     }
 }

@@ -1,7 +1,7 @@
 package com.arekalov.yandexshmr.data.di
 
 import android.content.Context
-import com.arekalov.yandexshmr.MyApplication
+import com.arekalov.yandexshmr.BuildConfig
 import com.arekalov.yandexshmr.data.network.NetworkConnectionManager
 import com.arekalov.yandexshmr.data.network.RetrofitConfig
 import com.arekalov.yandexshmr.data.network.ToDoItemApi
@@ -24,16 +24,19 @@ import javax.inject.Singleton
 object NetworkModule {
 
     @Provides
-    fun provideRetrofitConfig(@ApplicationContext context: Context): RetrofitConfig {
+    fun provideRetrofitConfig(
+        @ApplicationContext context: Context,
+        url: String
+    ): RetrofitConfig {
         val interceptors = listOf<Interceptor>(
             HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             },
             RetryInterceptor(),
-            AuthInterceptor(token = (context as MyApplication).authToken)
+            AuthInterceptor(token = BuildConfig.OAUTH_AUTHORIZATION)
         )
         return RetrofitConfig(
-            baseUrl = "https://hive.mrdekk.ru/todo/",
+            baseUrl = url,
             interceptors = interceptors
         )
     }

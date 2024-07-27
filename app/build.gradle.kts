@@ -59,6 +59,7 @@ dependencies {
     //    Hilt
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
 
 //    Navigation
     implementation(libs.androidx.navigation.compose)
@@ -112,10 +113,11 @@ dependencies {
 
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.android.compiler.v2511)
-    implementation(libs.androidx.hilt.navigation.compose)
+
 
     androidTestImplementation(libs.ui.test.junit4)
     debugImplementation(libs.ui.test.manifest)
+
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     debugImplementation(libs.androidx.ui.tooling)

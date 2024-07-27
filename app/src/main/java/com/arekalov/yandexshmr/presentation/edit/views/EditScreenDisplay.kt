@@ -27,8 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.R
@@ -54,7 +57,7 @@ fun EditScreenDisplay(
     modifier: Modifier = Modifier,
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
-
+    val placeHolderText = stringResource(R.string.taskPlaceHolder)
     LaunchedEffect(viewState) {
         if (viewState.error != null) {
             val result = snackbarHostState.showSnackbar(
@@ -111,11 +114,17 @@ fun EditScreenDisplay(
                     minLines = 3,
                     placeholder = {
                         Text(
-                            text = stringResource(R.string.taskPlaceHolder),
+                            text = placeHolderText,
                             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
                             style = MaterialTheme.typography.bodyMedium
                         )
                     },
+                    modifier = Modifier
+                        .semantics {
+                            contentDescription =
+                                if (viewState.item.task.isNotEmpty()) viewState.item.task else placeHolderText
+                        }
+                        .testTag(placeHolderText),
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = MaterialTheme.colorScheme.surface,
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface
