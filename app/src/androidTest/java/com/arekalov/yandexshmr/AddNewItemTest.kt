@@ -1,7 +1,6 @@
 package com.arekalov.yandexshmr
 
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.test.filterToOne
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
@@ -46,7 +45,6 @@ class AddNewItemTest {
             val aboutAppViewModel: AboutAppViewModel = viewModel()
             ToDoListTheme {
                 val navController = rememberNavController()
-                val theme = settingsViewModel.settingsState.collectAsState()
                 Navigation(
                     navController = navController,
                     settingsViewModel = settingsViewModel,

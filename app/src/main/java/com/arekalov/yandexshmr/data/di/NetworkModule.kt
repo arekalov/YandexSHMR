@@ -25,7 +25,6 @@ object NetworkModule {
 
     @Provides
     fun provideRetrofitConfig(
-        @ApplicationContext context: Context,
         url: String
     ): RetrofitConfig {
         val interceptors = listOf<Interceptor>(
