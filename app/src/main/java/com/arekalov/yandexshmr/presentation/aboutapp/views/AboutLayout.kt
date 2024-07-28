@@ -1,6 +1,3 @@
-package com.arekalov.yandexshmr.presentation.aboutapp.views
-
-
 fun getJson(theme: String, isAppLiked: Boolean): String {
     return """
   {
@@ -12,17 +9,35 @@ fun getJson(theme: String, isAppLiked: Boolean): String {
           "div": {
             "items": [
               {
-                "type": "_template_close",
+                "type": "container",
                 "alignment_horizontal": "left",
                 "height": {
                   "type": "fixed",
-                  "value": 18
+                  "value": 48
                 },
                 "width": {
                   "type": "fixed",
-                  "value": 18
+                  "value": 48
                 },
-                "tint_color": "@{getDictOptColor('#00ffffff', local_palette, 'color2', theme)}",
+                "items": [
+                  {
+                    "type": "_template_close",
+                    "alignment_horizontal": "left",
+                    "height": {
+                      "type": "fixed",
+                      "value": 18
+                    },
+                    "width": {
+                      "type": "fixed",
+                      "value": 18
+                    },
+                    "tint_color": "@{getDictOptColor('#00ffffff', local_palette, 'color2', theme)}",
+                    "margins": {
+                      "top": 15,
+                      "left": 15
+                    }
+                  }
+                ],
                 "margins": {
                   "top": 50,
                   "left": 20
@@ -176,6 +191,9 @@ fun getJson(theme: String, isAppLiked: Boolean): String {
                           "alignment_vertical": "top",
                           "paddings": {
                             "top": 8
+                          },
+                          "accessibility": {
+                            "description": "оценить приложение"
                           }
                         }
                       },
@@ -203,7 +221,10 @@ fun getJson(theme: String, isAppLiked: Boolean): String {
                           "paddings": {
                             "top": 8
                           },
-                          "tint_color": "@{getDictOptColor('#00ffffff', local_palette, 'color2', theme)}"
+                          "tint_color": "@{getDictOptColor('#00ffffff', local_palette, 'color2', theme)}",
+                          "accessibility": {
+                            "description": "оценить приложение"
+                          }
                         }
                       }
                     ]
@@ -379,6 +400,12 @@ fun getJson(theme: String, isAppLiked: Boolean): String {
               "top": 2,
               "right": 12,
               "bottom": 2
+            },
+            "paddings": {
+              "top": 5,
+              "right": 5,
+              "left": 5,
+              "bottom": 5
             }
           },
           {

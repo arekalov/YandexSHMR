@@ -1,6 +1,7 @@
 package com.arekalov.yandexshmr.presentation.settings.views
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.presentation.common.models.AppTheme
@@ -38,37 +42,51 @@ fun SettingsScreenDisplay(
     var isThemeBottomSheetShowed by rememberSaveable {
         mutableStateOf(false)
     }
-    Scaffold(
-        modifier = modifier.fillMaxWidth(),
-        topBar = {
-            SettingsTopBar(
-                onBackClicked = onBackClicked
-            )
-        }
-    ) { paddingValues: PaddingValues ->
-        if (isThemeBottomSheetShowed) {
-            ThemeBottomSheet(
-                sheetState = themeBottomSheetState,
-                onDismissRequest = { isThemeBottomSheetShowed = false },
-                changeTheme = onThemeChanged,
-                nowTHeme = viewState.theme
-            )
-        }
-        Surface(
-            modifier = Modifier
-                .padding(paddingValues)
-                .padding(top = 4.dp, start = 8.dp, end = 8.dp)
-                .shadow(3.dp, shape = RoundedCornerShape(5)),
-            color = MaterialTheme.colorScheme.surface
-        ) {
-            Column {
-                SetThemeItem(
-                    onClick = { isThemeBottomSheetShowed = true },
-                    nowTheme = viewState.theme
+    Box(modifier = Modifier.semantics { isTraversalGroup = true }) {
+        Scaffold(
+            modifier = modifier
+                .fillMaxWidth(),
+            topBar = {
+                SettingsTopBar(
+                    onBackClicked = onBackClicked,
+                    modifier = Modifier
+                        .semantics {
+                            traversalIndex = 0f
+                        }
                 )
-                AboutAppItem(
-                    onClick = onAboutAppClick
+            }
+        ) { paddingValues: PaddingValues ->
+            if (isThemeBottomSheetShowed) {
+                ThemeBottomSheet(
+                    sheetState = themeBottomSheetState,
+                    onDismissRequest = { isThemeBottomSheetShowed = false },
+                    changeTheme = onThemeChanged,
+                    nowTHeme = viewState.theme
                 )
+            }
+            Surface(
+                modifier = Modifier
+                    .padding(paddingValues)
+                    .padding(top = 4.dp, start = 8.dp, end = 8.dp)
+                    .shadow(3.dp, shape = RoundedCornerShape(5))
+                    .semantics {
+                        traversalIndex = 1f
+                    },
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Column {
+                    SetThemeItem(
+                        onClick = { isThemeBottomSheetShowed = true },
+                        nowTheme = viewState.theme,
+                        modifier = Modifier
+                            .semantics {
+                                traversalIndex = 2f
+                            }
+                    )
+                    AboutAppItem(
+                        onClick = onAboutAppClick
+                    )
+                }
             }
         }
     }

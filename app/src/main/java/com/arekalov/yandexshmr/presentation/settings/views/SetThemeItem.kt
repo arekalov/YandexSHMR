@@ -10,6 +10,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.R
@@ -22,10 +24,17 @@ fun SetThemeItem(
     nowTheme: AppTheme,
     modifier: Modifier = Modifier
 ) {
-    TextButton(onClick = onClick) {
+    val onThemeClickLabel = stringResource(R.string.onThemeClickLabel)
+    TextButton(
+        onClick = onClick,
+
+        ) {
         Column(
             modifier = modifier
                 .fillMaxWidth()
+                .semantics(mergeDescendants = true) {
+                    onClick(label = onThemeClickLabel, action = null)
+                }
         ) {
             Text(
                 text = stringResource(R.string.appThemeLabel),
@@ -40,7 +49,8 @@ fun SetThemeItem(
                 },
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                modifier = Modifier.padding(start = 2.dp)
+                modifier = Modifier
+                    .padding(start = 2.dp)
             )
         }
     }

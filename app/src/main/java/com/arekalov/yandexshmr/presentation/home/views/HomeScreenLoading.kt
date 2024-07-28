@@ -18,8 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.arekalov.yandexshmr.R
 import com.arekalov.yandexshmr.presentation.home.models.HomeViewState
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
 
@@ -30,6 +34,7 @@ fun HomeScreenLoading(
     viewState: HomeViewState.Loading,
     onSettingsCLick: () -> Unit,
 ) {
+    val loadingDescr = stringResource(id = R.string.loadingDescr)
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
     )
@@ -56,7 +61,10 @@ fun HomeScreenLoading(
             CircularProgressIndicator(
                 modifier = Modifier
                     .width(40.dp)
-                    .align(Alignment.Center),
+                    .align(Alignment.Center)
+                    .semantics {
+                        contentDescription = loadingDescr
+                    },
                 color = MaterialTheme.colorScheme.primary
             )
         }

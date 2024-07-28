@@ -12,6 +12,7 @@ import com.yandex.div.core.view2.Div2View
 import com.yandex.div.data.DivParsingEnvironment
 import com.yandex.div.json.ParsingErrorLogger
 import com.yandex.div2.DivData
+import getJson
 import org.json.JSONObject
 
 @Composable

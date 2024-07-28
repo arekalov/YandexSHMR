@@ -127,7 +127,7 @@ fun DeadlinePicker(
                     } else {
                         Color.Transparent
                     },
-                    contentDescription = "remove deadline"
+                    contentDescription = stringResource(R.string.deleteDeadlineDescr)
                 )
             }
         }

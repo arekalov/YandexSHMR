@@ -1,7 +1,5 @@
 package com.arekalov.yandexshmr.data.db
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import com.arekalov.yandexshmr.data.common.ADD_ERROR
 import com.arekalov.yandexshmr.data.common.DELETE_ERROR
 import com.arekalov.yandexshmr.data.common.GET_ERROR
@@ -72,7 +70,6 @@ class ToDoItemsDbDataSource @Inject constructor(
             incrementRevision()
             Resource.Success(null)
         } catch (ex: Exception) {
-            Log.e(TAG, ex.toString())
             Resource.Error(DELETE_ERROR)
 
         }

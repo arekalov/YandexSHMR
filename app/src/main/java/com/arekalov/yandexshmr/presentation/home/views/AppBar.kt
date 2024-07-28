@@ -26,6 +26,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.R
@@ -42,6 +47,8 @@ fun AppBar(
     doneCount: Int,
     modifier: Modifier = Modifier
 ) {
+    val showAllDescr = stringResource(id = R.string.showAllDescr)
+    val showNotDone = stringResource(R.string.showNotDoneDescr)
     val elevation = animateDpAsState(
         targetValue = if (scrollBehavior.state.collapsedFraction > 0.5) {
             20.dp
@@ -54,6 +61,9 @@ fun AppBar(
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = modifier
+            .semantics {
+                isTraversalGroup = true
+            }
             .fillMaxWidth()
             .padding(bottom = 0.dp)
             .shadow(elevation.value)
@@ -66,10 +76,13 @@ fun AppBar(
                     modifier = Modifier
                         .align(Alignment.CenterVertically)
                         .padding(end = 10.dp)
+                        .semantics {
+                            traversalIndex = 0f
+                        }
                 ) {
                     Icon(
                         imageVector = Icons.Default.Settings,
-                        contentDescription = "settings",
+                        contentDescription = stringResource(R.string.settingsDescr),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -83,6 +96,12 @@ fun AppBar(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .semantics(
+                            mergeDescendants = true
+                        ) {
+                            traversalIndex = 1f
+                            heading()
+                        }
                 ) {
                     Column(
                         modifier = Modifier
@@ -119,6 +138,10 @@ fun AppBar(
                         modifier = Modifier
                             .align(Alignment.CenterVertically)
                             .padding(end = 15.dp)
+                            .semantics {
+                                traversalIndex = 2f
+                                stateDescription = if (isVisibleAll) showNotDone else showAllDescr
+                            }
                     ) {
                         Icon(
                             painter = painterResource(
@@ -129,7 +152,7 @@ fun AppBar(
                                     R.drawable.ic_visibile
                                 }
                             ),
-                            contentDescription = "visible icon",
+                            contentDescription = null,
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }

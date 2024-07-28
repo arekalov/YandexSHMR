@@ -10,6 +10,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.semantics.CollectionInfo
+import androidx.compose.ui.semantics.collectionInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.arekalov.yandexshmr.data.repository.FakeHardCodeToDoItemRepository
@@ -29,7 +32,12 @@ fun ItemsList(
             .padding(5.dp)
             .shadow(3.dp, shape = RoundedCornerShape(5))
     ) {
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier
+                .semantics {
+                    collectionInfo = CollectionInfo(toDoItemModels.size, 1)
+                }
+        ) {
             items(
                 items = toDoItemModels,
                 key = { it.id }

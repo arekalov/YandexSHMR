@@ -36,7 +36,7 @@ fun SettingsTopBar(
             IconButton(onClick = onBackClicked) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_close),
-                    contentDescription = "back to home"
+                    contentDescription = stringResource(id = R.string.backDescr)
                 )
             }
         },

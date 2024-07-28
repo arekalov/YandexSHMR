@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,10 +46,11 @@ fun PriorityBottomSheet(
         sheetState = sheetState,
         modifier = modifier
             .fillMaxWidth()
-            .height(160.dp),
+            .wrapContentHeight(),
         containerColor = MaterialTheme.colorScheme.background
     ) {
         PriorityBottomSheetContent(
+            onDismissRequest = onDismissRequest,
             changePriority = changePriority,
             nowPriority = nowPriority
         )
@@ -60,16 +63,29 @@ fun PriorityItem(
     color: Color,
     onClick: () -> Unit,
     isSelected: Boolean,
+    onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isSelectedDescr = stringResource(R.string.isSelectedDescr)
+    val isNotSelectedDescr = stringResource(R.string.isNotSelectedDescr)
     val animatedColor by animateColorAsState(
         if (isSelected) color else color.copy(alpha = 0.4f),
-        label = ""
+        label = "selected animation"
     )
 
     TextButton(
-        onClick = onClick,
+        onClick = {
+            onClick()
+            onDismissRequest()
+        },
         modifier = modifier
+            .semantics {
+                stateDescription = if (isSelected) {
+                    isSelectedDescr
+                } else {
+                    isNotSelectedDescr
+                }
+            }
     ) {
         Text(
             text = text,
@@ -87,6 +103,7 @@ fun PriorityItem(
 @Composable
 fun PriorityBottomSheetContent(
     nowPriority: Priority,
+    onDismissRequest: () -> Unit,
     changePriority: (Priority) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -112,18 +129,21 @@ fun PriorityBottomSheetContent(
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             PriorityItem(
+                onDismissRequest = onDismissRequest,
                 text = stringResource(id = R.string.highPriorityLabel),
                 color = MaterialTheme.colorScheme.tertiary,
                 onClick = { changePriority(Priority.HIGH) },
                 isSelected = nowPriority == Priority.HIGH
             )
             PriorityItem(
+                onDismissRequest = onDismissRequest,
                 text = stringResource(id = R.string.reqularPriorityLabel),
                 color = MaterialTheme.colorScheme.onSurface,
                 onClick = { changePriority(Priority.REGULAR) },
                 isSelected = nowPriority == Priority.REGULAR
             )
             PriorityItem(
+                onDismissRequest = onDismissRequest,
                 text = stringResource(id = R.string.lowPriorityLabel),
                 color = MaterialTheme.colorScheme.onBackground.copy(0.8f),
                 onClick = { changePriority(Priority.LOW) },
@@ -141,7 +161,8 @@ private fun PriorityItemPreview() {
     ToDoListTheme {
         PriorityBottomSheetContent(
             changePriority = {},
-            nowPriority = Priority.HIGH
+            nowPriority = Priority.HIGH,
+            onDismissRequest = {}
         )
     }
 }
