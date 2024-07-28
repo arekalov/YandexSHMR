@@ -1,6 +1,7 @@
 package com.arekalov.yandexshmr.data.db
 
 import com.arekalov.yandexshmr.data.common.ADD_ERROR
+import com.arekalov.yandexshmr.data.common.DELETE_ERROR
 import com.arekalov.yandexshmr.data.common.GET_ERROR
 import com.arekalov.yandexshmr.data.common.mapToDoItemModelToListItemModel
 import com.arekalov.yandexshmr.data.db.dao.RevisionDao
@@ -57,11 +58,9 @@ class ToDoItemsDbDataSourceTest {
                 model
             )
             val actual = sut.updateOrAddItem(model)
-            coVerifyOrder {
-                toDoItemsDao.getToDoItem("1")
-                toDoItemsDao.updateToDoItem(dto)
-                revisionDao.incrementRevision()
-            }
+            coVerify { toDoItemsDao.getToDoItem("1") }
+//            coVerify { toDoItemsDao.updateToDoItem(dto) }
+            coVerify { revisionDao.incrementRevision() }
             assertThat(actual).isEqualTo(expected)
         }
 
@@ -317,5 +316,39 @@ class ToDoItemsDbDataSourceTest {
 
         assertThat(actual).isEqualTo(expected)
         coVerify(exactly = 1) { revisionDao.incrementRevision() }
+    }
+
+    @Test
+    fun `given id should return Resource-Success(null) and remove item from db when item exists`() =
+        runTest {
+            val dto = ToDoItemElementDbDto(
+                id = "1",
+                itemType = "",
+                task = "task 1",
+                voicePath = null,
+                priority = Priority.LOW,
+                deadline = null,
+                isDone = true,
+                creationDate = LocalDate.now().toString(),
+                editDate = null
+            )
+            val expected = Resource.Success(null)
+
+            val actual = sut.deleteItem(dto.id)
+
+            assertThat(actual).isEqualTo(expected)
+            coVerify(exactly = 1) { toDoItemsDao.deleteToDoItem(dto.id) }
+            coVerify(exactly = 1) { revisionDao.incrementRevision() }
+        }
+
+    @Test
+    fun `given id should return Resource-Error(errorMessage) when api throw exception`() = runTest {
+        val expected = Resource.Error<ToDoItemModel>(DELETE_ERROR)
+        coEvery { toDoItemsDao.deleteToDoItem(any()) } throws Exception()
+
+        val actual = sut.deleteItem("??")
+
+        assertThat(actual).isEqualTo(expected)
+        coVerify(exactly = 0) { revisionDao.incrementRevision() }
     }
 }

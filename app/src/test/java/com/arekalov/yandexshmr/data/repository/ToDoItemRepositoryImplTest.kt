@@ -138,4 +138,39 @@ class ToDoItemRepositoryImplTest {
             )
         }
 
+    @Test
+    fun `given id should return Resource-Success(toDoItem), delete it from db and net when item exists`() =
+        runTest {
+            val empty = ToDoItemModel(
+                id = "1",
+                task = "task item",
+                priority = Priority.LOW,
+                isDone = false,
+                creationDate = LocalDate.now()
+            )
+            val item = ToDoItemModel(
+                id = "2",
+                task = "task item",
+                priority = Priority.HIGH,
+                isDone = false,
+                creationDate = LocalDate.now()
+            )
+            val toDoItemListWithMapModel =
+                mapToDoItemModelToListItemModel(listOf())
+            coEvery { dbdDataSource.deleteItem(item.id) } returns Resource.Success(item)
+            coEvery { networkDataSource.deleteItem(item.id) } returns Resource.Success(item)
+            coEvery { dbdDataSource.getToDoItemListModel() } returns Resource.Success(
+                toDoItemListWithMapModel
+            )
+            val expected = Resource.Success(item)
+
+            val actual = sut.deleteItem(item.id)
+
+            assertThat(actual).isEqualTo(expected)
+            assertThat(sut.todoItems.value.data).isEqualTo(
+                mapToDoItemModelToListItemModel(
+                    listOf()
+                )
+            )
+        }
 }

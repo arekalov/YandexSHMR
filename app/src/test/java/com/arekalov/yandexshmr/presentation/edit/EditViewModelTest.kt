@@ -1,6 +1,7 @@
 package com.arekalov.yandexshmr.presentation.edit
 
 import app.cash.turbine.test
+import com.arekalov.yandexshmr.data.common.DELETE_ERROR
 import com.arekalov.yandexshmr.data.common.GET_ERROR
 import com.arekalov.yandexshmr.domain.model.Priority
 import com.arekalov.yandexshmr.domain.model.ToDoItemModel
@@ -243,6 +244,79 @@ class EditViewModelTest {
                 assertThat(state.error?.errorText).isEqualTo(expectedStateAfterSave.error?.errorText)
 
                 coVerify { repository.updateOrAddItem(item.id, item) }
+            }
+        }
+
+    @Test
+    fun `given id should delete it and update state when item exists in db and server`() = runTest {
+        val item = ToDoItemModel(
+            id = "1",
+            task = "task item",
+            priority = Priority.LOW,
+            isDone = false,
+            creationDate = LocalDate.now()
+        )
+        coEvery { repository.getOrCreateItem(id = item.id) } returns Resource.Success(item)
+        coEvery { repository.deleteItem(id = item.id) } returns Resource.Success(item)
+
+        val expectedStateAfterInit = EditViewState.Display(
+            item = item,
+            navigateToHome = false
+        )
+
+        val expectedStateAfterDelete = EditViewState.Loading(
+            navigateToHome = true
+        )
+
+        sut.editViewState.test {
+            sut.obtainIntent(EditIntent.InitState(item.id))
+            assertThat(awaitItem()).isEqualTo(EditViewState.Loading(navigateToHome = false))
+            assertThat(awaitItem()).isEqualTo(expectedStateAfterInit)
+
+            sut.obtainIntent(EditIntent.OnDeleteClick)
+            assertThat(awaitItem()).isEqualTo(expectedStateAfterDelete)
+
+            coVerify { repository.deleteItem(item.id) }
+        }
+    }
+
+    @Test
+    fun `given id should add error to state when deleteItem return Resource-Error`() =
+        runTest {
+            val item = ToDoItemModel(
+                id = "1",
+                task = "task item",
+                priority = Priority.LOW,
+                isDone = false,
+                creationDate = LocalDate.now()
+            )
+            coEvery { repository.getOrCreateItem(id = item.id) } returns Resource.Success(item)
+            coEvery { repository.deleteItem(item.id) } returns Resource.Error(DELETE_ERROR)
+
+            val expectedStateAfterInit = EditViewState.Display(
+                item = item,
+                navigateToHome = false
+            )
+
+            val expectedStateAfterSave = EditViewState.Display(
+                navigateToHome = false,
+                item = item,
+                error = ErrorDataClass(
+                    errorText = DELETE_ERROR,
+                    onActionClick = { }
+                )
+            )
+
+            sut.editViewState.test {
+                sut.obtainIntent(EditIntent.InitState(item.id))
+                assertThat(awaitItem()).isEqualTo(EditViewState.Loading(navigateToHome = false))
+                assertThat(awaitItem()).isEqualTo(expectedStateAfterInit)
+
+                sut.obtainIntent(EditIntent.OnDeleteClick)
+                val state = awaitItem() as EditViewState.Display
+                assertThat(state.item).isEqualTo(expectedStateAfterSave.item)
+                assertThat(state.navigateToHome).isEqualTo(expectedStateAfterSave.navigateToHome)
+                assertThat(state.error?.errorText).isEqualTo(expectedStateAfterSave.error?.errorText)
             }
         }
 }

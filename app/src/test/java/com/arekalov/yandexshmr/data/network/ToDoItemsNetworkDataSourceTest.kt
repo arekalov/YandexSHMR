@@ -1,5 +1,6 @@
 package com.arekalov.yandexshmr.data.network
 
+import com.arekalov.yandexshmr.data.common.DELETE_ERROR
 import com.arekalov.yandexshmr.data.common.GET_ERROR
 import com.arekalov.yandexshmr.data.network.dto.ToDoItemElementNetworkDto
 import com.arekalov.yandexshmr.data.network.dto.ToDoItemNetworkDto
@@ -200,4 +201,89 @@ class ToDoItemsNetworkDataSourceTest {
 
             assertThat(actual).isEqualTo(expected)
         }
+
+    @Test
+    fun `given id should return return Resource-Success(toDoItemModel deleted) when item delete from server`() =
+        runTest {
+            val dto = ToDoItemElementNetworkDto(
+                status = "ok",
+                revision = 1,
+                element = ToDoItemNetworkDto(
+                    done = true,
+                    created_at = LocalDate.now().toEpochMilli(),
+                    text = "My task",
+                    changed_at = LocalDate.now().toEpochMilli(),
+                    id = "1",
+                    importance = "basic",
+                    last_updated_by = "null",
+                    color = null,
+                    deadline = null
+                )
+            )
+            val model = dto.toToDoItemModel()
+            coEvery { todoItemApi.deleteToDoItem(any(), model.id) } returns Response.success(dto)
+            val expected = Resource.Success(model)
+
+            val actual = sut.deleteItem(model.id)
+
+            assertThat(actual).isEqualTo(expected)
+        }
+
+    @Test
+    fun `given id should return return Resource-Success(errorMessage) when item not exists delete`() =
+        runTest {
+            val dto = ToDoItemElementNetworkDto(
+                status = "ok",
+                revision = 1,
+                element = ToDoItemNetworkDto(
+                    done = true,
+                    created_at = LocalDate.now().toEpochMilli(),
+                    text = "My task",
+                    changed_at = LocalDate.now().toEpochMilli(),
+                    id = "1",
+                    importance = "basic",
+                    last_updated_by = "null",
+                    color = null,
+                    deadline = null
+                )
+            )
+            val model = dto.toToDoItemModel()
+            coEvery { todoItemApi.deleteToDoItem(any(), model.id) } returns Response.error(
+                404,
+                DELETE_ERROR.toResponseBody()
+            )
+            val expected = Resource.Error<ToDoItemModel>(DELETE_ERROR)
+
+            val actual = sut.deleteItem(model.id)
+
+            assertThat(actual).isEqualTo(expected)
+        }
+
+    @Test
+    fun `given id should return return Resource-Success(errorMessage) when api throws exception`() =
+        runTest {
+            val dto = ToDoItemElementNetworkDto(
+                status = "ok",
+                revision = 1,
+                element = ToDoItemNetworkDto(
+                    done = true,
+                    created_at = LocalDate.now().toEpochMilli(),
+                    text = "My task",
+                    changed_at = LocalDate.now().toEpochMilli(),
+                    id = "1",
+                    importance = "basic",
+                    last_updated_by = "null",
+                    color = null,
+                    deadline = null
+                )
+            )
+            val model = dto.toToDoItemModel()
+            coEvery { todoItemApi.deleteToDoItem(any(), model.id) } throws Exception()
+            val expected = Resource.Error<ToDoItemModel>(DELETE_ERROR)
+
+            val actual = sut.deleteItem(model.id)
+
+            assertThat(actual).isEqualTo(expected)
+        }
+
 }

@@ -1,15 +1,11 @@
 package com.arekalov.yandexshmr
 
 import androidx.activity.compose.setContent
-import androidx.compose.ui.test.filterToOne
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasSetTextAction
-import androidx.compose.ui.test.hasStateDescription
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithContentDescription
-import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,9 +24,7 @@ import org.junit.Test
 import java.util.UUID
 
 @HiltAndroidTest
-class AddNewItemTest {
-
-    private val uuid = UUID.randomUUID()
+class DeleteItemTest {
 
     @get:Rule(order = 0)
     val hiltAndroidRule = HiltAndroidRule(this)
@@ -40,6 +34,7 @@ class AddNewItemTest {
 
     @Test
     fun addNewItemTest() {
+        val uuid = UUID.randomUUID()
         composeTestRule.activity.setContent {
             val settingsViewModel: SettingsViewModel = viewModel()
             val homeViewModel: HomeViewModel = viewModel()
@@ -70,17 +65,6 @@ class AddNewItemTest {
             composeTestRule.onAllNodes(hasSetTextAction()).fetchSemanticsNodes().isNotEmpty()
         }
 
-        val priorityPickerText = composeTestRule.activity.getText(R.string.priorityLabel).toString()
-        val priorityPicker = composeTestRule.onNodeWithText(priorityPickerText)
-        priorityPicker.assertExists().performClick()
-
-        val priorityHighText = composeTestRule.activity.getString(R.string.highPriorityLabel)
-        composeTestRule.waitUntil(timeoutMillis = 3000) {
-            composeTestRule.onAllNodes(hasText(priorityHighText)).fetchSemanticsNodes().isNotEmpty()
-        }
-        val priorityRegular = composeTestRule.onNodeWithText(priorityHighText)
-        priorityRegular.assertExists().performClick()
-
         val textField = composeTestRule.onNode(hasSetTextAction()).assertExists()
         textField.performTextInput(uuid.toString())
 
@@ -95,14 +79,21 @@ class AddNewItemTest {
         }
 
         val item = composeTestRule.onNode(hasText(uuid.toString()))
+        item.assertExists().performClick()
 
-        val checkBox = item.onChildren()
-            .filterToOne(
-                hasStateDescription(
-                    composeTestRule.activity.getText(R.string.notDoneDescr).toString()
-                )
-            )
-        checkBox.assertExists()
+        composeTestRule.waitUntil(timeoutMillis = 2000) {
+            composeTestRule.onAllNodes(hasSetTextAction()).fetchSemanticsNodes().isNotEmpty()
+        }
+
+        val deleteText = composeTestRule.activity.getText(R.string.deleteLabel)
+        val deleteButton = composeTestRule.onNode(hasText(deleteText.toString()))
+        deleteButton.assertExists().performClick()
+
+        composeTestRule.waitUntil(timeoutMillis = 3000) {
+            composeTestRule.onAllNodes(hasText(mainScreenText)).fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeTestRule.onNode(hasText(uuid.toString())).assertDoesNotExist()
     }
 
 }
