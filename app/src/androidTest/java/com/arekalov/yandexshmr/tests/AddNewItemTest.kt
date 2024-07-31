@@ -23,7 +23,6 @@ import com.arekalov.yandexshmr.presentation.edit.EditViewModel
 import com.arekalov.yandexshmr.presentation.home.HomeViewModel
 import com.arekalov.yandexshmr.presentation.settings.SettingsViewModel
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
-import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import kotlinx.coroutines.delay
@@ -55,14 +54,6 @@ class AddNewItemTest {
     @After
     fun tearDown() {
         mockWebServer.shutdown()
-    }
-
-    @Test
-    fun test() {
-        assertThat(true).isTrue()
-        runBlocking {
-            delay(5000)
-        }
     }
 
     @Test
