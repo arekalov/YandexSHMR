@@ -1,5 +1,6 @@
-package com.arekalov.yandexshmr
+package com.arekalov.yandexshmr.tests
 
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.compose.ui.test.filterToOne
 import androidx.compose.ui.test.hasContentDescription
@@ -14,6 +15,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTextInput
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.arekalov.yandexshmr.R
 import com.arekalov.yandexshmr.presentation.MainActivity
 import com.arekalov.yandexshmr.presentation.aboutapp.AboutAppViewModel
 import com.arekalov.yandexshmr.presentation.common.navigation.Navigation
@@ -21,16 +23,22 @@ import com.arekalov.yandexshmr.presentation.edit.EditViewModel
 import com.arekalov.yandexshmr.presentation.home.HomeViewModel
 import com.arekalov.yandexshmr.presentation.settings.SettingsViewModel
 import com.arekalov.yandexshmr.presentation.theme.ToDoListTheme
+import com.google.common.truth.Truth.assertThat
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import java.util.UUID
 
 @HiltAndroidTest
 class AddNewItemTest {
-
-    private val uuid = UUID.randomUUID()
+    private lateinit var mockWebServer: MockWebServer
 
     @get:Rule(order = 0)
     val hiltAndroidRule = HiltAndroidRule(this)
@@ -38,8 +46,34 @@ class AddNewItemTest {
     @get:Rule(order = 1)
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
+    @Before
+    fun setUp() {
+        mockWebServer = MockWebServer()
+        mockWebServer.start()
+    }
+
+    @After
+    fun tearDown() {
+        mockWebServer.shutdown()
+    }
+
     @Test
-    fun addNewItemTest() {
+    fun test() {
+        assertThat(true).isTrue()
+        runBlocking {
+            delay(5000)
+        }
+    }
+
+    @Test
+    fun should_save_entered_item_in_network_and_db() {
+        Log.e("!!!", mockWebServer.url("/").toString())
+        mockWebServer.enqueue(
+            MockResponse()
+                .setBody("The client messed this up")
+                .setResponseCode(200)
+        )
+        Log.e("!!!", "setUp")
         composeTestRule.activity.setContent {
             val settingsViewModel: SettingsViewModel = viewModel()
             val homeViewModel: HomeViewModel = viewModel()
@@ -62,6 +96,9 @@ class AddNewItemTest {
             composeTestRule.onAllNodes(hasContentDescription(textPlus)).fetchSemanticsNodes()
                 .isNotEmpty()
         }
+        runBlocking {
+            delay(10000)
+        }
 
         val btnPlus = composeTestRule.onNodeWithContentDescription(textPlus)
         btnPlus.assertExists().performClick()
@@ -81,8 +118,9 @@ class AddNewItemTest {
         val priorityRegular = composeTestRule.onNodeWithText(priorityHighText)
         priorityRegular.assertExists().performClick()
 
+        val text = UUID.randomUUID().toString()
         val textField = composeTestRule.onNode(hasSetTextAction()).assertExists()
-        textField.performTextInput(uuid.toString())
+        textField.performTextInput(text)
 
         val buttonText = composeTestRule.activity.getText(R.string.saveLabel)
         val saveButton = composeTestRule.onNode(hasText(buttonText.toString()))
@@ -94,7 +132,7 @@ class AddNewItemTest {
             composeTestRule.onAllNodes(hasText(mainScreenText)).fetchSemanticsNodes().isNotEmpty()
         }
 
-        val item = composeTestRule.onNode(hasText(uuid.toString()))
+        val item = composeTestRule.onNode(hasText(text))
 
         val checkBox = item.onChildren()
             .filterToOne(
@@ -104,5 +142,6 @@ class AddNewItemTest {
             )
         checkBox.assertExists()
     }
+
 
 }

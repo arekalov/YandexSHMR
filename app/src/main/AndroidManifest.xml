@@ -18,6 +18,7 @@
         android:theme="@style/Theme.YandexSHMR"
         tools:targetApi="34">
         <activity
+            android:networkSecurityConfig="@xml/security_config"
             android:name=".presentation.MainActivity"
             android:exported="true">
             <intent-filter>

@@ -51,6 +51,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            resValue("string", "clear_text_config", "false")
+        }
+        debug {
+            resValue("string", "clear_text_config", "false")
         }
     }
 }
@@ -110,6 +114,7 @@ dependencies {
 
     androidTestImplementation(libs.junit.jupiter.v5103)
     androidTestImplementation(libs.junit.platform.launcher)
+    androidTestImplementation(libs.mockwebserver)
 
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.android.compiler.v2511)
